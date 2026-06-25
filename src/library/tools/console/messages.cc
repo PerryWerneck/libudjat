@@ -28,26 +28,26 @@ using namespace std;
 
 namespace Udjat {
 
-	UDJAT_API const char * Console::color(Logger::Level level) {
+	UDJAT_API const Console::Color Console::color(Logger::Level level) {
 
 		// https://alligatr.co.uk/ansi-codes/
 		// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
 		static const struct {
 			Logger::Level level;
-			const char *decoration;
+			const Console::Color color;
 		} decorations[] = {
-			{ Logger::Level::Error, 	"\x1b[91m" },
-			{ Logger::Level::Notice, 	"\x1b[96m" },
-			{ Logger::Level::Warning,	"\x1b[93m" },
-			{ Logger::Level::Info, 		"\x1b[92m" },
-			{ Logger::Level::Trace, 	"\x1b[94m" },
-			{ Logger::Level::Debug, 	"\x1b[95m" },
+			{ Logger::Level::Error, 	BrightRedForeground		},
+			{ Logger::Level::Notice, 	BrightCyanForeground	},
+			{ Logger::Level::Warning,	BrightYellowForeground	},
+			{ Logger::Level::Info, 		BrightGreenForeground	},
+			{ Logger::Level::Trace, 	BrightBlueForeground	},
+			{ Logger::Level::Debug, 	BrightMagentaForeground	},
 		};
 
 		for(const auto &decoration : decorations) {
 			if(decoration.level & level) {
-				return decoration.decoration;
+				return decoration.color;
 			}
 		}
 

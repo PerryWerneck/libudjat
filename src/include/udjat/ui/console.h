@@ -48,9 +48,6 @@
 		/// @brief Get icon based on logger level
 		UDJAT_API const char * icon(Logger::Level level);
 
-		/// @brief Get color based on logger level
-		UDJAT_API const char * color(Logger::Level level);
-
 		using Decorator = const char *;
 
 		constexpr Decorator Reset = "\x1B[0m";
@@ -82,6 +79,9 @@
 		constexpr Color BrightMagentaForeground = "\x1B[95m";
 		constexpr Color BrightCyanForeground = "\x1B[96m";
 		constexpr Color BrightWhiteForeground = "\x1B[97m";
+
+		/// @brief Get color based on logger level
+		UDJAT_API const Color color(Logger::Level level);
 
 		enum Foreground : uint8_t {
 			Default = 39,

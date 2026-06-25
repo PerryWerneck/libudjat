@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-24 17:09-0300\n"
+"POT-Creation-Date: 2026-06-25 18:16-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -118,15 +118,15 @@ msgstr "Erro inesperado durante a configuração"
 msgid "Run all unit tests"
 msgstr ""
 
-#: src/library/tools/application/loader.cc:108
+#: src/library/tools/application/loader.cc:105
 msgid "Interactive mode"
 msgstr ""
 
-#: src/library/tools/application/loader.cc:123
+#: src/library/tools/application/loader.cc:120
 msgid "Load module file"
 msgstr ""
 
-#: src/library/tools/application/loader.cc:123
+#: src/library/tools/application/loader.cc:120
 msgid "path"
 msgstr ""
 
@@ -708,23 +708,23 @@ msgstr "Opções de log"
 msgid "Enable console output"
 msgstr "Habilita saída para console"
 
-#: src/library/tools/logger/argparser.cc:83
+#: src/library/tools/logger/argparser.cc:86
 msgid "Disable console output"
 msgstr "Desativa saída para console"
 
-#: src/library/tools/logger/argparser.cc:90
+#: src/library/tools/logger/argparser.cc:93
 msgid "Enable log to file"
 msgstr "Habilita log em arquivo"
 
-#: src/library/tools/logger/argparser.cc:93
+#: src/library/tools/logger/argparser.cc:96
 msgid "Log to file requires a filename"
 msgstr "Log para file existe um nome de arquivo"
 
-#: src/library/tools/logger/argparser.cc:100
+#: src/library/tools/logger/argparser.cc:103
 msgid "Set the log verbosity level"
 msgstr "Defíne o nível de detalhes do log"
 
-#: src/library/tools/logger/argparser.cc:113
+#: src/library/tools/logger/argparser.cc:116
 #: src/library/tools/logger/commandline.cc:191
 msgid "Enable coredump"
 msgstr "Habilita coredump"
@@ -782,37 +782,18 @@ msgstr ""
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
 
-#. The first group is allways the application options
-#: src/library/tools/argparser.cc:39
-msgid "Application options"
-msgstr "Opções da aplicação"
-
-#: src/library/tools/argparser.cc:61 src/library/tools/commandlineparser.cc:166
+#: src/library/tools/commandlineparser.cc:166 src/library/tools/argparser.cc:61
 msgid "Show this help message"
 msgstr "Mostra essa mensagem de help"
-
-#: src/library/tools/argparser.cc:197
-#: src/library/tools/commandlineparser.cc:257
-msgid "Usage:"
-msgstr "Uso:"
-
-#: src/library/tools/argparser.cc:229
-msgid "[OPTIONS]"
-msgstr "[OPÇÕES]"
-
-#: src/library/tools/argparser.cc:299
-#, c++-format
-msgid "Invalid option: -{}"
-msgstr "Opção inválida: -{}"
-
-#: src/library/tools/argparser.cc:316
-#, c++-format
-msgid "Invalid option: --{}"
-msgstr "Opção inválid: --{}"
 
 #: src/library/tools/commandlineparser.cc:169
 msgid "Application options:\n"
 msgstr "Opções da aplicação:\n"
+
+#: src/library/tools/commandlineparser.cc:257
+#: src/library/tools/argparser.cc:242
+msgid "Usage:"
+msgstr "Uso:"
 
 #: src/library/tools/commandlineparser.cc:258
 msgid "[OPTION..]"
@@ -880,6 +861,30 @@ msgstr "Selecione opção (Enter para sair): "
 #: src/library/tools/unit-tests.cc:202
 msgid "Available tests"
 msgstr ""
+
+#. The first group is allways the application options
+#: src/library/tools/argparser.cc:39
+msgid "Application options"
+msgstr "Opções da aplicação"
+
+#: src/library/tools/argparser.cc:155 src/library/tools/argparser.cc:171
+#: src/library/tools/argparser.cc:185
+msgid "Invalid use of repeated argument"
+msgstr ""
+
+#: src/library/tools/argparser.cc:274
+msgid "[OPTIONS]"
+msgstr "[OPÇÕES]"
+
+#: src/library/tools/argparser.cc:344
+#, c++-format
+msgid "Invalid option: -{}"
+msgstr "Opção inválida: -{}"
+
+#: src/library/tools/argparser.cc:361
+#, c++-format
+msgid "Invalid option: --{}"
+msgstr "Opção inválid: --{}"
 
 #, fuzzy
 #~ msgid "Test options"

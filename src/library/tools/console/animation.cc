@@ -37,8 +37,8 @@ namespace Udjat {
 		style = st;	
 	}
 
-	const char ** Console::Animation::get_model(Animation::Style style) noexcept {
-
+	const char ** Console::Animation::get_model(Animation::Style style) {
+ 
 		static const char *plaintext[] = { "|", "/", "-", "\\", nullptr }; 
 		static const char *simple[] = { "◴","◷","◶","◵", nullptr };
 		static const char *braille[] = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏", nullptr };

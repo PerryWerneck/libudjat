@@ -54,9 +54,9 @@
             Progress(const char *title = "");
             ~Progress() override;
 
-            Dialog::Progress & set(const Console::Color color) noexcept;
+            Dialog::Progress & set(Console::Color color) noexcept;
 
-			Dialog::Progress & set(uint64_t current = 0, uint64_t total = 0, bool is_file_size = true) noexcept override;
+			Dialog::Progress & set(uint64_t current, uint64_t total, bool is_file_size = true) noexcept override;
             Dialog::Progress & url(const char *url) noexcept override;
     
         };

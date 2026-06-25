@@ -465,11 +465,18 @@
 					{
 						Console::Progress progress{"Testing progress bar"};
 
-						progress.set(10,10,false);
+						progress.set(Console::BrightWhiteForeground);
+						progress.set(10,10);
 						sleep(5);
 
+						progress.set(Console::GreenForeground);
 						for(size_t ix = 0; ix < 400;ix++) {
 							progress.set(ix/4,100,false);
+							if(ix == 200) {
+								progress.set(Console::YellowForeground);
+							} else if(ix == 250) {
+								progress.set(Console::RedForeground);
+							}
 							usleep(50000);
 						}
 						progress.set(10,10,false);

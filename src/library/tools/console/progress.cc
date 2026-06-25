@@ -163,7 +163,7 @@ namespace Udjat {
 
 		}
 
-		buffer << '\r';
+		buffer << '\r' << Reset;
 
 		Console::write(buffer.str().c_str());
 

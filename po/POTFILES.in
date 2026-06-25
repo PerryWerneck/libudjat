@@ -220,7 +220,6 @@ src/library/tools/logger/misc.cc
 src/library/tools/logger/stream.cc
 src/library/tools/logger/string.cc
 src/library/tools/object.cc
-src/library/tools/argparser.cc
 src/library/tools/commandlineparser.cc
 src/library/tools/systemservice/args_linux.cc
 src/library/tools/systemservice/args_windows.cc
@@ -235,6 +234,7 @@ src/library/tools/console/animation.cc
 src/library/tools/console/messages.cc
 src/library/tools/unit-tests.cc
 src/library/tools/properties.cc
+src/library/tools/argparser.cc
 src/library/ui/progress.cc
 src/library/ui/menu.cc
 src/library/ui/status.cc
