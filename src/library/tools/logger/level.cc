@@ -145,8 +145,12 @@
 				}
 			}
 		}
-
+ 
+#ifdef GETTEXT_PACKAGE
 		return dgettext(GETTEXT_PACKAGE,name);
+#else
+		return name;
+#endif // GETTEXT_PACKAGE
 	}
 
  }
