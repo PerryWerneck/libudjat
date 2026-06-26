@@ -247,7 +247,6 @@
 
  static int network_test() {
 
-#ifndef _WIN32
 	auto nic = Udjat::Network::Interface::Default();
 
 	auto name = nic->name();
@@ -270,7 +269,6 @@
 	} else {
 		Logger::String{"Default network interface netmask: ",mask.c_str()}.info();
 	}
- #endif // !_WIN32
  
 	return 0;
  }

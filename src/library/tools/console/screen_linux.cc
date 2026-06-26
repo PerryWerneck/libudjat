@@ -33,14 +33,6 @@
 #include <udjat/tools/intl.h>
 #include <udjat/tools/string.h>
 
-#ifndef _WIN32
-	#include <sys/ioctl.h>
-#endif // !_WIN32
-
-#ifdef HAVE_UNISTD_H
-	#include <unistd.h>
-#endif 
-
 using namespace std;
 
 namespace Udjat {
