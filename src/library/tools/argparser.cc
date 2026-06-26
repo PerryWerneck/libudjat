@@ -222,6 +222,8 @@
 
 	bool ArgumentParser::show_help() const {
 
+		using namespace Console;
+
 		debug("Running ",__FUNCTION__);
 
 		size_t len = 0;
@@ -268,13 +270,13 @@
 #endif
 
 		if(decorated) {
-			cout << Console::Faint;
+			cout << SetFaint;
 		}
 
 		cout << _("[OPTIONS]");
 		
 		if(decorated) {
-			cout << Console::Reset;
+			cout << ResetFaint;
 		}
 
 		cout << "\n\n";
@@ -282,7 +284,7 @@
 		for(const auto &group : groups) {
 			if(decorated) {
 
-				cout << Console::Bold << group.c_str() << ":" << Console::Reset << "\n";	
+				cout << SetBold << group.c_str() << ":" << ResetBold << "\n";	
 
 			} else {
 	

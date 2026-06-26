@@ -94,13 +94,13 @@ namespace Udjat {
 		// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 		Console::write(String{
 			"\r",
-			Console::ClearEOL,
-			Console::color(level),
+			ClearEOL,
+			color(level),
 			icon(level),
 			"\t",
-			Console::Bold,
+			SetBold,
 			message,
-			Console::Reset,
+			Reset,
 			"\n"
 		}.c_str());
 

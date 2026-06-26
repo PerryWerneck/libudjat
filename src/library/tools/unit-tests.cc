@@ -216,9 +216,9 @@
 						opt.append(" ");
 					}
 					opt.append(
-						"  ",Console::Faint,
+						"  ",Console::SetFaint,
 						"(",worker.option,")",
-						Console::Reset
+						Console::ResetFaint
 					);
 				}
 

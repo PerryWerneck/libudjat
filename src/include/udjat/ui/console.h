@@ -48,19 +48,31 @@
 		/// @brief Get icon based on logger level
 		UDJAT_API const char * icon(Logger::Level level);
 
-		using Decorator = const char *;
+		// Reference: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
-		constexpr Decorator Reset = "\x1B[0m";
-		constexpr Decorator Bold = "\x1B[1m";
-		constexpr Decorator Faint = "\x1B[2m";
-		
-		constexpr Decorator CursorInvisible = "\x1b[?25l";
-		constexpr Decorator CursorVisible = "\x1b[?25h";
-		constexpr Decorator ClearEOL = "\x1b[0K";
-		constexpr Decorator EraseLine = "\x1b[2K";
+		using Function = const char *;
+		constexpr Function Reset = "\x1B[0m";
+		constexpr Function CursorInvisible = "\x1b[?25l";
+		constexpr Function CursorVisible = "\x1b[?25h";
+		constexpr Function ClearEOL = "\x1b[0K";
+		constexpr Function EraseLine = "\x1b[2K";
+
+		using Decorator = const char *;
+		constexpr Decorator SetBold = "\x1B[1m";
+		constexpr Decorator SetFaint = "\x1B[2m";
+		constexpr Decorator SetItalic = "\x1B[3m";
+		constexpr Decorator SetUnderline = "\x1B[4m";
+		constexpr Decorator SetBlinking = "\x1B[5m";
+		constexpr Decorator SetStrikethrough = "\x1B[9m";
+
+		constexpr Decorator ResetBold = "\x1B[22m";
+		constexpr Decorator ResetFaint = "\x1B[22m";
+		constexpr Decorator ResetItalic = "\x1B[23m";
+		constexpr Decorator ResetUnderline = "\x1B[24m";
+		constexpr Decorator ResetBlinking = "\x1B[55m";
+		constexpr Decorator ResetStrikethrough = "\x1B[29m";
 
 		using Color = const char *;
-
 		constexpr Color DefaultForeground = "\x1B[39m";
 		constexpr Color BlackForeground = "\x1B[30m";
 	
@@ -140,7 +152,7 @@
 			/// @param current Downloaded size.
 			/// @param total Total size.
 			/// @return Allways false.
-			bool progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;
+			[[deprecated("Use Console::Progress")]] bool progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;
 	
 		};
 
