@@ -214,6 +214,10 @@ if openssl.found()
 
       pkg_libraries_private += [ '-libmtss']
 
+    #
+    # tpm2-tss-engine.h provided by tpm2-tss-engine-devel
+    # requires tss2/tss2_tpm2_types.h provided by tpm2-0-tss-devel
+    #
     elif cxx.compiles('#include <tpm2-tss-engine.h>', name : 'tpm2-tss-engine.h')
 
       app_conf.set('HAVE_TPM2_TSS_ENGINE_H', 1)

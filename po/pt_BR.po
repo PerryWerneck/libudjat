@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-25 19:56-0300\n"
+"POT-Creation-Date: 2026-06-25 21:07-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -791,7 +791,7 @@ msgid "Application options:\n"
 msgstr "Opções da aplicação:\n"
 
 #: src/library/tools/commandlineparser.cc:257
-#: src/library/tools/argparser.cc:242
+#: src/library/tools/argparser.cc:244
 msgid "Usage:"
 msgstr "Uso:"
 
@@ -872,16 +872,16 @@ msgstr "Opções da aplicação"
 msgid "Invalid use of repeated argument"
 msgstr ""
 
-#: src/library/tools/argparser.cc:274
+#: src/library/tools/argparser.cc:276
 msgid "[OPTIONS]"
 msgstr "[OPÇÕES]"
 
-#: src/library/tools/argparser.cc:344
+#: src/library/tools/argparser.cc:346
 #, c++-format
 msgid "Invalid option: -{}"
 msgstr "Opção inválida: -{}"
 
-#: src/library/tools/argparser.cc:361
+#: src/library/tools/argparser.cc:363
 #, c++-format
 msgid "Invalid option: --{}"
 msgstr "Opção inválid: --{}"
