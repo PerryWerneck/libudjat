@@ -32,6 +32,11 @@
 #include <cstdio>
 #include <udjat/tools/intl.h>
 #include <udjat/tools/string.h>
+#include <sys/ioctl.h>
+
+#ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+#endif // HAVE_UNISTD_H
 
 using namespace std;
 
@@ -204,37 +209,7 @@ namespace Udjat {
 	}
 
 	Console::Screen & Console::Screen::set(const Foreground color) {
-		if(Console::decorated()) {
-			*this << "\x1B[" << (int) color << "m";
-		}
-		return *this;
-	}
-
-	Console::Screen & Console::Screen::bold(bool on) {
-		if(Console::decorated()) {
-			*this << "\x1B[" << (on ? "1" : "22") << "m";
-		}
-		return *this;
-	}
-
-	Console::Screen & Console::Screen::faint(bool on) {
-		if(Console::decorated()) {
-			*this << "\x1B[" << (on ? "2" : "22") << "m";
-		}
-		return *this;
-	}
-
-	Console::Screen & Console::Screen::italic(bool on) {
-		if(Console::decorated()) {
-			*this << "\x1B[" << (on ? "3" : "23") << "m";
-		}
-		return *this;
-	}
-
-	Console::Screen & Console::Screen::cursor(bool on) {
-		if(Console::decorated()) {
-			*this << "\x1B[" << (on ? "?25h" : "?25l");
-		}
+		*this << "\x1B[" << (int) color << "m";
 		return *this;
 	}
 
@@ -245,11 +220,6 @@ namespace Udjat {
 
 	Console::Screen & Console::Screen::down(size_t lines) {
 		*this << "\x1B[" << lines << "E";
-		return *this;
-	}
-
-	Console::Screen & Console::Screen::erase_line() {
-		*this << "\x1B[2K";
 		return *this;
 	}
 

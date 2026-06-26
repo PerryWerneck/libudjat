@@ -228,26 +228,6 @@ namespace Udjat {
 		return *this;
 	}
 
-	UI::Console & Console::Screen::bold(bool on) {
-		*this << "\x1B[" << (on ? "1" : "22") << "m";
-		return *this;
-	}
-
-	UI::Console & Console::Screen::faint(bool on) {
-		*this << "\x1B[" << (on ? "2" : "22") << "m";
-		return *this;
-	}
-
-	UI::Console & Console::Screen::italic(bool on) {
-		*this << "\x1B[" << (on ? "3" : "23") << "m";
-		return *this;
-	}
-
-	UI::Console & Console::Screen::cursor(bool on) {
-		*this << "\x1B[" << (on ? "?25h" : "?25l");
-		return *this;
-	}
-
 	UI::Console & Console::Screen::up(size_t lines) {
 		*this << "\x1B[" << lines << "F";
 		return *this;
@@ -255,11 +235,6 @@ namespace Udjat {
 
 	UI::Console & Console::Screen::down(size_t lines) {
 		*this << "\x1B[" << lines << "E";
-		return *this;
-	}
-
-	UI::Console & Console::Screen::erase_line() {
-		*this << "\x1B[2K";
 		return *this;
 	}
 
