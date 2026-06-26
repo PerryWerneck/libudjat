@@ -69,7 +69,10 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/tools/ssl/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/http/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/mainloop/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/console/screen_linux.cc) \
+	$(srcdir)/src/library/tools/console/animation.cc \  
+	$(srcdir)/src/library/tools/console/messages.cc \
+	$(srcdir)/src/library/tools/console/progress.cc \
+	$(srcdir)/src/library/tools/console/screen_linux.cc \
 	$(wildcard $(srcdir)/src/library/tools/mainloop/os/linux/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/os/linux/application/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/os/linux/*.cc) \

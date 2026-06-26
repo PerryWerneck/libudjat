@@ -53,9 +53,9 @@ src/library/tools/base64.cc
 src/library/tools/cache.cc
 src/library/tools/converters.cc
 src/library/tools/crypto/backend.cc
-src/library/tools/crypto/backend/engine.cc
 src/library/tools/crypto/backend/legacy.cc
 src/library/tools/crypto/backend/provider.cc
+src/library/tools/crypto/backend/engine.cc
 src/library/tools/crypto/exception.cc
 src/library/tools/crypto/key.cc
 src/library/tools/event.cc
