@@ -63,106 +63,187 @@
  #endif // HAVE_SMBIOS
 
  #ifdef HAVE_OPENSSL
- static int ssl_test() {
+ 	static void test_ssl(const char *backend) {
 
-	static const char * backends[] = {
-		"legacy",
-#if defined(HAVE_OPENSSL_ENGINE)
-		"engine",
-#endif
-#if defined(HAVE_OPENSSL_PROVIDER)
-		"provider",
-#endif
-	};
+		String filename{"/tmp/test-",backend,".key"};
 
-	for(const auto &backend : backends) {
+		Udjat::Crypto::Key pkey;
 
-		Logger::String{"-----[ Testing backend '",backend,"' ]------------------------------------------------------"}.notice();
-		try {
+		// Test key generation
+		pkey.generate(filename.c_str(),"password",2048,backend);
 
-			String filename{"/tmp/test-",backend,".key"};
+		string pkeystr = pkey.to_string();
+		bool tss = strstr(pkeystr.c_str(),"BEGIN TSS") != nullptr;
 
-			Udjat::Crypto::Key pkey;
+		Logger::String{"Generated private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",pkeystr.c_str()}.info();
+		pkey.save_public(String{"/tmp/test-",backend,".pub"}.c_str());
 
-			// Test key generation
-			pkey.generate(filename.c_str(),"password",2048,backend);
+		// Test encription/decription
+		{
+			size_t encripted_len = 0;
+			size_t decripted_len = 0;
 
-			string pkeystr = pkey.to_string();
-			bool tss = strstr(pkeystr.c_str(),"BEGIN TSS") != nullptr;
+			const char *buffer = "Simple string to test crypto functions";
 
-			Logger::String{"Generated private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",pkeystr.c_str()}.info();
-			pkey.save_public(String{"/tmp/test-",backend,".pub"}.c_str());
+			auto encripted = make_handle<void>(pkey.encrypt(buffer,encripted_len),free);
 
-			// Test encription/decription
-			{
-				size_t encripted_len = 0;
-				size_t decripted_len = 0;
+			Logger::String{"The encripted block has ",encripted_len," bytes"}.info();
 
-				const char *buffer = "Simple string to test crypto functions";
+			auto decrypted = make_handle<void>(pkey.decrypt(encripted.get(),encripted_len,decripted_len),free);
 
-				auto encripted = make_handle<void>(pkey.encrypt(buffer,encripted_len),free);
+			debug("Decrypted string: '",((char *) decrypted.get()),"'");
 
-				Logger::String{"The encripted block has ",encripted_len," bytes"}.info();
-
-				auto decrypted = make_handle<void>(pkey.decrypt(encripted.get(),encripted_len,decripted_len),free);
-
-				debug("Decrypted string: '",((char *) decrypted.get()),"'");
-
-				if(strcmp(buffer,(const char *) decrypted.get())) {
-					throw runtime_error("Error decripting data block");
-				} else {
-					Logger::String{"Decripted block is ok"}.info();
-				}
-
+			if(strcmp(buffer,(const char *) decrypted.get())) {
+				throw runtime_error("Error decripting data block");
+			} else {
+				Logger::String{"Decripted block is ok"}.info();
 			}
 
-			// Test sign/verify
-			{
-				size_t siglen;
-				unsigned int diglen;
+		}
 
-				const char *buffer = "Simple string to test crypto functions";
-				void *digest = pkey.digest(buffer,diglen);
+		// Test sign/verify
+		{
+			size_t siglen;
+			unsigned int diglen;
 
-				Logger::String{"The digest block has ",diglen," bytes"}.info();
+			const char *buffer = "Simple string to test crypto functions";
+			void *digest = pkey.digest(buffer,diglen);
 
-				void *sig = pkey.sign(digest,diglen,siglen);
+			Logger::String{"The digest block has ",diglen," bytes"}.info();
 
-				Logger::String{"The signed block has ",siglen," bytes"}.info();
+			void *sig = pkey.sign(digest,diglen,siglen);
 
-				if(pkey.verify(sig,siglen,digest,diglen)) {
-					Logger::String{"Signed block is ok"}.info();
-				} else {
-					free(digest);
-					free(sig);
-					throw runtime_error("Error sigining data block");
-				}
+			Logger::String{"The signed block has ",siglen," bytes"}.info();
 
+			if(pkey.verify(sig,siglen,digest,diglen)) {
+				Logger::String{"Signed block is ok"}.info();
+			} else {
 				free(digest);
 				free(sig);
+				throw runtime_error("Error sigining data block");
 			}
 
-			// Test key loading
-			Logger::String{"Reloading private key for ",backend," from file."}.info();
-			String loaded = Udjat::Crypto::Key{}.load(filename.c_str(),"password",backend).to_string();
+			free(digest);
+			free(sig);
+		}
 
-			Logger::String{"Reloaded private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",loaded.c_str()}.info();
+		// Test key loading
+		Logger::String{"Reloading private key for ",backend," from file."}.info();
+		String loaded = Udjat::Crypto::Key{}.load(filename.c_str(),"password",backend).to_string();
 
-			if(strcmp(loaded.c_str(),pkeystr.c_str()) != 0) {
-				throw logic_error("Reloaded key does not match generated key.");
-			}
+		Logger::String{"Reloaded private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",loaded.c_str()}.info();
 
-		} catch(const std::exception &e) {
-			Logger::String{"Error testing backend '",backend,"': ",e.what()}.error();
+		if(strcmp(loaded.c_str(),pkeystr.c_str()) != 0) {
+			throw logic_error("Reloaded key does not match generated key.");
 		}
 
 		Logger::String{"-----[ Finished test of backend '",backend,"' ]---------------------------------------------"}.notice();
+
 	}
-
-
-	return 0;
- }
  #endif // HAVE_OPENSSL
+
+
+//  #ifdef HAVE_OPENSSL
+//  static int ssl_test() {
+
+// 	static const char * backends[] = {
+// 		"legacy",
+// #if defined(HAVE_OPENSSL_ENGINE)
+// 		"engine",
+// #endif
+// #if defined(HAVE_OPENSSL_PROVIDER)
+// 		"provider",
+// #endif
+// 	};
+
+// 	for(const auto &backend : backends) {
+
+// 		Logger::String{"-----[ Testing backend '",backend,"' ]------------------------------------------------------"}.notice();
+// 		try {
+
+// 			String filename{"/tmp/test-",backend,".key"};
+
+// 			Udjat::Crypto::Key pkey;
+
+// 			// Test key generation
+// 			pkey.generate(filename.c_str(),"password",2048,backend);
+
+// 			string pkeystr = pkey.to_string();
+// 			bool tss = strstr(pkeystr.c_str(),"BEGIN TSS") != nullptr;
+
+// 			Logger::String{"Generated private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",pkeystr.c_str()}.info();
+// 			pkey.save_public(String{"/tmp/test-",backend,".pub"}.c_str());
+
+// 			// Test encription/decription
+// 			{
+// 				size_t encripted_len = 0;
+// 				size_t decripted_len = 0;
+
+// 				const char *buffer = "Simple string to test crypto functions";
+
+// 				auto encripted = make_handle<void>(pkey.encrypt(buffer,encripted_len),free);
+
+// 				Logger::String{"The encripted block has ",encripted_len," bytes"}.info();
+
+// 				auto decrypted = make_handle<void>(pkey.decrypt(encripted.get(),encripted_len,decripted_len),free);
+
+// 				debug("Decrypted string: '",((char *) decrypted.get()),"'");
+
+// 				if(strcmp(buffer,(const char *) decrypted.get())) {
+// 					throw runtime_error("Error decripting data block");
+// 				} else {
+// 					Logger::String{"Decripted block is ok"}.info();
+// 				}
+
+// 			}
+
+// 			// Test sign/verify
+// 			{
+// 				size_t siglen;
+// 				unsigned int diglen;
+
+// 				const char *buffer = "Simple string to test crypto functions";
+// 				void *digest = pkey.digest(buffer,diglen);
+
+// 				Logger::String{"The digest block has ",diglen," bytes"}.info();
+
+// 				void *sig = pkey.sign(digest,diglen,siglen);
+
+// 				Logger::String{"The signed block has ",siglen," bytes"}.info();
+
+// 				if(pkey.verify(sig,siglen,digest,diglen)) {
+// 					Logger::String{"Signed block is ok"}.info();
+// 				} else {
+// 					free(digest);
+// 					free(sig);
+// 					throw runtime_error("Error sigining data block");
+// 				}
+
+// 				free(digest);
+// 				free(sig);
+// 			}
+
+// 			// Test key loading
+// 			Logger::String{"Reloading private key for ",backend," from file."}.info();
+// 			String loaded = Udjat::Crypto::Key{}.load(filename.c_str(),"password",backend).to_string();
+
+// 			Logger::String{"Reloaded private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",loaded.c_str()}.info();
+
+// 			if(strcmp(loaded.c_str(),pkeystr.c_str()) != 0) {
+// 				throw logic_error("Reloaded key does not match generated key.");
+// 			}
+
+// 		} catch(const std::exception &e) {
+// 			Logger::String{"Error testing backend '",backend,"': ",e.what()}.error();
+// 		}
+
+// 		Logger::String{"-----[ Finished test of backend '",backend,"' ]---------------------------------------------"}.notice();
+// 	}
+
+
+// 	return 0;
+//  }
+//  #endif // HAVE_OPENSSL
 
  static int network_test() {
 
@@ -392,12 +473,30 @@
 			},
 #ifdef HAVE_OPENSSL
 			UnitTests::Worker{
-				"Test SSL engine",
+				"ssl-legacy", "Test OpenSSL Legacy backend",
 				[]() {
-					ssl_test();
+					test_ssl("legacy");
 					return true;
 				}
 			},
+#if defined(HAVE_OPENSSL_ENGINE)
+			UnitTests::Worker{
+				"ssl-engine", "Test OpenSSL engine backend",
+				[]() {
+					test_ssl("engine");
+					return true;
+				}
+			},
+#endif
+#if defined(HAVE_OPENSSL_PROVIDER)
+			UnitTests::Worker{
+				"ssl-provider", "Test OpenSSL provider backend",
+				[]() {
+					test_ssl("provider");
+					return true;
+				}
+			},
+#endif
 #endif // HAVE_OPENSSL
 #ifdef HAVE_SMBIOS
 			UnitTests::Worker{
