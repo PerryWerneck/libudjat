@@ -38,8 +38,8 @@
 
  namespace Udjat {
 
-	Udjat::Level LevelFactory(const XML::Node &node) {
-		return LevelFactory(node.attribute("level").as_string("unimportant"));
+	Udjat::Level LevelFactory(const Properties &props) {
+		return LevelFactory(props.get("level","unimportant").c_str());
 	}
 
 	Udjat::Level LevelFactory(const char *name) {
@@ -52,6 +52,32 @@
 		throw runtime_error(string{"Unknown level '"} + name + "'");
 
 	}
+
+	Logger::Level LogLevelFactory(const Level level) {
+
+		static const struct {
+			Level from;
+			Logger::Level to;
+		} values[] = {
+
+			{ Level::undefined,		Logger::Trace 	},
+			{ Level::unimportant,	Logger::Trace	},
+			{ Level::ready,			Logger::Info	},
+			{ Level::warning,		Logger::Warning	},
+			{ Level::error,			Logger::Error	},
+			{ Level::critical,		Logger::Error	},
+
+		};
+
+		for(const auto &value : values) {
+			if(value.from == level) {
+				return value.to;
+			}
+		}
+
+		return Logger::Error;
+	}
+
 
  }
 

@@ -19,7 +19,8 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
+ #include <udjat/tools/logger.h>
  #include <cstdint>
 
  namespace Udjat {
@@ -40,7 +41,12 @@
 	UDJAT_API Level LevelFactory(const char *name);
 
 	/// @brief Get level from XML node.
-	UDJAT_API Level LevelFactory(const XML::Node &node);
+	UDJAT_API Level LevelFactory(const Properties &props);
+
+	/// @brief Get logger level.
+	/// @param level The agent level.
+	/// @return The correspondent Logger level.
+	UDJAT_API Logger::Level LogLevelFactory(const Level level);
 
  }
 

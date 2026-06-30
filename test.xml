@@ -1,94 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<udjat>
 
-<!-- config src='http://localhost/~perry/libudjat.xml' update-timer='600' -->
-<udjat src='http://127.0.0.1/~perry/libudjat.xml' update-timer='600'>
+	<module name='civetweb' required='no' preload='no' />
+	<module path='.build/udjat-module-libvirt.so' required='yes' />
 
-	<module name='information' required='no' preload='no' />
-	<module name='dmi' required='no' preload='no' />
+	<agent name='local' type='hypervisor'>
 
-	<module name='http' preload='yes' required='no' />
-	<!-- module name='civetweb' required='no' preload='yes' / -->
-
-	<attribute name='alert-type' value='file' />
-	<attribute name='alert-filename' value='/tmp/netwatcher-%d.log' />
-	<attribute name='alert-payload' value='${timestamp(%Y/%m/%d %H:%M:%S)},${summary}' />
-
-	<action name='check' type='shell' success-value='0' timeout='5' trigger-event='start'>
-		#!/bin/bash
-		ls -l
-	</action>
-
-	<!-- alert name='startup' url='${default-url}/hello' / -->	
-	<!-- alert name='sscritps' cmdline='ls -l' stdout='error' / -->	
-	
-	<agent name='intvalue' type='integer' value='0'>
-
-		<attribute name='summary' value='Summary of agent ${name}' />
-		
-		<agent name='subkey' type='integer' value='0' />
-		<agent name='text' type='string' value='test-value' />
-
-		<state name='sample' value='0' summary='The intvalue is 0' level='ready' />
 
 	</agent>
 
-	<alert name='orphaned' type='file' strip-payload='yes' trigger-event='start'>
-		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-	</alert>
-		
-	<agent name='random1' type='random' update-timer='10' update-signal='reload' alert-type='file' alert-filename='/tmp/random1-%d.alerts'>
-
-		<alert name='changed' type='file' strip-payload='yes' trigger-event='value-change'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary},${value}
-		</alert>
-
-		<state name='s0' value='0' summary='Random 0'>
-			<alert name='r0.0' type='file' strip-payload='yes'>
-				${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-			</alert>
-		</state>
-		
-		<state name='s1' value='1' summary='Random 1' strip-payload='yes'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-		</state>
-
-		<state name='s2' value='2' summary='Random 2' strip-payload='yes'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-		</state>
-
-		<state name='s3' value='3' summary='Random 3' strip-payload='yes'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-		</state>
-
-		<state name='s4' value='4' summary='Random 4' strip-payload='yes'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-		</state>
-
-		<state name='s5' value='5' summary='Random 5' strip-payload='yes'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-		</state>	
-		
-	</agent>
-	
-	<!-- agent name='random10' type='random' update-timer='10'>
-
-		<alert type='d-bus'>
-		
-			<argument type='int16' value='${agent.value}'/>
-			<argument type='string' value='${level}'/>
-			<argument type='string' value='${state.summary}'/>
-				
-		</alert>
-
-		<alert type='script' trigger-event='value-change' cmdline='ls -l' />
-
-		<state name='s0' value='0' summary='Random 0' />
-		<state name='s1' value='1' summary='Random 1' />
-		<state name='s2' value='2' summary='Random 2' />
-		<state name='s3' value='3' summary='Random 3' />
-		<state name='s4' value='4' summary='Random 4' />
-		<state name='s5' value='5' summary='Random 5' />
-
-	</agent -->
-	
 </udjat>
