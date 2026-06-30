@@ -610,8 +610,12 @@
 
 					cout << endl << endl;
 
+					timer->set(-1);
+
+					cout << "Timer is " << (timer->enabled() ? "enabled" : "disabled") << endl;
+
 					delete timer;
-					
+
 					return true;
 				}
 			},
