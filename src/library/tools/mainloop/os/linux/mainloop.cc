@@ -106,22 +106,13 @@
 
 	void Linux::MainLoop::push_back(MainLoop::Timer *timer) {
 		lock_guard<mutex> lock(guard);
-#ifdef DEBUG
-		cout << "MainLoop\t---> Enabling timer " << hex << ((void *) timer) << dec
-				<< " " << timer->to_string() << endl;
-#endif // DEBUG
+		debug("Enabling timer ",to_hex_string((unsigned long) timer));
 		timers.enabled.push_back(timer);
 		wakeup();
 	}
 
 	void Linux::MainLoop::remove(MainLoop::Timer *timer) {
-#ifdef DEBUG
-		clog << "MainLoop\t---> Disabling timer " << hex << ((void *) timer) << dec << endl;
-#endif // DEBUG
-		lock_guard<mutex> lock(guard);
-#ifdef DEBUG
-		clog << "MainLoop\t---> Disabling timer " << hex << ((void *) timer) << dec << endl;
-#endif // DEBUG
+		debug("Disabling timer ",to_hex_string( (unsigned long) timer));
 		timers.enabled.remove(timer);
 	}
 

@@ -34,6 +34,8 @@
  #include <udjat/tools/memory.h>
  #include <udjat/ui/console/progress.h>
  #include <udjat/ui/console.h>
+ #include <udjat/tools/timer.h>
+ #include <udjat/tools/mainloop.h>
 
  #ifdef HAVE_UNISTD_H
  #include <unistd.h>
@@ -581,6 +583,35 @@
 
 					cout << "\n\n" << flush;
 
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"timer", "Test timers",
+				[]() {
+
+					cout << "\n\n" << flush;
+					
+					MainLoop &mainloop = MainLoop::getInstance();
+
+					auto timer = mainloop.TimerFactory(-1,[&](){
+						cout << "Timer expired" << endl;
+						mainloop.quit();
+						return true;
+					});
+
+					cout << "Timer is " << (timer->enabled() ? "enabled" : "disabled") << endl;
+
+					timer->set(10000);
+
+					cout << "Timer is " << (timer->enabled() ? "enabled" : "disabled") << endl;
+
+					mainloop.run();
+
+					cout << endl << endl;
+
+					delete timer;
+					
 					return true;
 				}
 			},

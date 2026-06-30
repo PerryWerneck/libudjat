@@ -55,10 +55,15 @@
 		}
 	}
 
-	bool MainLoop::Timer::set(const unsigned long milliseconds) {
+	bool MainLoop::Timer::set(const int milliseconds) {
 
 		if(values.interval == milliseconds) {
 			return false;
+		}
+
+		if(milliseconds < 0) {
+			disable();
+			return true;
 		}
 
 		auto saved = values.activation_time;
@@ -107,9 +112,9 @@
 		MainLoop::getInstance().remove(this);
 	}
 
-	bool MainLoop::Timer::set(const XML::Node &xml, const char *attrname) {
+	bool MainLoop::Timer::set(const Properties &props, const char *attrname) {
 
-		String attr{xml,attrname};
+		String attr = props[attrname];
 		if(attr.empty()) {
 			return false;
 		}
@@ -228,10 +233,7 @@
 		protected:
 			void on_timer() override {
 
-#ifdef DEBUG
-				clog << "MainLoop\t---> Activating timer " << hex << ((void *) this) << dec
-						<< " " << this->to_string() << endl;
-#endif // DEBUG
+				debug("Activating timer ",to_hex_string((unsigned long ) this)," ",this->to_string());
 
 				bool success = true;
 
@@ -262,11 +264,10 @@
 
 		public:
 			CallBackTimer(unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), callback(c) {
-#ifdef DEBUG
-			clog << "MainLoop\t---> Factoring timer " << hex << ((void *) this) << dec
-					<< " " << this->to_string() << endl;
-#endif // DEBUG
-				enable();
+				debug("Factoring timer ",to_hex_string((unsigned long ) this)).c_str(), " ", this->to_string().c_str());
+				if(milliseconds > 0) {
+					enable();
+				}
 			}
 
 		};

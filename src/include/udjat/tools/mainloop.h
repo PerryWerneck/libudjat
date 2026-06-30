@@ -148,7 +148,7 @@ namespace Udjat {
 		/// @param interval	Timer interval on milliseconds.
 		/// @param call Method when timer expires, timer will be deleted if it returns 'false'.
 		/// @return Timer object.
-		Timer * TimerFactory(unsigned long interval, const std::function<bool()> call);
+		Timer * TimerFactory(int interval, const std::function<bool()> call);
 
 	};
 
