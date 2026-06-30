@@ -128,10 +128,10 @@
 
 	time_t XML::Document::parse() const {
 
-		auto root = document_element();
-		Logger::setup(XML::Node{root});
+		auto root = XML::Node{document_element()};
+		Logger::setup(root);
 
-		for(const auto &node : root) {
+		for(const auto &node : ((pugi::xml_node) root)) {
 			if(!node.attribute("preload").as_bool(false)) {
 				XML::parse(node);
 			}

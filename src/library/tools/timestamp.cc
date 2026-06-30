@@ -35,17 +35,16 @@ namespace Udjat {
 	TimeStamp::TimeStamp(const char *time, const char *format) : value{parse(time,format)} {
 	}
 
-	TimeStamp::TimeStamp(const XML::Node &node, const char *attrname, const time_t def) {
-		String str{node,attrname,""};
-		if(str.empty()) {
-			value = def;
+	TimeStamp::TimeStamp(const Properties &props, const char *attrname, const time_t def) {
+		if(props.contains(attrname)) {
+			value = parse(props[attrname].c_str());
 		} else {
-			value = parse(str.c_str());
+			value = def;
 		}
 	}
 
-	TimeStamp::TimeStamp(const XML::Node &node, const char *attrname, const char *def)
-		: TimeStamp{Udjat::String{node,attrname,def}.c_str()} {
+	TimeStamp::TimeStamp(const Properties &props, const char *attrname, const char *def)
+		: TimeStamp{props.get(attrname,def).c_str()} {
 	}
 
 	TimeStamp::operator struct tm() const noexcept {

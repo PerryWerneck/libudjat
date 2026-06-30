@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/properties.h>
+ #include <string>
 
  namespace Udjat {
 

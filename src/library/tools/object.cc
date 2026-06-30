@@ -565,7 +565,7 @@
 			XML::Document document{path.c_str()};
 
 			const auto &root = document.document_element();
-			next = TimeStamp{root,"update-timer"};
+			next = TimeStamp{XML::Node(root),"update-timer"};
 			if(next) {
 				next += time(0);
 			}
