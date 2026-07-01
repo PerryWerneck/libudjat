@@ -28,6 +28,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
 
  using namespace std;
 
@@ -123,7 +124,7 @@
 
 	}
 
-	bool Interface::push_back(const XML::Node &, std::shared_ptr<Action>) {
+	bool Interface::push_back(const Properties &, std::shared_ptr<Action>) {
 		throw logic_error("This interface is unable to handle actions");
 	}
 
@@ -149,15 +150,15 @@
 		value["description"] = description();
 	}
 
-	Interface::Handler::Introspection::Introspection(const XML::Node &node) 
-		: type{Value::TypeFactory(node,"type")}, name{String{node,"name"}.as_quark()} {
+	Interface::Handler::Introspection::Introspection(const Properties &props) 
+		: type{Value::TypeFactory(props,"type")}, name{props["name"].as_quark()} {
 
-		int dir = String{node,"direction","out"}.select("none","in","out","both",nullptr);
+		int dir = props.get("direction","out").select("none","in","out","both",nullptr);
 		if(dir < 0) {
 			throw runtime_error("Invalid direction, should be none, in, out or both");
 		}
 
-		switch(String{node,"value-from","none"}.select("none","path",nullptr)) {
+		switch(props.get("value-from","none").select("none","path",nullptr)) {
 		case 0:	// none
 			break;
 
@@ -166,7 +167,7 @@
 			break;
 
 		default:
-			throw runtime_error(Logger::String{"Unexpected value '",String{node,"value-from"}.c_str(),"' on value-from attribute"});			
+			throw runtime_error(Logger::String{"Unexpected value '",props["value-from"].c_str(),"' on value-from attribute"});			
 		}
 
 		direction = (Direction) dir;
@@ -177,13 +178,14 @@
 	Interface::Handler::Handler(const char *name) : handler_name{name} {
 	}
 
-	Interface::Handler::Handler(const char *name, const XML::Node &node) : Handler{name} {
-		for(XML::Node child = node.child("arg"); child; child = child.next_sibling("arg")) {
+	Interface::Handler::Handler(const char *name, const Properties &props) : Handler{name} {
+		props.for_each_child([this](const Properties &child) {
 			introspection.emplace_back(child);
-		}
+			return false;
+		});
 	}
 
-	Interface::Handler::Handler(const XML::Node &node) : Handler{String{node,"name"}.as_quark(),node} {
+	Interface::Handler::Handler(const Properties &props) : Handler{props["name"].as_quark(),props} {
 	}
 
 	Interface::Handler::~Handler() {
@@ -315,24 +317,24 @@
 		return 0;
 	}
 
-	Interface::Interface(const XML::Node &node) {
+	Interface::Interface(const Properties &props) {
 
 		// Try type based name
-		String attr{node.attribute("type").as_string("default"),"-name"};
-		interface_name = String{node,attr.c_str()}.as_quark();
+		String attr{props.get("type","default").c_str(),"-name"};
+		interface_name = props[attr.c_str()].as_quark();
 		if(interface_name && *interface_name) {
 			return;
 		}
 
 		// Check names.
-		for(const char *attrname : { "name", "action-name"}) {
-			interface_name = String{node,attrname}.as_quark();
+		for(const char *attrname : { "action-name", "name"}) {
+			interface_name = props[attrname].as_quark();
 			if(interface_name && *interface_name) {
 				return;
 			}
 		}
 
-		throw runtime_error(Logger::String{"Required attribute 'name' or '",node.attribute("type").as_string("default"),"-name","' is missing or empty"});
+		throw runtime_error(Logger::String{"Required attribute 'name' or '",props.get("type","default").c_str(),"-name","' is missing or empty"});
 
 	}
 

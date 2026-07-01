@@ -23,12 +23,11 @@
 
  #pragma once
 
- #pragma once
-
  #include <udjat/defs.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/container.h>
  #include <udjat/action.h>
@@ -51,13 +50,13 @@
 		constexpr Interface(const char *name) : interface_name{name} {
 		}
 
-		/// @brief Build an interface from XML description
-		/// @param name The interface declaration.
-		Interface(const XML::Node &node);
+		/// @brief Build an interface from properties.
+		/// @param props The properties.
+		Interface(const Properties &props);
 
 		/// @brief Push back single action handler.
 		/// @param action The action to push back.
-		virtual bool push_back(const XML::Node &node, std::shared_ptr<Action> action);
+		virtual bool push_back(const Properties &props, std::shared_ptr<Action> action);
 
 	public:
 
@@ -78,12 +77,12 @@
 				} direction = None;
 				Value::Type type;	///< @brief The type value.
 				const char *name;	///< @brief The argument name.
-				Introspection(const XML::Node &node);
+				Introspection(const Properties &props);
 			};
 
 			Handler(const char *name = "unnamed");
-			Handler(const XML::Node &node);
-			Handler(const char *name, const XML::Node &node);
+			Handler(const Properties &props);
+			Handler(const char *name, const Properties &props);
 			virtual ~Handler();
 
 			inline const char * c_str() const noexcept {
@@ -115,7 +114,7 @@
 			/// @param response The response data.
 			/// @return The return code of the first action to fail.
 			/// @retval Complete without failures.
-			int call(Udjat::Request &request, Udjat::Response &response) const;
+			virtual int call(Udjat::Request &request, Udjat::Response &response) const;
 
 			virtual void push_back(const XML::Node &node);
 			virtual void push_back(std::shared_ptr<Action> action);
@@ -160,7 +159,7 @@
 
 			virtual void getProperties(Udjat::Value &value) const;
 
-			virtual Interface & InterfaceFactory(const XML::Node &node) = 0;
+			virtual Interface & InterfaceFactory(const Properties &props) = 0;
 
 		};
 
@@ -184,7 +183,7 @@
 
 		/// @brief Insert interface handler.
 		/// @param node The handler description.
-		virtual Handler & push_back(const XML::Node &node) = 0;
+		virtual Handler & push_back(const Properties &props) = 0;
 
 		virtual ~Interface();
 
