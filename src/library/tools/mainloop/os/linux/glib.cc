@@ -21,9 +21,11 @@
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
  #include <private/glib/mainloop.h>
+ #include <private/signals.h>
  #include <udjat/tools/timer.h>
  #include <semaphore.h>
  #include <dlfcn.h>
+ #include <udjat/tools/event.h>
 
  namespace Udjat {
 
@@ -38,7 +40,8 @@
 		METHOD_G_MAIN_LOOP_NEW,
 		METHOD_G_MAIN_CONTEXT_DEFAULT,
 		METHOD_G_MAIN_LOOP_RUN,
-		METHOD_G_MAIN_LOOP_UNREF
+		METHOD_G_MAIN_LOOP_UNREF,
+		METHOD_G_MAIN_LOOP_QUIT
 	};
 
 	static const char *names[] = {
@@ -52,7 +55,8 @@
 		"g_main_loop_new",
 		"g_main_context_default",
 		"g_main_loop_run",
-		"g_main_loop_unref"
+		"g_main_loop_unref",
+		"g_main_loop_quit",
 	};
 
 	static void *methods[sizeof(names)/sizeof(names[0])];
@@ -126,9 +130,18 @@
 		void (*g_main_loop_unref)(void* loop)
 			= (void (*)(void *)) methods[METHOD_G_MAIN_LOOP_UNREF];
 
-		void *loop = g_main_loop_new(g_main_context_default(), 0);
-		g_main_loop_run(loop);
-		g_main_loop_unref(loop);
+		this->loop = g_main_loop_new(g_main_context_default(), 0);
+
+		debug("------------------ Starting GLIB mainlopp -----------------------");
+ 		capture_signals(this);
+		g_main_loop_run(this->loop);
+		g_main_loop_unref(this->loop);
+		this->loop = NULL;
+
+		//
+		// Restore signals
+		//
+		Udjat::Event::remove(this);
 	
 		return 0;
 	
@@ -148,6 +161,13 @@
 	}
 
 	void Glib::MainLoop::quit() {
+
+		if(loop) {
+			void (*g_main_loop_quit)(void * loop) 
+				= (void (*)(void *)) methods[METHOD_G_MAIN_LOOP_QUIT];	
+			g_main_loop_quit(loop);
+		}
+
 	}
 
 	static int do_timer(Udjat::MainLoop::Timer *timer) {

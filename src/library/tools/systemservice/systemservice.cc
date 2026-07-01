@@ -51,9 +51,7 @@
 			throw std::system_error(EBUSY,std::system_category(),"System service already active");
 		}
 		instance = this;
-		
-		Logger::console(false);
-
+				
 #ifdef HAVE_SYSTEMD
 		sd_notifyf(0,"STATUS=Starting");
 #endif // HAVE_SYSTEMD

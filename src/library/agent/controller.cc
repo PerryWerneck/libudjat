@@ -229,18 +229,18 @@ namespace Udjat {
 
 			} else {
 				next = std::min(next,agent->update.next);
-				debug(
-					"Agent='",agent->name(),
-					"' update set to '",TimeStamp(agent->update.next),
-					", global update set to ",TimeStamp(next)
-				);
+				// debug(
+				// 	"Agent='",agent->name(),
+				// 	"' update set to '",TimeStamp(agent->update.next),
+				// 	", global update set to ",TimeStamp(next)
+				// );
 			}
 		});
 
 		//
 		// Enqueue agent updates
 		//
-		debug(updatelist.size()," agent(s) to update, next update will be ",TimeStamp(next));
+		// debug(updatelist.size()," agent(s) to update, next update will be ",TimeStamp(next));
 
 		if(now < next) {
 			MainLoop::Timer::reset((next-now) * 1000);

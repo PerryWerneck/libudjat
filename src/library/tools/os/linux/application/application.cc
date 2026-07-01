@@ -50,7 +50,7 @@
 		bindtextdomain(gettext_package, STRINGIZE_VALUE_OF(LOCALEDIR));
 		bind_textdomain_codeset(gettext_package, "UTF-8");
 		textdomain(gettext_package);
-		Logger::String{"Getting translations from ",STRINGIZE_VALUE_OF(LOCALEDIR)}.trace(gettext_package);
+//		Logger::String{"Getting translations from ",STRINGIZE_VALUE_OF(LOCALEDIR)}.trace(gettext_package);
 
 #endif // HAVE_LIBINTL
 

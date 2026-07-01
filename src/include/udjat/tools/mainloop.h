@@ -64,6 +64,10 @@ namespace Udjat {
 			return this->mtype == type;
 		}
 
+		inline bool operator !=(const Type type) const noexcept {
+			return this->mtype != type;
+		}
+
 		/// @brief Get default mainloop.
 		static MainLoop & getInstance();
 
