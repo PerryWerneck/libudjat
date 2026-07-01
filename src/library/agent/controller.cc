@@ -26,6 +26,8 @@
  *
  */
 
+ #define LOG_DOMAIN "agent"
+
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/tools/threadpool.h>
@@ -37,8 +39,6 @@
  #include <udjat/agent/abstract.h>
  #include <unistd.h>
 
- #undef LOG_DOMAIN
- #define LOG_DOMAIN "agent"
  #include <udjat/tools/logger.h>
 
  #include <udjat/tools/intl.h>
@@ -83,7 +83,7 @@ namespace Udjat {
 
 			Logger::String{
 				"Agent ",
-				std::to_string((unsigned long long) ((void *) root.get())),
+				to_hex_string((unsigned long) root.get()).c_str(),
 				" was promoted to root"
 			}.trace(root->name());
 
@@ -94,7 +94,7 @@ namespace Udjat {
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::get() const {
 		if(this->root)
 			return this->root;
-		throw logic_error(_("Agent controller was not initialized"));
+		throw logic_error(_("Root agent is not available"));
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path, bool required) const {
@@ -151,20 +151,20 @@ namespace Udjat {
 
 	void Abstract::Agent::Controller::stop() noexcept {
 
-		Logger::String{
-			"Stopping controller"
-		}.trace("agent");
+		debug("---- Stopping agent controller ----");
 
 		MainLoop::Timer::disable();
 
 		if(root) {
 
+			Logger::String{"Stopping controller"}.trace();
+	
 			try {
 				root->stop();
 			} catch(const std::exception &e) {
-				root->error() << "Error '" << e.what() << "' stopping root agent" << endl;
+				Logger::String{"Error '",e.what(),"' stopping root agent"}.error(root->name());
 			} catch(...) {
-				root->error() << "Unexpected error stopping root agent" << endl;
+				Logger::String{"Unexpected error stopping root agent"}.error(root->name());
 			}
 
 			root.reset();
@@ -173,8 +173,13 @@ namespace Udjat {
 			ThreadPool::getInstance().wait();
 			debug("Wait for tasks complete");
 
+		} else {
+
+			Logger::String{"Stopping empty controller"}.trace();
+
 		}
 
+		debug("---- Agent controller stopped ----");
 	}
 
 	void Abstract::Agent::Controller::update_agents() {

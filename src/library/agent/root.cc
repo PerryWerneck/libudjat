@@ -212,9 +212,7 @@
 			}
 
 			virtual ~Agent() {
-				std::stringstream ss;
-				ss << "Root agent " << hex << ((void *) this) << dec << " was destroyed";
-				Logger::String{ss.str()}.trace("agents");
+				Logger::String{"Root agent ",to_hex_string((unsigned long) this).c_str()," was destroyed"}.trace(name());
 			}
 
 			Value & getProperties(Value &value) const override {

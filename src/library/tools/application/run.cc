@@ -61,23 +61,6 @@
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
 	}
 	
-// 	bool Application::setProperty(const char *name, const char *value) {
-
-// 		debug("Property: '",name,"'('",(value ? value : "NULL"),"')");
-
-// #ifdef _WIN32
-// 		if(!SetEnvironmentVariable(name,value)) {
-// 			throw Win32::Exception(_("Unable to set environment variable"));
-// 		}
-// #else
-// 		if(setenv(name, value, 1)) {
-// 			throw std::system_error(errno,std::system_category(),_("Unable to set environment variable"));
-// 		}
-// #endif // _WIN32
-
-// 		return true;
-// 	}
-
 	static void dump(std::shared_ptr<Abstract::Agent> agent, size_t level = 0) {
 
 		Logger::String{

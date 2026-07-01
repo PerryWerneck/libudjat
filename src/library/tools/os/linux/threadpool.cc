@@ -26,6 +26,8 @@
  *
  */
 
+ #define LOG_DOMAIN "threadpool"
+
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
@@ -105,7 +107,7 @@
 
 		if(threads.active.load()) {
 
-			clog << "threadpool\tWaiting for " << threads.active.load() << " thread(s)" << endl;
+			Logger::String{"Waiting for ",threads.active.load()," thread(s)"}.trace();
 
 			for(size_t f=0; f < 10000 && threads.active.load() > 0; f++) {
 
@@ -119,9 +121,9 @@
 			{
 				size_t count = threads.active.load();
 				if(count) {
-					cerr << "threadpool\tStopping with " << count << " threads on pool" << endl;
+					Logger::String{"Stopping with ",count," threads on pool"}.error();
 				} else {
-					cout << "threadpool\tStopping with no pending threads" << endl;
+					Logger::String{"Stopping with no pending threads"}.trace();
 				}
 			}
 

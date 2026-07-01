@@ -120,9 +120,15 @@ namespace Udjat {
 
 		// Deleted! My children are now orphans.
 		lock_guard<std::recursive_mutex> lock(guard);
-		for(auto child : agents()) {
-			child->parent = nullptr;
-			debug("Releasing agent ",name()," with ",child.use_count()," references");
+
+		auto children = agents();
+		auto count = children.size();
+		if(count) {
+			Logger::String{"Unparenting ",count," agent(s)"}.trace(name());
+			for(auto child : children) {
+				Logger::String{"Unparenting child '",child->name()," with ",child.use_count()," references"}.trace(name());
+				child->parent = nullptr;
+			}
 		}
 
 	}
