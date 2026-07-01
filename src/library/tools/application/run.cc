@@ -38,7 +38,7 @@
  #include <private/service.h>
 
  #undef LOG_DOMAIN
- #define LOG_DOMAIN Application::Name()
+ #define LOG_DOMAIN Application::Name();
  #include <udjat/tools/logger.h>
 
  #include <iostream>     // std::cout, std::ostream, std::ios
@@ -212,8 +212,6 @@
 
 	int Application::run(const char *definitions) {
 
-		debug(__FUNCTION__);
-
 		// Parse command line arguments.
 		if(parse_arguments()) {
 			debug("Stopping by parse-arguments request");
@@ -241,57 +239,33 @@
 			});
 #endif // _WIN32
 
- 		if(definitions && *definitions) {
+		try {
 
- 			const char *path = String{definitions}.expand(true).as_quark();
-			ThreadPool::getInstance().push([this,path]{
+			if(definitions && *definitions) {
 
-				debug("Parsing definitions at '",path,"'");
-
-				try {
-
-
-					parse(path,true);
-
+				const char *path = String{definitions}.expand(true).as_quark();
+				
 #ifndef _WIN32
-					// Sighup force reconfiguration.
-					Event::SignalHandler(this,SIGHUP,[this,path]() -> bool {
-						Logger::String{"Catched SIGHUP, reloading ",path}.info(name());
-						parse(path,false);
-						return true;
-					});
+				// Sighup force reconfiguration.
+				Event::SignalHandler(this,SIGHUP,[this,path]() -> bool {
+					Logger::String{"Catched SIGHUP, reloading ",path}.info(name());
+					parse(path,false);
+					return true;
+				});
 
-					Logger::String{
-						"Signal '",(const char *) strsignal(SIGHUP),"' (SIGHUP) will reload settings from ",path
-					}.info(name());
+				Logger::String{
+					"Signal '",(const char *) strsignal(SIGHUP),"' (SIGHUP) will reload settings from ",path
+				}.info(name());
 #endif // _WIN32
 
-				} catch(const std::exception &e) {
+				parse(path,true);
 
-					MainLoop::getInstance().quit(e.what());
+			} else {
 
-				}
+				state( _("Starting services") );
+				Service::Controller::getInstance().start();
 
-
-			});
-
-		}
-
-
-		try {
-		
-// 			if(definitions && *definitions) {
-
-				
-
-// 				parse(path,true);
-
-// 			} else {
-
-// 				state( _("Starting services") );
-// 				Service::Controller::getInstance().start();
-
-// 			}
+			}
 
 			// Start the main loop.
 			debug("----> Starting mainloop");

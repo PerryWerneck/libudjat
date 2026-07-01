@@ -94,7 +94,7 @@
 
 	void SystemService::on_timer() {
 
-		debug("Watchdog timer expired");
+		// debug("Watchdog timer expired");
 		
 #ifdef HAVE_SYSTEMD
 		// Notify systemd that we are alive.
