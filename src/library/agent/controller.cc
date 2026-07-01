@@ -157,10 +157,12 @@ namespace Udjat {
 
 		if(root) {
 
-			Logger::String{"Stopping controller"}.trace();
-	
 			try {
+				debug("---- Stopping children ----");
 				root->stop();
+				debug("---- Cleaning children ----");
+				root->clear();
+				debug("---- Root agent cleanup is complete ----")
 			} catch(const std::exception &e) {
 				Logger::String{"Error '",e.what(),"' stopping root agent"}.error(root->name());
 			} catch(...) {

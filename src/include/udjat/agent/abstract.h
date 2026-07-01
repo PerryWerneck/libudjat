@@ -216,6 +216,9 @@
 			/// @param summary State body, will be expanded with agent properties.
 			std::shared_ptr<Abstract::State> StateFactory(const char *name, const Udjat::Level level, const char *summary = "", const char *body = "");
 
+			/// @brief Clear agent (remove all children)
+			void clear();
+
 		public:
 			class Controller;
 			friend class Controller;
@@ -307,7 +310,7 @@
 			/// @return true if the data was updated.
 			virtual bool refresh(bool ondemand = false);
 
-			/// @brief Stop agent.
+			/// @brief Stop agent and children.
 			virtual void stop();
 
 			/// @brief Find child by path.

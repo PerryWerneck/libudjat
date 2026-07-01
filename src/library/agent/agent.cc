@@ -113,23 +113,15 @@ namespace Udjat {
 
 	Abstract::Agent::~Agent() {
 
-		debug("Cleaning up agent ",name());
+		debug("Destroying agent '",name(),"'");
 
 		// Remove all associated events.
 		Udjat::Event::remove(this);
 
-		// Deleted! My children are now orphans.
-		lock_guard<std::recursive_mutex> lock(guard);
+		// Remove children
+		clear();
 
-		auto children = agents();
-		auto count = children.size();
-		if(count) {
-			Logger::String{"Unparenting ",count," agent(s)"}.trace(name());
-			for(auto child : children) {
-				Logger::String{"Unparenting child '",child->name()," with ",child.use_count()," references"}.trace(name());
-				child->parent = nullptr;
-			}
-		}
+		debug("agent '",name(),"' was destroyed");
 
 	}
 
@@ -180,6 +172,47 @@ namespace Udjat {
 		}
 
 		notify(STOPPED);
+
+	}
+
+	void Abstract::Agent::clear() {
+
+		debug("Cleaning up agent ",name());
+
+		lock_guard<std::recursive_mutex> lock(guard);
+
+		// Remove child agents
+		{
+			auto count = children.agents.size();
+
+			if(count) {
+				Logger::String{"Cleaning ",count," agent(s)"}.trace(name());
+
+				while(!children.agents.empty()) {
+					auto child = children.agents.back();
+					children.agents.pop_back();
+					Logger::String{"Cleaning child '",child->name(),"' with ",child.use_count()," references"}.trace(name());
+					child->parent = nullptr;
+					child->clear();
+				}
+			}
+
+		}
+
+		// Remove objects
+		{
+			auto count = children.objects.size();
+
+			if(count) {
+				Logger::String{"Cleaning ",count," objects(s)"}.trace(name());
+
+				while(!children.objects.empty()) {
+					auto child = children.objects.back();
+					children.objects.pop_back();
+					Logger::String{"Removing object '",child->name()," with ",child.use_count()," references"}.trace(name());
+				}
+			}
+		}
 
 	}
 
