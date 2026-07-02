@@ -194,7 +194,7 @@
 
 		/// @brief Insert interface handler.
 		/// @param node The handler description.
-		virtual Handler & push_back(const Properties &props) = 0;
+		virtual Handler & push_back(const Properties &props);
 
 		virtual ~Interface();
 

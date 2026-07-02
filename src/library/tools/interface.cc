@@ -128,7 +128,7 @@
 		throw logic_error("This interface is unable to handle actions");
 	}
 
-	Interface::Handler & Interface::push_back(const XML::Node &) {
+	Interface::Handler & Interface::push_back(const Properties &) {
 		throw logic_error("This interface cant accept dynamic actions");
 	}
 
