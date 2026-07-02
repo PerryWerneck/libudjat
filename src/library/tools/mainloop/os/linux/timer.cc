@@ -34,7 +34,10 @@
  namespace Udjat {
 
 	MainLoop::Timer::Timer(int milliseconds) {
-		set(milliseconds);
+		if(!milliseconds) {
+			throw system_error(EINVAL,system_category(),"Invalid timer value");
+		}
+		reset(milliseconds);
 	}
 
 	MainLoop::Timer::~Timer() {

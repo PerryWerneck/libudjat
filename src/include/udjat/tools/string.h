@@ -493,7 +493,11 @@
 
 	template <typename I> 
 	inline std::string to_hex_string(I *w) {
+#ifdef _WIN32
+		return to_hex_string((size_t) w);
+#else
 		return to_hex_string((unsigned long ) w);
+#endif // _WIN32
 	}
 
 	inline const char * to_string(Udjat::String &str) {

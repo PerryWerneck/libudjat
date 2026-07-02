@@ -212,7 +212,7 @@
 			}
 
 			virtual ~Agent() {
-				Logger::String{"Root agent ",to_hex_string((unsigned long) this).c_str()," was destroyed"}.trace(name());
+				Logger::String{"Root agent ",to_hex_string(this).c_str()," was destroyed"}.trace(name());
 			}
 
 			Value & getProperties(Value &value) const override {

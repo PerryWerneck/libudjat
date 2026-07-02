@@ -83,7 +83,7 @@ namespace Udjat {
 
 			Logger::String{
 				"Agent ",
-				to_hex_string((unsigned long) root.get()).c_str(),
+				to_hex_string(root.get()).c_str(),
 				" was promoted to root"
 			}.trace(root->name());
 
