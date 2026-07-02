@@ -25,6 +25,7 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
+ #include <udjat/authentication.h>
 
  namespace Udjat {
 
@@ -53,6 +54,9 @@
 
 		/// @brief The requested API version.
 		unsigned int apiver = 0;
+
+		/// @brief Authentication for this request.
+		std::shared_ptr<Authentication> authentication;
 
 	public:
 
@@ -86,11 +90,16 @@
 			return !(reqpath && *reqpath);
 		}
 
-		bool getProperty(const char *key, std::string &value) const override;
+		/// @brief Check the required authentication level.
+		/// @param auth The required authentication level.
+		/// @return true if this request is valid for the supplied level.
+		bool allow(const Authentication::Level auth) const;
 
-		/// @brief Is this request authenticated?
-		/// @return True if the request has user credentials.
-		virtual bool authenticated() const noexcept;
+		/// @brief Get the username for the request.
+		/// @return The username if authenticated, empty string if not.
+		const char *username() const;
+
+		bool getProperty(const char *key, std::string &value) const override;
 
 		/// @brief Check the cache state.
 		/// @param timestamp Current response timestamp.

@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <cstdint>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/properties.h>
  
  namespace Udjat {
 
@@ -37,10 +38,14 @@
 					Guest,  ///< @brief Guest/Viewer: Read-only access to specific resources.
 					User,	///< @brief User/Member: Can create, edit, and view their own data, but cannot see global settings.
 					Admin,	///< @brief Admin/Manager: Can invite/remove regular users, change application settings, and manage content.Standard 
-					Owner,	///< @brief Owner/Super Admin: Full system control, billing management, and account deletion. (Strictly 1 or 2 users).
-				
-					Count	///< @brief How many authentication levels we have?
+
+					// Owner is allways the higher one.
+					Owner,	///< @brief Owner/Super: Full system control, billing management, and account deletion. (Strictly 1 or 2 users).
 				};
+
+				static Level LevelFactory(const char *name = nullptr);
+				static Level LevelFactory(const Properties &props);
+				static Level LevelFactory(const Properties &props, Level level);
 			
 				Authentication(Level level = None);
 				Authentication(const char *username, Level level = Guest);
@@ -91,11 +96,26 @@
 					return username.c_str();
 				}
 
+				inline bool allow(Level level) const noexcept {
+					return level >= current_level;
+				}
+
 			private:
 				Level current_level = None;
 				std::string username;
 
 
 		};
+
+ }
+
+ namespace std {
+
+	UDJAT_API const char * to_string(const Udjat::Authentication::Level level);
+
+	inline ostream & operator<< (ostream& os, const Udjat::Authentication::Level level) {
+		return os << to_string(level);
+	}
+
 
  }

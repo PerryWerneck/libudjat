@@ -23,6 +23,7 @@
  #include <udjat/tools/memory.h>
  #include <stdexcept>
  #include <udjat/tools/base64.h>
+ #include <stdexcept>
 
 #ifdef HAVE_OPENSSL
 	#include <openssl/evp.h>
@@ -35,6 +36,23 @@
 #endif // HAVE_OPENSSL
 
  using namespace std;
+
+ static const struct {
+	Udjat::Authentication::Level level;
+	const char *name;
+ } levelnames[] = {
+	{ Udjat::Authentication::None,	"None" 			},
+	{ Udjat::Authentication::Guest, "Guest" 		},
+	{ Udjat::Authentication::Guest,	"Viewer" 		},
+	{ Udjat::Authentication::User,	"User" 			},
+	{ Udjat::Authentication::User,	"Member" 		},
+	{ Udjat::Authentication::Admin,	"Admin" 		},
+	{ Udjat::Authentication::Admin,	"Manager"		},
+	{ Udjat::Authentication::Admin,	"Administrator"	},
+	{ Udjat::Authentication::Owner,	"Owner" 		},
+	{ Udjat::Authentication::Owner,	"Super"			},
+	{ Udjat::Authentication::Owner,	"root"			}
+ };
 
  namespace Udjat {
 
@@ -273,6 +291,47 @@
 #endif // HAVE_OPENSSL
 	}
 
+	Authentication::Level Authentication::LevelFactory(const char *name) {
+		
+		if(name && *name) {
+			for(const auto &level : levelnames) {
+
+				if(!strcasecmp(level.name,name)) {
+					return level.level;
+				}	
+			}
+
+			throw runtime_error(String{"Unexpected authentication level: '",name,"'"});
+
+		}
+
+		return Authentication::None;
+
+	}
+
+	Authentication::Level Authentication::LevelFactory(const Properties &props) {
+		return LevelFactory(props["required-authentication-level"].c_str());
+	}
+
+	Authentication::Level Authentication::LevelFactory(const Properties &props, Authentication::Level def) {
+		if(props.contains("required-authentication-level")) {
+			return LevelFactory(props);
+		}
+		return def;
+	}
+
+ }
+
+ namespace std {
+
+	UDJAT_API const char * to_string(const Udjat::Authentication::Level lvl) {
+		for(const auto &level : levelnames) {
+			if(level.level == lvl) {
+				return level.name;
+			}
+		}
+		return "";
+	}
 
  }
 

@@ -43,8 +43,11 @@
 		return def;
 	}
 
-	bool Request::authenticated() const noexcept {
-		return false;
+	bool Request::allow(const Authentication::Level auth) const {
+		if(!authentication) {
+			return auth == Authentication::None;
+		}
+		return authentication->allow(auth);
 	}
 
 	bool Request::for_each(const std::function<bool(const char *name, const char *value)> &call) const {
@@ -54,6 +57,13 @@
 			}
 			return false;	
 		});
+	}
+
+	const char * Request::username() const {
+		if(authentication) {
+			return authentication->c_str();
+		} 
+		return "";
 	}
 
 	bool Request::getProperty(const char *key, std::string &value) const {
@@ -68,6 +78,11 @@
 			return true;
 		}
 
+		if(!strcasecmp(key,"username")) {
+			value = username();
+			return true;
+		}
+
 		return Value::getProperty(key,value);
 	}
 
@@ -75,54 +90,6 @@
 		Logger::String{"Returning empty value for header '",name,"'"}.trace();
 		return "";
 	}
-
-	/*
-	const char * Request::chk_prefix(const char *prefix) const noexcept {
-
-		debug(__FUNCTION__,"('",prefix,"')");
-
-		//
-		// Get requested prefix.
-		//
-		if(!(prefix && *prefix)) {
-			return nullptr;
-		}
-
-		if(*prefix == '/') {
-			prefix++;
-		}
-
-		//
-		// Get request path.
-		//
-		const char *path = argptr ? argptr : reqpath;
-
-		debug("Path= '",path,"'");
-		debug("Prefix= '",prefix,"'");
-
-		if(*path == '/') {
-			path++;
-		}
-
-		//
-		// Check if 'path' begins with 'prefix'
-		//
-		size_t szPath = strlen(path);
-		size_t szPrefix = strlen(prefix);
-
-		if(szPath < szPrefix) {
-			return nullptr;
-		}
-
-		if( (path[szPrefix] == '/' || path[szPrefix] == 0) && strncasecmp(prefix,path,szPrefix) == 0) {
-			debug("Arguments: '",(path+szPrefix),"'");
-			return path + szPrefix;
-		}
-
-		return nullptr;
-
-	}
-	*/
 
 	bool Request::has_prefix(const char *prefix) const noexcept {
 

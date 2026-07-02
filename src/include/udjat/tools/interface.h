@@ -31,6 +31,7 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/container.h>
  #include <udjat/action.h>
+ #include <udjat/authentication.h>
  #include <vector>
  #include <memory>
  #include <vector>
@@ -163,6 +164,8 @@
 		}
 #endif
 
+		bool allow(const Authentication::Level auth) const;
+
 		/// @brief Call handler actions.
 		/// @param request The request data.
 		/// @param response The response data.
@@ -182,6 +185,7 @@
 
 	private:
 		const char *interface_name;
+		Authentication::Level required_auth = Authentication::None;
 
 	protected:
 

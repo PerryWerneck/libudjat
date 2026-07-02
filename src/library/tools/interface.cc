@@ -325,8 +325,8 @@
 
 		return 0;
 	}
-
-	Interface::Interface(const Properties &props) {
+	
+	Interface::Interface(const Properties &props) : required_auth{Authentication::LevelFactory(props)} {
 
 		// Try type based name
 		String attr{props.get("type","default").c_str(),"-name"};
@@ -345,6 +345,10 @@
 
 		throw runtime_error(Logger::String{"Required attribute 'name' or '",props.get("type","default").c_str(),"-name","' is missing or empty"});
 
+	}
+
+	bool Interface::allow(const Authentication::Level auth) const {
+		return auth >= required_auth;
 	}
 
 	Interface::~Interface() {
