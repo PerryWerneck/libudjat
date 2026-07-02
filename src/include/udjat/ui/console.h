@@ -48,6 +48,12 @@
 		/// @brief Get icon based on logger level
 		UDJAT_API const char * icon(Logger::Level level);
 
+		/// @brief Show a success message.
+		UDJAT_API bool success(const char *message);
+
+		/// @brief Show a failed message.
+		UDJAT_API bool failed(const char *message);
+
 		// Reference: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
 		using Function = const char *;

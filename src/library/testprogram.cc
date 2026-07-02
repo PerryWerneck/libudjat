@@ -506,9 +506,9 @@
 					cout << "Decrypted text: " << decripted.c_str() << endl << endl;
 
 					if(strcmp(text,decripted.c_str()) == 0) {
-						Console::status(Logger::Info,"Success","Authentication test passed");
+						Console::success("Authentication test passed");
 					} else {
-						Console::status(Logger::Error,"Failed","Authentication test failed");
+						Console::failed("Authentication test failed");
 					}
 
 					cout << endl;

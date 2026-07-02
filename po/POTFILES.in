@@ -236,6 +236,7 @@ src/library/tools/unit-tests.cc
 src/library/tools/properties.cc
 src/library/tools/argparser.cc
 src/library/tools/interface.cc
+src/library/tools/authentication.cc
 src/library/ui/progress.cc
 src/library/ui/menu.cc
 src/library/ui/status.cc
@@ -358,6 +359,7 @@ src/include/udjat/win32/service.h
 src/include/udjat/win32/registry.h
 src/include/udjat/action.h
 src/include/udjat/defs.h
+src/include/udjat/authentication.h
 src/library/private.h
 src/library/tools/mainloop/os/windows/private.h
 src/library/tools/os/linux/file/private.h

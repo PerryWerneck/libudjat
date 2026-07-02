@@ -79,6 +79,49 @@ namespace Udjat {
 		return "🪧";
 	}
 
+	UDJAT_API bool Console::success(const char *message) {
+
+		if(!decorated()) {
+			return false;
+		}
+
+		Console::write(String{
+			"\r",
+			ClearEOL,
+			BrightGreenForeground,
+			"✅",
+			"\x1B[5G",
+			SetBold,
+			message,
+			Reset,
+			"\n"
+		}.c_str());
+
+		return true;
+
+	}
+
+	UDJAT_API bool Console::failed(const char *message) {
+
+		if(!decorated()) {
+			return false;
+		}
+
+		Console::write(String{
+			"\r",
+			ClearEOL,
+			BrightRedForeground,
+			"❌",
+			"\x1B[5G",
+			SetBold,
+			message,
+			Reset,
+			"\n"
+		}.c_str());
+
+		return true;
+	}
+
 	UDJAT_API void Console::status(Logger::Level level, const char *domain, const char *message) noexcept {
 
 		if(!Console::decorated()) {
@@ -97,7 +140,7 @@ namespace Udjat {
 			ClearEOL,
 			color(level),
 			icon(level),
-			"\t",
+			"\x1B[5G",
 			SetBold,
 			message,
 			Reset,
