@@ -20,7 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/abstract/object.h>
  #include <memory>
  #include <vector>
@@ -39,11 +39,11 @@
 		constexpr Activatable(const char *name = "") : object_name{name} {
 		}
 	
-		Activatable(const XML::Node &node);
+		Activatable(const Properties &props);
 		virtual ~Activatable();
 
 		/// @brief Convenience method to get payload from xml
-		static const char * payload(const XML::Node &node);
+		static const char * payload(const Properties &props);
 
 		/// @brief Convenience method to capture and translate exceptions.
 		int exec(Udjat::Value &response, bool except, const std::function<int()> &func);

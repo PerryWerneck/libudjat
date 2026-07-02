@@ -23,7 +23,6 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <udjat/tools/xml.h>
  #include <udjat/tools/file/watcher.h>
  #include <udjat/tools/handler.h>
  #include <list>
