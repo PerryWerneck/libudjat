@@ -113,15 +113,11 @@ namespace Udjat {
 
 	Abstract::Agent::~Agent() {
 
-		debug("Destroying agent '",name(),"'");
-
 		// Remove all associated events.
 		Udjat::Event::remove(this);
 
 		// Remove children
 		clear();
-
-		debug("agent '",name(),"' was destroyed");
 
 	}
 

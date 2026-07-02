@@ -128,6 +128,15 @@
 		throw logic_error("This interface is unable to handle actions");
 	}
 
+	Interface::Handler & Interface::push_back(const XML::Node &) {
+		throw logic_error("This interface cant accept dynamic actions");
+	}
+
+	int Interface::call(Udjat::Request &request, Udjat::Response &response) const {
+		Logger::String{"This interface is unable to process request"}.error(name());
+		return ENOTSUP;
+	}
+
 	Interface::Factory::Factory(const char *name, const char *description) : factory_name{name}, factory_description{description} {
 		Factories().push_back(this);
 	}

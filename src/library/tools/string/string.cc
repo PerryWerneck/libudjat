@@ -60,7 +60,7 @@
 	static const char * unit_names[] = { "B", "KB", "MB", "GB", "TB" };
 
 	void String::append(const char *str) {
-		if(str) {
+		if(str && *str) {
 			std::string::append(str);
 		}
 	}

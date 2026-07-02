@@ -181,6 +181,17 @@
 		}
 #endif
 
+		/// @brief Call handler actions.
+		/// @param request The request data.
+		/// @param response The response data.
+		/// @return The return code of the first action to fail.
+		/// @retval 0 if complete without failures.
+		/// @retval ENOENT Request not found.
+		/// @retval EPERM Access denied.
+		/// @retval EINVAL Invalid arguments on request. 
+		/// @retval ENOTSUP if the request is not supported.
+		virtual int call(Udjat::Request &request, Udjat::Response &response) const;
+
 		/// @brief Insert interface handler.
 		/// @param node The handler description.
 		virtual Handler & push_back(const Properties &props) = 0;
