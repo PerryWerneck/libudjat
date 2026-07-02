@@ -40,24 +40,6 @@
 
 	/// @brief Abstract handler.
 	class UDJAT_API Interface {
-	private:
-		const char *interface_name;
-
-	protected:
-
-		typedef Interface Super;
-
-		constexpr Interface(const char *name) : interface_name{name} {
-		}
-
-		/// @brief Build an interface from properties.
-		/// @param props The properties.
-		Interface(const Properties &props);
-
-		/// @brief Push back single action handler.
-		/// @param action The action to push back.
-		virtual bool push_back(const Properties &props, std::shared_ptr<Action> action);
-
 	public:
 
 		/// @brief A request handler method.
@@ -197,6 +179,24 @@
 		virtual Handler & push_back(const Properties &props);
 
 		virtual ~Interface();
+
+	private:
+		const char *interface_name;
+
+	protected:
+
+		typedef Interface Super;
+
+		constexpr Interface(const char *name) : interface_name{name} {
+		}
+
+		/// @brief Build an interface from properties.
+		/// @param props The properties.
+		Interface(const Properties &props);
+
+		/// @brief Push back single action handler.
+		/// @param action The action to push back.
+		virtual bool push_back(const Properties &props, std::shared_ptr<Action> action);
 
 	};
 

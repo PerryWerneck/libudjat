@@ -4,7 +4,6 @@ src/library/agent/parse.cc
 src/library/agent/path.cc
 src/library/agent/properties.cc
 src/library/agent/push_back.cc
-src/library/agent/set.cc
 src/library/agent/setup/alerts.cc
 src/library/agent/setup/properties.cc
 src/library/agent/update.cc
@@ -12,9 +11,10 @@ src/library/agent/event.cc
 src/library/agent/state.cc
 src/library/agent/factory.cc
 src/library/agent/start.cc
+src/library/agent/root.cc
 src/library/agent/agent.cc
 src/library/agent/controller.cc
-src/library/agent/root.cc
+src/library/agent/set.cc
 src/library/alert/construct.cc
 src/library/alert/factory.cc
 src/library/alert/file.cc
@@ -70,7 +70,6 @@ src/library/tools/http/error.cc
 src/library/tools/http/exception.cc
 src/library/tools/http/timestamp.cc
 src/library/tools/http/mimetype.cc
-src/library/tools/interface.cc
 src/library/tools/mainloop/handler.cc
 src/library/tools/mainloop/mainloop.cc
 src/library/tools/mainloop/os/linux/handler.cc
@@ -236,6 +235,7 @@ src/library/tools/console/screen.cc
 src/library/tools/unit-tests.cc
 src/library/tools/properties.cc
 src/library/tools/argparser.cc
+src/library/tools/interface.cc
 src/library/ui/progress.cc
 src/library/ui/menu.cc
 src/library/ui/status.cc
@@ -300,7 +300,6 @@ src/include/udjat/tools/http/exception.h
 src/include/udjat/tools/http/timestamp.h
 src/include/udjat/tools/http/method.h
 src/include/udjat/tools/http/mimetype.h
-src/include/udjat/tools/interface.h
 src/include/udjat/tools/intl.h
 src/include/udjat/tools/memory.h
 src/include/udjat/tools/message.h
@@ -331,6 +330,7 @@ src/include/udjat/tools/loader.h
 src/include/udjat/tools/properties.h
 src/include/udjat/tools/mainloop.h
 src/include/udjat/tools/singleton.h
+src/include/udjat/tools/interface.h
 src/include/udjat/tools/converters.h
 src/include/udjat/tools/logger.h
 src/include/udjat/tools/application.h

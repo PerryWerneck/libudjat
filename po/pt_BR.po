@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-01 14:14-0300\n"
+"POT-Creation-Date: 2026-07-02 10:12-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -28,26 +28,6 @@ msgstr "Erro ao ativar estado"
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
 
-#: src/library/agent/agent.cc:232
-msgid "default"
-msgstr "padrão"
-
-#: src/library/agent/agent.cc:234
-msgid "Normal"
-msgstr "Normal"
-
-#: src/library/agent/agent.cc:235
-msgid "Agent has nothing to report"
-msgstr "Agente não tem nada a informar"
-
-#: src/library/agent/controller.cc:97
-msgid "Root agent is not available"
-msgstr ""
-
-#: src/library/agent/controller.cc:357
-msgid "Get agent properties"
-msgstr "Obtém propriedades do agente"
-
 #: src/library/agent/root.cc:98
 #: src/library/tools/systemservice/systemservice.cc:143
 msgid "System is ready"
@@ -56,6 +36,26 @@ msgstr "Sistema em funcionamento"
 #: src/library/agent/root.cc:98
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
+
+#: src/library/agent/agent.cc:228
+msgid "default"
+msgstr "padrão"
+
+#: src/library/agent/agent.cc:230
+msgid "Normal"
+msgstr "Normal"
+
+#: src/library/agent/agent.cc:231
+msgid "Agent has nothing to report"
+msgstr "Agente não tem nada a informar"
+
+#: src/library/agent/controller.cc:97
+msgid "Root agent is not available"
+msgstr ""
+
+#: src/library/agent/controller.cc:352
+msgid "Get agent properties"
+msgstr "Obtém propriedades do agente"
 
 #: src/library/module/module.cc:103
 #, c++-format
@@ -388,41 +388,41 @@ msgstr "Erro HTTP {}"
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:164
-#: src/library/tools/mainloop/os/windows/timer.cc:163
+#: src/library/tools/mainloop/os/linux/timer.cc:166
+#: src/library/tools/mainloop/os/windows/timer.cc:166
 msgid "one second"
 msgstr "um segundo"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:170
-#: src/library/tools/mainloop/os/windows/timer.cc:169
+#: src/library/tools/mainloop/os/linux/timer.cc:172
+#: src/library/tools/mainloop/os/windows/timer.cc:172
 msgid "one hour"
 msgstr "uma hora"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:173
-#: src/library/tools/mainloop/os/windows/timer.cc:172
+#: src/library/tools/mainloop/os/linux/timer.cc:175
+#: src/library/tools/mainloop/os/windows/timer.cc:175
 #, c++-format
 msgid "{} hours"
 msgstr "{} horas"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:179
-#: src/library/tools/mainloop/os/windows/timer.cc:178
+#: src/library/tools/mainloop/os/linux/timer.cc:181
+#: src/library/tools/mainloop/os/windows/timer.cc:181
 msgid "one minute"
 msgstr "um minuto"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:182
-#: src/library/tools/mainloop/os/windows/timer.cc:181
+#: src/library/tools/mainloop/os/linux/timer.cc:184
+#: src/library/tools/mainloop/os/windows/timer.cc:184
 #, c++-format
 msgid "{} minutes"
 msgstr "{} minutos"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:185
-#: src/library/tools/mainloop/os/windows/timer.cc:184
+#: src/library/tools/mainloop/os/linux/timer.cc:187
+#: src/library/tools/mainloop/os/windows/timer.cc:187
 #, c++-format
 msgid " {} seconds"
 msgstr " {} segundos"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:188
-#: src/library/tools/mainloop/os/windows/timer.cc:187
+#: src/library/tools/mainloop/os/linux/timer.cc:190
+#: src/library/tools/mainloop/os/windows/timer.cc:190
 #, c++-format
 msgid " {} milliseconds"
 msgstr " {} millisegundos"

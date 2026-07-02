@@ -486,6 +486,7 @@ lib_src += [
   'src/library/tools/quark.cc',
   'src/library/tools/requestpath.cc',
   'src/library/tools/script.cc',
+  'src/library/tools/authentication.cc',
   'src/library/tools/shortcut.cc',
   'src/library/tools/string/xml.cc',
   'src/library/tools/string/expand.cc',
@@ -969,6 +970,7 @@ install_headers(
   'src/include/udjat/alert.h',
   'src/include/udjat/defs.h',
   'src/include/udjat/module.h',
+  'src/include/udjat/authentication.h',
   subdir: 'udjat'  
 )
 

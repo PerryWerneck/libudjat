@@ -47,6 +47,7 @@
 
  #ifdef HAVE_OPENSSL
  #include <udjat/tools/crypto.h>
+ #include <udjat/authentication.h>
  #endif // HAVE_OPENSSL
 
  using namespace Udjat;
@@ -487,6 +488,32 @@
 				"ssl-legacy", "Test OpenSSL Legacy backend",
 				[]() {
 					test_ssl("legacy");
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"authtoken", "Test Authentication token",
+				[]() {
+
+					Authentication auth;
+					const char *text = "Testing encripted authentication token";
+
+					auto token = auth.encrypt(text);
+
+					cout << "Encrypted text: " << token.c_str() << endl;
+
+					auto decripted = auth.decrypt(token);
+					cout << "Decrypted text: " << decripted.c_str() << endl << endl;
+
+					if(strcmp(text,decripted.c_str()) == 0) {
+						Console::status(Logger::Info,"Success","Authentication test passed");
+					} else {
+						Console::status(Logger::Error,"Failed","Authentication test failed");
+					}
+
+					cout << endl;
+
+
 					return true;
 				}
 			},
