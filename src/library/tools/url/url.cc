@@ -49,6 +49,14 @@
 
  namespace Udjat {
 
+	URL::URL(const Properties &props, const char *attrname, bool required) {
+		if(required && !props.contains(attrname)) {
+			throw runtime_error(String{"Required attribute '",attrname,"' is missing"});
+		}
+		assign(props[attrname]);
+		expand(props);
+	}
+
 	String URL::servicename() const {
 		
 		ParsedUri uri{*this};

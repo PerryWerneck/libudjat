@@ -38,7 +38,7 @@
  #include <udjat/tools/http/method.h>
  #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/file/handler.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <memory>
 
  namespace Udjat {
@@ -56,8 +56,7 @@
 		URL(const std::string &str) : String{str} {
 		}
 
-		URL(const XML::Node &node, const char *attrname = "src", bool required = false) : String{node,attrname,required} {
-		}
+		URL(const Properties &props, const char *attrname = "src", bool required = false);
 
 		template<typename... Targs>
 		URL(const char *str, Targs... Fargs) : String{str} {

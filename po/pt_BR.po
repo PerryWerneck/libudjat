@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-26 12:00-0300\n"
+"POT-Creation-Date: 2026-07-01 14:14-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -20,35 +20,6 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.9\n"
 
-#: src/library/agent/root.cc:98
-#: src/library/tools/systemservice/systemservice.cc:141
-msgid "System is ready"
-msgstr "Sistema em funcionamento"
-
-#: src/library/agent/root.cc:98
-msgid "No abnormal state was detected"
-msgstr "Nenhum estado anormal foi reportado"
-
-#: src/library/agent/agent.cc:193
-msgid "default"
-msgstr "padrão"
-
-#: src/library/agent/agent.cc:195
-msgid "Normal"
-msgstr "Normal"
-
-#: src/library/agent/agent.cc:196
-msgid "Agent has nothing to report"
-msgstr "Agente não tem nada a informar"
-
-#: src/library/agent/controller.cc:97
-msgid "Agent controller was not initialized"
-msgstr "Controlador de agentes não foi inicializado"
-
-#: src/library/agent/controller.cc:350
-msgid "Get agent properties"
-msgstr "Obtém propriedades do agente"
-
 #: src/library/agent/state.cc:145
 msgid "Error activating state"
 msgstr "Erro ao ativar estado"
@@ -56,6 +27,35 @@ msgstr "Erro ao ativar estado"
 #: src/library/agent/state.cc:150
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
+
+#: src/library/agent/agent.cc:232
+msgid "default"
+msgstr "padrão"
+
+#: src/library/agent/agent.cc:234
+msgid "Normal"
+msgstr "Normal"
+
+#: src/library/agent/agent.cc:235
+msgid "Agent has nothing to report"
+msgstr "Agente não tem nada a informar"
+
+#: src/library/agent/controller.cc:97
+msgid "Root agent is not available"
+msgstr ""
+
+#: src/library/agent/controller.cc:357
+msgid "Get agent properties"
+msgstr "Obtém propriedades do agente"
+
+#: src/library/agent/root.cc:98
+#: src/library/tools/systemservice/systemservice.cc:143
+msgid "System is ready"
+msgstr "Sistema em funcionamento"
+
+#: src/library/agent/root.cc:98
+msgid "No abnormal state was detected"
+msgstr "Nenhum estado anormal foi reportado"
 
 #: src/library/module/module.cc:103
 #, c++-format
@@ -88,31 +88,13 @@ msgid "Enable auto exit timer in seconds"
 msgstr ""
 
 #: src/library/tools/application/argparser.cc:35
-#: src/library/tools/timestamp.cc:248
+#: src/library/tools/timestamp.cc:247
 msgid "seconds"
 msgstr "segundos"
 
 #: src/library/tools/application/argparser.cc:39
 msgid "Timer option requires a value in seconds"
 msgstr ""
-
-#: src/library/tools/application/run.cc:107
-msgid "Loading configuration"
-msgstr "Carregando configuração"
-
-#. Activate the new root agent.
-#: src/library/tools/application/run.cc:155
-msgid "Activating new configuration"
-msgstr "Ativando nova configuração"
-
-#: src/library/tools/application/run.cc:173
-#: src/library/tools/application/run.cc:265
-msgid "Starting services"
-msgstr "Iniciando serviços"
-
-#: src/library/tools/application/run.cc:183
-msgid "Unexpected error while activating new configuration"
-msgstr "Erro inesperado durante a configuração"
 
 #: src/library/tools/application/loader.cc:90
 msgid "Run all unit tests"
@@ -129,6 +111,24 @@ msgstr ""
 #: src/library/tools/application/loader.cc:120
 msgid "path"
 msgstr ""
+
+#: src/library/tools/application/run.cc:90
+msgid "Loading configuration"
+msgstr "Carregando configuração"
+
+#. Activate the new root agent.
+#: src/library/tools/application/run.cc:138
+msgid "Activating new configuration"
+msgstr "Ativando nova configuração"
+
+#: src/library/tools/application/run.cc:156
+#: src/library/tools/application/run.cc:248
+msgid "Starting services"
+msgstr "Iniciando serviços"
+
+#: src/library/tools/application/run.cc:166
+msgid "Unexpected error while activating new configuration"
+msgstr "Erro inesperado durante a configuração"
 
 #: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
 msgid "yes"
@@ -388,41 +388,41 @@ msgstr "Erro HTTP {}"
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:158
-#: src/library/tools/mainloop/os/windows/timer.cc:158
+#: src/library/tools/mainloop/os/linux/timer.cc:164
+#: src/library/tools/mainloop/os/windows/timer.cc:163
 msgid "one second"
 msgstr "um segundo"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:164
-#: src/library/tools/mainloop/os/windows/timer.cc:164
+#: src/library/tools/mainloop/os/linux/timer.cc:170
+#: src/library/tools/mainloop/os/windows/timer.cc:169
 msgid "one hour"
 msgstr "uma hora"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:167
-#: src/library/tools/mainloop/os/windows/timer.cc:167
+#: src/library/tools/mainloop/os/linux/timer.cc:173
+#: src/library/tools/mainloop/os/windows/timer.cc:172
 #, c++-format
 msgid "{} hours"
 msgstr "{} horas"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:173
-#: src/library/tools/mainloop/os/windows/timer.cc:173
+#: src/library/tools/mainloop/os/linux/timer.cc:179
+#: src/library/tools/mainloop/os/windows/timer.cc:178
 msgid "one minute"
 msgstr "um minuto"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:176
-#: src/library/tools/mainloop/os/windows/timer.cc:176
+#: src/library/tools/mainloop/os/linux/timer.cc:182
+#: src/library/tools/mainloop/os/windows/timer.cc:181
 #, c++-format
 msgid "{} minutes"
 msgstr "{} minutos"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:179
-#: src/library/tools/mainloop/os/windows/timer.cc:179
+#: src/library/tools/mainloop/os/linux/timer.cc:185
+#: src/library/tools/mainloop/os/windows/timer.cc:184
 #, c++-format
 msgid " {} seconds"
 msgstr " {} segundos"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:182
-#: src/library/tools/mainloop/os/windows/timer.cc:182
+#: src/library/tools/mainloop/os/linux/timer.cc:188
+#: src/library/tools/mainloop/os/windows/timer.cc:187
 #, c++-format
 msgid " {} milliseconds"
 msgstr " {} millisegundos"
@@ -552,69 +552,69 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
 
-#: src/library/tools/timestamp.cc:105
+#: src/library/tools/timestamp.cc:104
 msgid "Less than one minute"
 msgstr "Menos de um minuto"
 
-#: src/library/tools/timestamp.cc:118
+#: src/library/tools/timestamp.cc:117
 msgid "{d} {D}"
 msgstr "{d} {D}"
 
 #. Only days.
-#: src/library/tools/timestamp.cc:119
+#: src/library/tools/timestamp.cc:118
 msgid "{h} {H}"
 msgstr "{h} {H}"
 
 #. Only hours.
-#: src/library/tools/timestamp.cc:120
+#: src/library/tools/timestamp.cc:119
 msgid "{d} {D} and {h} {H}"
 msgstr "{d} {D} e {h} {H}"
 
 #. Days and hours.
-#: src/library/tools/timestamp.cc:121
+#: src/library/tools/timestamp.cc:120
 msgid "{m} {M}"
 msgstr "{m} {M}"
 
 #. Only minutes.
-#: src/library/tools/timestamp.cc:122
+#: src/library/tools/timestamp.cc:121
 msgid "{d} {D} and {m} {M}"
 msgstr "{d} {D} e {m} {M}"
 
 #. Days and minutes.
-#: src/library/tools/timestamp.cc:123
+#: src/library/tools/timestamp.cc:122
 msgid "{h} {H} and {m} {M}"
 msgstr "{h} {H} e {m} {M}"
 
 #. Hours and minutes.
-#: src/library/tools/timestamp.cc:124
+#: src/library/tools/timestamp.cc:123
 msgid "{d} {D}, {h} {H} and {m} {M}"
 msgstr "{d} {D}, {h} {H} e {m} {M}"
 
-#: src/library/tools/timestamp.cc:132 src/library/tools/timestamp.cc:251
+#: src/library/tools/timestamp.cc:131 src/library/tools/timestamp.cc:250
 msgid "days"
 msgstr "dias"
 
-#: src/library/tools/timestamp.cc:132 src/library/tools/timestamp.cc:251
+#: src/library/tools/timestamp.cc:131 src/library/tools/timestamp.cc:250
 msgid "day"
 msgstr "dia"
 
-#: src/library/tools/timestamp.cc:134 src/library/tools/timestamp.cc:250
+#: src/library/tools/timestamp.cc:133 src/library/tools/timestamp.cc:249
 msgid "hours"
 msgstr "horas"
 
-#: src/library/tools/timestamp.cc:134 src/library/tools/timestamp.cc:250
+#: src/library/tools/timestamp.cc:133 src/library/tools/timestamp.cc:249
 msgid "hour"
 msgstr "hora"
 
-#: src/library/tools/timestamp.cc:136 src/library/tools/timestamp.cc:249
+#: src/library/tools/timestamp.cc:135 src/library/tools/timestamp.cc:248
 msgid "minutes"
 msgstr "minutos"
 
-#: src/library/tools/timestamp.cc:136 src/library/tools/timestamp.cc:249
+#: src/library/tools/timestamp.cc:135 src/library/tools/timestamp.cc:248
 msgid "minute"
 msgstr "minuto"
 
-#: src/library/tools/timestamp.cc:248
+#: src/library/tools/timestamp.cc:247
 msgid "second"
 msgstr "segundo"
 
@@ -841,7 +841,7 @@ msgstr "Reinstalar serviço"
 msgid "Block access to 'net stop' on this service"
 msgstr "Bloquear acesso a 'net stop' no serviço"
 
-#: src/library/tools/systemservice/systemservice.cc:145
+#: src/library/tools/systemservice/systemservice.cc:147
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
@@ -885,6 +885,9 @@ msgstr "Opção inválida: -{}"
 #, c++-format
 msgid "Invalid option: --{}"
 msgstr "Opção inválid: --{}"
+
+#~ msgid "Agent controller was not initialized"
+#~ msgstr "Controlador de agentes não foi inicializado"
 
 #, fuzzy
 #~ msgid "Test options"

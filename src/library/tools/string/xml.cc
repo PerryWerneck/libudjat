@@ -34,8 +34,11 @@
 
  namespace Udjat {
 
-	String::String(const Properties &props, const char *attrname, bool required)
-		: String{props.get(attrname,required ? nullptr : "")} {
+	String::String(const Properties &props, const char *attrname, bool required) {
+		if(required && !props.contains(attrname)) {
+			throw runtime_error(String{"Required attribute '",attrname,"' is missing"});
+		}
+		assign(props[attrname]);
 		expand(props);
 	}
 
