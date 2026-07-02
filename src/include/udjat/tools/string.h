@@ -491,6 +491,11 @@
 		return hexvalue;
 	}
 
+	template <typename I> 
+	inline std::string to_hex_string(I *w) {
+		return to_hex_string((unsigned long ) w);
+	}
+
 	inline const char * to_string(Udjat::String &str) {
 		return str.c_str();
 	}

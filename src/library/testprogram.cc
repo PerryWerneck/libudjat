@@ -444,6 +444,17 @@
 						cout << ix << "=" << to_hex_string(ix) << endl;
 					}
 					cout << endl;
+					{
+						void *ptr = NULL;
+						cout << "NULL = " << to_hex_string(ptr) << endl;
+					}
+					{
+						int x = 1;
+						int *ptr = &x;
+						cout << "intptr = " << to_hex_string(ptr) << endl;
+						cout << "(" << hex << ((unsigned long) ptr) << dec << ")" << endl;
+					}
+					cout << endl;
 					return true;
 				}
 			},
