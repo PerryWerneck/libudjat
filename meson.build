@@ -1096,4 +1096,10 @@ install_headers(
   subdir: 'udjat/tools/actions'  
 )
 
+install_headers(
+  'src/include/udjat/ui/console/menu.h',
+  'src/include/udjat/ui/console/progress.h',
+  subdir: 'udjat/ui/console'
+)
+
 
