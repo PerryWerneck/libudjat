@@ -201,7 +201,11 @@
 			virtual std::shared_ptr<Abstract::State> computeState();
 
 			/// @brief Set 'on-demand' option.
-			void setOndemand() noexcept;
+			void on_demand(bool opt = true) noexcept;
+
+			inline void setOndemand() noexcept {
+				on_demand(true);
+			}
 
 			/// @brief Set update timer interval.
 			/// @param value New timer interval (0 disable it).

@@ -193,13 +193,8 @@ namespace Udjat {
 
 		root->for_each([now,this,&next,&updatelist](std::shared_ptr<Agent> agent) {
 
-			// Ignore agents without 'next' or with forwarded state.
-			if(!agent->update.next || agent->current_state.forwarded()) {
-				// debug(
-				// 	"Agent='",agent->name(),"' will not update. Next=",agent->update.next,
-				// 	" Forwarded=",(agent->current_state.forwarded() ? "Yes" : "No"),
-				// 	" (",agent->current_state.selected->summary(),")"
-				// );
+			// Ignore agents with on_demand flag active, without 'next' or with forwarded state.
+			if(agent->update.on_demand || !agent->update.next || agent->current_state.forwarded()) {
 				return;
 			}
 
