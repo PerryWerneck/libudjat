@@ -43,11 +43,18 @@
 		return def;
 	}
 
-	bool Request::allow(const Authentication::Level auth) const {
-		if(!authentication) {
-			return auth == Authentication::None;
+	bool Request::allow(const Authentication::Level level) const {
+		if(!auth) {
+			return level == Authentication::None;
 		}
-		return authentication->allow(auth);
+		return auth->allow(level);
+	}
+
+	const char * Request::username() const {
+		if(auth) {
+			return auth->c_str();
+		} 
+		return "";
 	}
 
 	bool Request::for_each(const std::function<bool(const char *name, const char *value)> &call) const {
@@ -57,13 +64,6 @@
 			}
 			return false;	
 		});
-	}
-
-	const char * Request::username() const {
-		if(authentication) {
-			return authentication->c_str();
-		} 
-		return "";
 	}
 
 	bool Request::getProperty(const char *key, std::string &value) const {

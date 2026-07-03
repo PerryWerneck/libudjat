@@ -271,6 +271,15 @@
 
 	}
 
+	bool Authentication::available() noexcept {
+#ifdef HAVE_OPENSSL
+		return true;
+#else
+		return false;
+#endif // HAVE_OPENSSL
+	}
+
+
 	void Authentication::reset() {
 #ifdef HAVE_OPENSSL
 		Controller::getInstance().reset();

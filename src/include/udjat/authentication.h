@@ -29,11 +29,13 @@
 		/// @brief Authentication token
 		class UDJAT_API Authentication {
 			public:
+
+				static bool available() noexcept;
 				
 				/// @brief Reset authentication tokens.
 				static void reset();
 
-				enum Level : uint16_t {
+				enum Level : uint8_t {
 					None,	///< @brief Non authenticated user.
 					Guest,  ///< @brief Guest/Viewer: Read-only access to specific resources.
 					User,	///< @brief User/Member: Can create, edit, and view their own data, but cannot see global settings.

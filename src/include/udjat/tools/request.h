@@ -56,7 +56,7 @@
 		unsigned int apiver = 0;
 
 		/// @brief Authentication for this request.
-		std::shared_ptr<Authentication> authentication;
+		std::shared_ptr<Authentication> auth;
 
 	public:
 
@@ -94,6 +94,12 @@
 		/// @param auth The required authentication level.
 		/// @return true if this request is valid for the supplied level.
 		bool allow(const Authentication::Level auth) const;
+
+		/// @brief Get authentication token.
+		inline std::shared_ptr<Authentication> authentication() const noexcept {
+			return auth;
+		};
+
 
 		/// @brief Get the username for the request.
 		/// @return The username if authenticated, empty string if not.
