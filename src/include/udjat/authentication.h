@@ -52,13 +52,40 @@
 
 				/// @brief Encrypt token, return base64.
 				/// @param token The token to encrypt.
+				/// @param sz The length of the token
 				/// @return base64 encrypted token.
-				static std::string encrypt(const std::string &token);
+				static std::string encrypt(const void *token, size_t sz);
+
+				template <typename T>
+				inline static std::string encrypt(const T &token) {
+					return encrypt(&token,sizeof(token));
+				}
 
 				/// @brief Decript base64, return token.
-				/// @param b64 The Base64 encrypted token 
-				/// @return The decrypted token.
-				static std::string decrypt(const std::string &b64);
+				/// @param b64 The Base64 encrypted token. 
+				/// @param token The destination token.
+				/// @param maxlen The max lenght for token.
+				/// @return The size of decripted token.
+				static size_t decrypt(const char *b64, void *token, size_t maxlen);
+
+				/// @brief Decript base64, return string.
+				/// @param b64 The Base64 encrypted token. 
+				/// @return The string with decripted token.
+				static std::string decrypt(const char *b64);
+
+				inline static std::string decrypt(const std::string &b64) {
+					return decrypt(b64.c_str());
+				}
+
+				template <typename T>
+				inline static size_t decrypt(const char *b64, const T &token) {
+					return decrypt(b64,&token,sizeof(token));
+				}
+
+				template <typename T>
+				inline static size_t decrypt(const std::string &b64, const T &token) {
+					return decrypt(b64.c_str(),&token,sizeof(token));
+				}
 
 				virtual ~Authentication();
 

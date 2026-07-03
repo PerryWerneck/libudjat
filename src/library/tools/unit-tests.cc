@@ -175,16 +175,22 @@
 
 				if(!(name && *name) || worker == name) {
 					Logger::String{"--- ",worker.c_str()," ---"}.notice();
-					worker.call();
+					if(worker.call()) {
+						Console::success(String{worker.c_str()," passed"}.c_str());
+					} else {
+						Console::failed(String{worker.c_str()," failed"}.c_str());
+					}
 				}
 
 			} catch(const std::exception &e) {
 
 				Logger::String{worker.c_str(),": ",e.what()}.error();
+				Console::failed(String{worker.c_str()," failed"}.c_str());
 
 			} catch(...) {
 
 				Logger::String{worker.c_str(),": Unexpected error"}.error();
+				Console::failed(String{worker.c_str()," failed"}.c_str());
 
 			}
 		}

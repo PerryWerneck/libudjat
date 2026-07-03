@@ -91,13 +91,15 @@
 			generate_random_bytes(key);
 		}
 
-		/// @brief Encrypt payload using AES-256-GCM
-		/// @param payload The payload to encrypt.
-		std::string encrypt(const std::string &payload) {
+		/// @brief Encrypt token, return base64.
+		/// @param token The token to encrypt.
+		/// @param sz The length of the token
+		/// @return base64 encrypted token.
+		std::string encrypt(const void *token, size_t szToken) {
 			unsigned char iv[KEY_SIZE];
 			generate_random_bytes(iv);
 
-			unsigned char ciphertext[payload.size() << 1];
+			unsigned char ciphertext[szToken << 1];
 			unsigned char tag[TAG_SIZE];
 
 			auto ctx = make_handle(EVP_CIPHER_CTX_new(), EVP_CIPHER_CTX_free);
@@ -120,9 +122,9 @@
         		throw Crypto::Exception("Failed to set Key and IV");
     		}
 			
-			// Encrypt the plaintext payload
+			// Encrypt the token
     		int len = 0;
-    		if (EVP_EncryptUpdate(ctx.get(), ciphertext, &len, (unsigned char *) payload.c_str(), payload.size()) != 1) {
+    		if (EVP_EncryptUpdate(ctx.get(), ciphertext, &len, (unsigned char *) token, szToken) != 1) {
         		throw Crypto::Exception("Failed to encrypt plaintext");
 			}
 			int ciphertext_len = len;
@@ -171,9 +173,8 @@
 
 		}			
 
-		std::string decrypt(const std::string &b64) {
+		size_t decrypt(const char *b64, void *token, size_t maxlen)  {
 
-			size_t maxlen = b64.size()*2;
 			unsigned char decoded[maxlen];
 			ssize_t decoded_len;
 			int ciphertext_len = 0;
@@ -182,7 +183,7 @@
 			unsigned char *tag;
 			unsigned char *iv;
 
-			decoded_len = Base64::decode((unsigned char *) b64.c_str(),decoded,maxlen);
+			decoded_len = Base64::decode((unsigned char *) b64,decoded,maxlen);
 			if(decoded_len < 0) {
 				throw runtime_error("Failed to decode base64");
 			}
@@ -238,7 +239,7 @@
 			if (EVP_DecryptUpdate(ctx.get(), plaintext, &len, ciphertext, ciphertext_len) != 1) {
 				throw Crypto::Exception("Failed to decrypt ciphertext");
 			}
-			int plaintext_len = len;	
+			size_t plaintext_len = len;	
 			
 			// Finalize decryption (This performs tag verification)
 			// If the ciphertext has been modified or the tag is invalid, this function returns <= 0.
@@ -249,7 +250,14 @@
 
 			plaintext_len += len;
 
-			return std::string{(const char *) plaintext,(size_t) plaintext_len};
+			if(plaintext_len > maxlen) {
+				throw runtime_error("Decoded buffer is larger than expected");
+			}
+
+			memset(token,0,maxlen);
+			memcpy(token,plaintext,plaintext_len);
+
+			return plaintext_len;
 
 		}
 	
@@ -275,20 +283,32 @@
 
 	}
 
-	std::string Authentication::encrypt(const std::string &token) {
+	std::string Authentication::encrypt(const void *token, size_t len) {
 #ifdef HAVE_OPENSSL
-		return Controller::getInstance().encrypt(token);
+		return Controller::getInstance().encrypt(token,len);
 #else
 		throw runtime_error("Authentication engine is not available");
 #endif // HAVE_OPENSSL
 	}
 
-	std::string Authentication::decrypt(const std::string &b64) {
+	size_t Authentication::decrypt(const char *b64, void *token, size_t maxlen) {
 #ifdef HAVE_OPENSSL
-		return Controller::getInstance().decrypt(b64);
+		return Controller::getInstance().decrypt(b64,token,maxlen);
 #else
 		throw runtime_error("Authentication engine is not available");
 #endif // HAVE_OPENSSL
+	}
+
+	std::string Authentication::decrypt(const char *b64) {
+#ifdef HAVE_OPENSSL
+		size_t maxlen = strlen(b64);
+		char buffer[maxlen];
+		auto szText = decrypt(b64,buffer,maxlen);
+		return std::string{buffer,szText};
+#else
+		throw runtime_error("Authentication engine is not available");
+#endif // HAVE_OPENSSL
+
 	}
 
 	Authentication::Level Authentication::LevelFactory(const char *name) {

@@ -492,29 +492,20 @@
 				}
 			},
 			UnitTests::Worker{
-				"authtoken", "Test Authentication token",
+				"authtoken", "Authentication token",
 				[]() {
 
 					Authentication auth;
 					const char *text = "Testing encripted authentication token";
 
-					auto token = auth.encrypt(text);
-
-					cout << "Encrypted text: " << token.c_str() << endl;
+					auto token = Authentication::encrypt(text,strlen(text));
+					Logger::String{"Encrypted text: ",token.c_str()}.trace();
 
 					auto decripted = auth.decrypt(token);
-					cout << "Decrypted text: " << decripted.c_str() << endl << endl;
+					Logger::String{"Decrypted text: ",decripted.c_str()}.trace();
 
-					if(strcmp(text,decripted.c_str()) == 0) {
-						Console::success("Authentication test passed");
-					} else {
-						Console::failed("Authentication test failed");
-					}
+					return strcmp(text,decripted.c_str()) == 0;
 
-					cout << endl;
-
-
-					return true;
 				}
 			},
 #if defined(HAVE_OPENSSL_ENGINE)
