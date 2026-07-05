@@ -189,5 +189,10 @@
 		return "";
 	}
 
+	bool Request::html() const noexcept {
+		return false;
+	}
+
+
  }
 

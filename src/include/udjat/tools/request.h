@@ -74,6 +74,10 @@
 			return apiver;
 		}
 
+		/// @brief Test if the client is asking for an HTML formatted request.
+		/// @return true if it's an HTML formatted.
+		virtual bool html() const noexcept;
+
 		/// @brief Get request header.
 		/// @param name Name of the header.
 		/// @return The header value of "" if not found.

@@ -30,6 +30,8 @@
 		class UDJAT_API Authentication {
 			public:
 
+				/// @brief Check for authentication engine availability.
+				/// @return true if the authentication engine is available.
 				static bool available() noexcept;
 				
 				/// @brief Reset authentication tokens.
