@@ -128,7 +128,11 @@
 				}
 
 				inline bool allow(Level level) const noexcept {
-					return level >= current_level;
+					return current_level >= level;
+				}
+
+				inline Level level() const noexcept {
+					return current_level;
 				}
 
 			private:
