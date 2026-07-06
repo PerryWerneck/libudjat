@@ -102,42 +102,54 @@
 #else
 
 				inline bool operator ==(const Level level) const noexcept {
-					return current_level == level;
+					return user.level == level;
 				}
 
 				inline bool operator>(const Level level) const noexcept {
-					return current_level > level;
+					return user.level > level;
 				}
 
 				inline bool operator<(const Level level) const noexcept {
-					return current_level < level;
+					return user.level < level;
 				}
 
 				inline bool operator>=(const Level level) const noexcept {
-					return current_level >= level;
+					return user.level >= level;
 				}
 
 				inline bool operator<=(const Level level) const noexcept {
-					return current_level <= level;
+					return user.level <= level;
 				}
 
 #endif
 
 				inline const char *c_str() const noexcept {
-					return username.c_str();
+					return user.name.c_str();
 				}
 
 				inline bool allow(Level level) const noexcept {
-					return current_level >= level;
+					return user.level >= level;
 				}
 
 				inline Level level() const noexcept {
-					return current_level;
+					return user.level;
+				}
+
+				inline const char *name() const noexcept {
+					return user.name.c_str();
+				}
+
+			protected:
+				inline void name(const char *name) noexcept {
+					user.name = name;
 				}
 
 			private:
-				Level current_level = None;
-				std::string username;
+
+				struct {
+					Level level = None;
+					std::string name;
+				} user;
 
 
 		};

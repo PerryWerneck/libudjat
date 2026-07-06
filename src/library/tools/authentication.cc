@@ -264,11 +264,13 @@
 	};
 #endif // HAVE_OPENSSL
 
-	Authentication::Authentication(Level level) : current_level{level} {
+	Authentication::Authentication(Level level) {
+		user.level = level;
 	}
 
-	Authentication::Authentication(const char *u, Level level) : current_level{level}, username{u} {
-
+	Authentication::Authentication(const char *name, Level level) {
+		user.level = level;
+		user.name = name;
 	}
 
 	bool Authentication::available() noexcept {
