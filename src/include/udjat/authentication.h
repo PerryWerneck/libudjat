@@ -58,10 +58,10 @@
 				/// @param token The token to encrypt.
 				/// @param sz The length of the token
 				/// @return base64 encrypted token.
-				static std::string encrypt(const void *token, size_t sz);
+				static String encrypt(const void *token, size_t sz);
 
 				template <typename T>
-				inline static std::string encrypt(const T &token) {
+				inline static String encrypt(const T &token) {
 					return encrypt(&token,sizeof(token));
 				}
 
@@ -75,9 +75,9 @@
 				/// @brief Decript base64, return string.
 				/// @param b64 The Base64 encrypted token. 
 				/// @return The string with decripted token.
-				static std::string decrypt(const char *b64);
+				static String decrypt(const char *b64);
 
-				inline static std::string decrypt(const std::string &b64) {
+				inline static String decrypt(const std::string &b64) {
 					return decrypt(b64.c_str());
 				}
 

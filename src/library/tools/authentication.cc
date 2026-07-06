@@ -95,7 +95,7 @@
 		/// @param token The token to encrypt.
 		/// @param sz The length of the token
 		/// @return base64 encrypted token.
-		std::string encrypt(const void *token, size_t szToken) {
+		String encrypt(const void *token, size_t szToken) {
 			unsigned char iv[KEY_SIZE];
 			generate_random_bytes(iv);
 
@@ -292,7 +292,7 @@
 
 	}
 
-	std::string Authentication::encrypt(const void *token, size_t len) {
+	String Authentication::encrypt(const void *token, size_t len) {
 #ifdef HAVE_OPENSSL
 		return Controller::getInstance().encrypt(token,len);
 #else
@@ -308,7 +308,7 @@
 #endif // HAVE_OPENSSL
 	}
 
-	std::string Authentication::decrypt(const char *b64) {
+	String Authentication::decrypt(const char *b64) {
 #ifdef HAVE_OPENSSL
 		size_t maxlen = strlen(b64);
 		char buffer[maxlen];
