@@ -88,6 +88,11 @@
 		String name() const;
 		String dirname() const;
 
+		/// @brief Get Query string.
+		/// @param escape If true call String::escape() on the arguments.
+		/// @return the url query.
+		String query(bool escape = false) const;
+
 		/// @brief Extract mimetype from URL path.
 		/// @return The mimetype, 'none' if URL has no extension.
 		MimeType mimetype() const;

@@ -35,6 +35,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/base64.h>
  #include <algorithm>
+ #include <udjat/tools/memory.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -180,7 +181,7 @@
 
 		sanitize(result);
 
-		return result;
+		return result.c_str();
 	}
 
 	String URL::name() const {
@@ -296,6 +297,40 @@
 		*this = newUri;
 
 		return *this;
+	}
+
+	String URL::query(bool escape) const {
+
+		String query;
+
+		ParsedUri uri{*this};
+		UriQueryListA *queryList = nullptr;
+		int items = 0; 
+
+		if(!uri.query.first) {
+			return query;
+		}
+
+		if(uriDissectQueryMallocA(&queryList, &items, uri.query.first, uri.query.afterLast) != URI_SUCCESS) {
+			throw runtime_error("Unexpected error on uriDissectQueryMallocA");
+		}
+
+		for (UriQueryListA *node = queryList; node; node = node->next) {
+			if(!query.empty()) {
+				query += "&";
+			}
+			query += node->key;
+			query += "=";
+			if(escape) {
+				query += String{node->value}.escape();
+			} else {
+				query += node->value;
+			}
+		}
+
+		uriFreeQueryListA(queryList);
+
+		return query;
 	}
 
 	bool URL::for_each(const std::function<bool(const char *key, const char *value)> &func) const {
