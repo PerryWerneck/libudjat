@@ -269,13 +269,9 @@
 		Controller() {
 		}
 
-		void generate_random_bytes(unsigned char key[KEY_SIZE]) {
-		};
-
 	public:
 
 		~Controller() {
-
 		}
 
 		static Controller & getInstance() {
