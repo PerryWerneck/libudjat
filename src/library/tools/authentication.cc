@@ -56,7 +56,7 @@
 
  namespace Udjat {
 
-#ifdef HAVE_OPENSSL
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 	constexpr size_t KEY_SIZE = 32; // 256-bit key
 	constexpr size_t IV_SIZE = 12;  // 96-bit IV (Standard for GCM)
 	constexpr size_t TAG_SIZE = 16; // 128-bit authentication tag
@@ -262,6 +262,43 @@
 		}
 	
 	};
+
+#elif defined(HAVE_OPENSSL)
+	class UDJAT_PRIVATE Controller {
+	private:
+		Controller() {
+		}
+
+		void generate_random_bytes(unsigned char key[KEY_SIZE]) {
+		};
+
+	public:
+
+		~Controller() {
+
+		}
+
+		static Controller & getInstance() {
+			static Controller instance;
+			return instance;
+		}
+
+		void reset() {
+		}
+
+		/// @brief Encrypt token, return base64.
+		/// @param token The token to encrypt.
+		/// @param sz The length of the token
+		/// @return base64 encrypted token.
+		String encrypt(const void *token, size_t szToken) {
+			throw system_error(ENOTSUP,system_category(),"This feature requires OpenSSL V3");
+		}			
+
+		size_t decrypt(const char *b64, void *token, size_t maxlen)  {
+			throw system_error(ENOTSUP,system_category(),"This feature requires OpenSSL V3");
+		}
+	
+	};
 #endif // HAVE_OPENSSL
 
 	Authentication::Authentication(Level level) {
@@ -274,7 +311,7 @@
 	}
 
 	bool Authentication::available() noexcept {
-#ifdef HAVE_OPENSSL
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 		return true;
 #else
 		return false;
