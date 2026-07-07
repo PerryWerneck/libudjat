@@ -81,6 +81,10 @@
 			return itens.end();
 		}
 
+		inline void clear() {
+			itens.clear();
+		}
+
 	private:
 		std::vector<Item> itens;
 

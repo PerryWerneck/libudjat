@@ -170,6 +170,9 @@
 	Interface::Handler::Handler(const char *name) : handler_name{name} {
 	}
 
+	Interface::Handler::Handler(const char *name, const Properties &) : handler_name{name} {
+	}
+
 	Interface::Handler::~Handler() {
 	}
 

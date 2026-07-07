@@ -49,6 +49,8 @@
 		public:
 
 			Handler(const char *name = "unnamed");
+			Handler(const char *name, const Properties &props);
+
 			virtual ~Handler();
 
 			inline const char * c_str() const noexcept {
