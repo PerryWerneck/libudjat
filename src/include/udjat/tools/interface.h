@@ -50,6 +50,7 @@
 
 			Handler(const char *name = "unnamed");
 			Handler(const char *name, const Properties &props);
+			Handler(const Properties &props);
 
 			virtual ~Handler();
 

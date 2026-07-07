@@ -399,6 +399,10 @@
 		return false;
 	}
 
+	int URL::call(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer) {
+		return handler()->perform(method, payload, writer);
+	}
+
 	String URL::call(const HTTP::Method method, const char *payload, const bool console) const {
 		stringstream str;
 		auto hdr = handler();
@@ -406,6 +410,7 @@
 			method, 
 			payload, 
 			[this,&str,console](uint64_t current, uint64_t total, const void *data, size_t len) -> bool {
+				debug("Got '",len,"' bytes");
 				if(data && len) {
 					str.write((const char *) data,len);
 				}
@@ -416,7 +421,7 @@
 			}
 		);
 		hdr->except(rc);
-		return String{str.str()};		
+		return String{str.str().c_str()};		
 	}
 
 	bool URL::get(Udjat::Value &value, const HTTP::Method method, const char *payload) const {

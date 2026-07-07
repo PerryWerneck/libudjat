@@ -160,6 +160,8 @@
 		/// @retval -ENOTSUP No support for test in protocol handler.
 		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const;
 
+		int call(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer);
+
 		String call(const HTTP::Method method = HTTP::Get, const char *payload = "", const bool console = false) const;
 
 		/// @brief Do a 'get' request.

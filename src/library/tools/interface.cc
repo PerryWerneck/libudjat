@@ -173,6 +173,9 @@
 	Interface::Handler::Handler(const char *name, const Properties &) : handler_name{name} {
 	}
 
+	Interface::Handler::Handler(const Properties &props) : Handler{props["name"].as_quark(),props} {
+	}
+
 	Interface::Handler::~Handler() {
 	}
 
