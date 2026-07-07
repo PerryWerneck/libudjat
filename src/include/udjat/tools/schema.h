@@ -31,8 +31,8 @@
 
 		class UDJAT_API Item {
 		protected:
-			const char *item_name;					///< @brief The item name.
-			Value::Type item_type;					///< @brief The value type.
+			const char *item_name;			//< @brief The item name.
+			Value::Type item_type;			///< @brief The value type.
 			const char *item_description;	///< @brief The item description.
 
 		public:
@@ -53,6 +53,7 @@
 			inline const char * description() const noexcept {
 				return item_description;
 			}
+
 		};
 
 		Schema() {
@@ -73,6 +74,7 @@
 			append(Fargs...);
 		}
 
+#if __cplusplus >= 201703L
 		inline auto begin() const noexcept {
 			return itens.begin();
 		}
@@ -80,6 +82,15 @@
 		inline auto end() const noexcept {
 			return itens.end();
 		}
+#else
+		inline std::vector<Item>::const_iterator begin() const noexcept {
+			return children.agents.begin();
+		}
+
+		inline std::vector<Item>::const_iterator end() const noexcept {
+			return children.agents.end();
+		}
+#endif
 
 		inline void clear() {
 			itens.clear();

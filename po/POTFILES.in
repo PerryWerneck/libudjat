@@ -235,8 +235,8 @@ src/library/tools/console/screen.cc
 src/library/tools/unit-tests.cc
 src/library/tools/properties.cc
 src/library/tools/argparser.cc
-src/library/tools/interface.cc
 src/library/tools/authentication.cc
+src/library/tools/interface.cc
 src/library/ui/progress.cc
 src/library/ui/menu.cc
 src/library/ui/status.cc
@@ -329,9 +329,9 @@ src/include/udjat/tools/loader.h
 src/include/udjat/tools/properties.h
 src/include/udjat/tools/mainloop.h
 src/include/udjat/tools/singleton.h
-src/include/udjat/tools/interface.h
 src/include/udjat/tools/request.h
 src/include/udjat/tools/url.h
+src/include/udjat/tools/interface.h
 src/include/udjat/tools/schema.h
 src/include/udjat/tools/converters.h
 src/include/udjat/tools/logger.h
