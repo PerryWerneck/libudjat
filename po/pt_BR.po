@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-02 17:20-0300\n"
+"POT-Creation-Date: 2026-07-07 00:30-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -49,11 +49,11 @@ msgstr "Normal"
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/library/agent/controller.cc:97
+#: src/library/agent/controller.cc:98
 msgid "Root agent is not available"
 msgstr ""
 
-#: src/library/agent/controller.cc:352
+#: src/library/agent/controller.cc:353
 msgid "Get agent properties"
 msgstr "Obtém propriedades do agente"
 
@@ -858,7 +858,7 @@ msgid "Select option (Enter to quit): "
 msgstr "Selecione opção (Enter para sair): "
 
 #. Run interactive mode.
-#: src/library/tools/unit-tests.cc:202
+#: src/library/tools/unit-tests.cc:208
 msgid "Available tests"
 msgstr ""
 

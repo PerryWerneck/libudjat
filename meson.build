@@ -1031,6 +1031,7 @@ install_headers(
   'src/include/udjat/tools/parse.h',
   'src/include/udjat/tools/quark.h',
   'src/include/udjat/tools/response.h',
+  'src/include/udjat/tools/schema.h',
   'src/include/udjat/tools/script.h',
   'src/include/udjat/tools/service.h',
   'src/include/udjat/tools/singleton.h',

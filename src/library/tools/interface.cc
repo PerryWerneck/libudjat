@@ -159,85 +159,18 @@
 		value["description"] = description();
 	}
 
-	Interface::Handler::Introspection::Introspection(const Properties &props) 
-		: type{Value::TypeFactory(props,"type")}, name{props["name"].as_quark()} {
+	bool Interface::Handler::input_schema(Schema &schema) const noexcept {
+		return false;
+	}
 
-		int dir = props.get("direction","out").select("none","in","out","both",nullptr);
-		if(dir < 0) {
-			throw runtime_error("Invalid direction, should be none, in, out or both");
-		}
-
-		switch(props.get("value-from","none").select("none","path",nullptr)) {
-		case 0:	// none
-			break;
-
-		case 1:	// path
-			dir |= FromPath;
-			break;
-
-		default:
-			throw runtime_error(Logger::String{"Unexpected value '",props["value-from"].c_str(),"' on value-from attribute"});			
-		}
-
-		direction = (Direction) dir;
-
-
+	bool Interface::Handler::output_schema(Schema &schema) const noexcept{
+		return false;
 	}
 
 	Interface::Handler::Handler(const char *name) : handler_name{name} {
 	}
 
-	Interface::Handler::Handler(const char *name, const Properties &props) : Handler{name} {
-		props.for_each_child([this](const Properties &child) {
-			introspection.emplace_back(child);
-			return false;
-		});
-	}
-
-	Interface::Handler::Handler(const Properties &props) : Handler{props["name"].as_quark(),props} {
-	}
-
 	Interface::Handler::~Handler() {
-	}
-
-	bool Interface::Handler::for_each(const std::function<bool(const Introspection &instrospection)> &call) const {
-		for(const auto &val : introspection) {
-			if(call(val)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	void Interface::Handler::introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &call) const {
-
-		if(introspection.empty()) {
-
-			for(const auto &action : actions) {
-				action->introspect(call);
-			}
-
-		} else {
-
-			for(const auto &val : introspection) {
-
-				if(val.direction & Introspection::FromPath) {
-					continue;
-				}
-
-				if(val.direction & Introspection::Input) {
-					call(val.name,val.type,true);
-				}
-
-				if(val.direction & Introspection::Input) {
-					call(val.name,val.type,false);
-				}
-
-			}
-
-
-		}
-
 	}
 
 	void Interface::Handler::push_back(std::shared_ptr<Action> action) {
@@ -264,29 +197,17 @@
 		}
 
 		request.rewind();
-		for(auto &val : introspection) {
 
-			bool frompath = (val.direction & Introspection::FromPath);
-			string value;
-			if(frompath) {
-				debug("Getting '",val.name,"' from path");
-				request.pop(value);
+		// Check input properties
+		{
+			Schema schema;
+			if(input_schema(schema)) {
+				for(const auto &item : schema) {
+					if(!request.contains(item.name())) {
+						throw runtime_error(Logger::String{"Required argument is missing: ",item.description()});
+					}
+				}
 			}
-
-			if( (val.direction & Introspection::Input) && (!request.contains(val.name) || frompath)) {
-
-				// It's an input, update request.
-				request[val.name].set(value.c_str(),val.type);
-				debug("request[",val.name,"]='",value.c_str(),"' '",std::to_string(request[val.name]).c_str(),"'");
-			}
-
-			if( (val.direction & Introspection::Output) && (!response.contains(val.name) || frompath)) {
-
-				// It's an output, update response.
-				response[val.name].set(value.c_str(),val.type);
-				debug("response[",val.name,"]='",value.c_str(),"'");
-			}
-
 		}
 
 		//

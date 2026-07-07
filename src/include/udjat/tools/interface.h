@@ -30,6 +30,7 @@
  #include <udjat/tools/properties.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/container.h>
+ #include <udjat/tools/schema.h>
  #include <udjat/action.h>
  #include <udjat/authentication.h>
  #include <vector>
@@ -47,25 +48,7 @@
 		class UDJAT_API Handler {
 		public:
 
-			/// @brief Interface method introspection.
-			struct Introspection {
-				/// @brief The value direction (bitmask).
-				enum Direction : uint8_t {
-					None		= 0x00,	///< @brief No direction, calculated value.
-					Input		= 0x01,	///< @brief It's an input parameter.
-					Output		= 0x02,	///< @brief It's an output parameter.
-					Both		= 0x03,	///< @brief It's an input/output parameter.
-
-					FromPath	= 0x80,	///< @brief Extract input from path.
-				} direction = None;
-				Value::Type type;	///< @brief The type value.
-				const char *name;	///< @brief The argument name.
-				Introspection(const Properties &props);
-			};
-
 			Handler(const char *name = "unnamed");
-			Handler(const Properties &props);
-			Handler(const char *name, const Properties &props);
 			virtual ~Handler();
 
 			inline const char * c_str() const noexcept {
@@ -76,11 +59,15 @@
 				return handler_name;
 			}
 
-			/// @brief Get handler introspection.
-			/// @param call Callback to receive instrospection data.
-			void introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &call) const;
+			/// @brief Retrieves the schema definition for the interface inputs.
+			/// @param[out] schema Object populated with the interface input schema details.
+			/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
+			virtual bool input_schema(Schema &schema) const noexcept;
 
-			bool for_each(const std::function<bool(const Introspection &instrospection)> &call) const;
+			/// @brief Retrieves the schema definition for the interface outputs.
+			/// @param[out] schema Object populated with the interface output schema details.
+			/// @return True if the interface defines an output schema; false otherwise (schema remains unmodified).
+			virtual bool output_schema(Schema &schema) const noexcept;
 
 #if __cplusplus >= 202002L
 			inline auto operator <=>(const char *name) const noexcept {
@@ -104,7 +91,6 @@
 
 		private:
 			const char *handler_name;
-			std::vector<Introspection> introspection;
 			std::vector<std::shared_ptr<Action>> actions;
 
 		};

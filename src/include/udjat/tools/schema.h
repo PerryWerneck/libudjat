@@ -31,17 +31,28 @@
 
 		class UDJAT_API Item {
 		protected:
-			const char *name;					///< @brief The item name.
-			Value::Type type;					///< @brief The value type.
-			const char *description = nullptr;	///< @brief The item description.
+			const char *item_name;					///< @brief The item name.
+			Value::Type item_type;					///< @brief The value type.
+			const char *item_description;	///< @brief The item description.
 
 		public:
-			constexpr Item(const char *n, Value::Type t)
-				: name{n}, type{t} { }
+			constexpr Item(const char *name, Value::Type type)
+				: item_name{name}, item_type{type}, item_description{name} { }
 
-			constexpr Item(const char *n, Value::Type t, const char *d)
-				: name{n}, type{t}, description{d} { }
+			constexpr Item(const char *name, Value::Type type, const char *description)
+				: item_name{name}, item_type{type}, item_description{description} { }
 
+			inline const char *name() const noexcept {
+				return item_name;
+			}
+
+			inline const Value::Type type() const noexcept {
+				return item_type;
+			}
+
+			inline const char * description() const noexcept {
+				return item_description;
+			}
 		};
 
 		Schema() {
