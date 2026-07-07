@@ -84,11 +84,11 @@
 		}
 #else
 		inline std::vector<Item>::const_iterator begin() const noexcept {
-			return children.agents.begin();
+			return itens.begin();
 		}
 
 		inline std::vector<Item>::const_iterator end() const noexcept {
-			return children.agents.end();
+			return itens.end();
 		}
 #endif
 
