@@ -33,9 +33,12 @@
 				/// @brief Check for authentication engine availability.
 				/// @return true if the authentication engine is available.
 				static bool available() noexcept;
-				
-				/// @brief Reset authentication tokens.
-				static void reset();
+
+				/// @brief Clear authentication, set it to default state.
+				virtual void clear() noexcept;
+
+				/// @brief Reset authentication engine, generate a new key.
+				static void reset() noexcept;
 
 				enum Level : uint8_t {
 					None,	///< @brief Non authenticated user.
@@ -144,12 +147,16 @@
 					user.name = name;
 				}
 
+				/// @brief Set login name to 'email', update access level.
+				/// @param email The user e-mail.
+				/// @return The new access level.
+				virtual Level login(const char *email) noexcept;
+				
 			private:
 
 				struct {
 					Level level = None;
 					std::string name;
-					std::string avatar;
 				} user;
 
 

@@ -18,11 +18,16 @@
  */
 
  #include <config.h>
+
+ #define LOG_DOMAIN "authentication"
+ #include <udjat/tools/logger.h>
+
  #include <udjat/defs.h>
  #include <udjat/authentication.h>
  #include <udjat/tools/memory.h>
  #include <stdexcept>
  #include <udjat/tools/base64.h>
+ #include <udjat/tools/configuration.h>
  #include <stdexcept>
 
 #ifdef HAVE_OPENSSL
@@ -168,7 +173,11 @@
 					IV_SIZE
 				);
 
-				return Base64::encode(buffer,buflen);
+				auto b64 = Base64::encode(buffer,buflen);
+				if(Logger::enabled(Logger::Debug)) {
+					Logger::String{"Output token: '",b64.c_str(),"'"}.info();
+				}
+				return b64;
 			}
 
 		}			
@@ -245,6 +254,9 @@
 			// If the ciphertext has been modified or the tag is invalid, this function returns <= 0.
 			int ret = EVP_DecryptFinal_ex(ctx.get(), plaintext + len, &len);
 			if (ret <= 0) {
+				if(Logger::enabled(Logger::Debug)) {
+					Logger::String{"Input token: '",b64,"'"}.info();
+				}
 				throw std::runtime_error("Authentication failed! Token is invalid or has been modified.");
 			}		
 
@@ -306,6 +318,27 @@
 		user.name = name;
 	}
 
+	Authentication::Level Authentication::login(const char *email) noexcept {
+
+		Config::Value<string> owner{"authentication","owner"};
+
+		if(!(owner.empty() || strcasecmp(email,owner.c_str()))){
+			Logger::String{"User '",email,"' logged in as owner"}.info();
+			return user.level = Level::Owner;
+		}
+
+		if(Config::Value<bool>{"authentication","allow-guest",false}) {
+			Logger::String{"Rejecting user '",email,"' (guest not allowed)"}.warning();
+			return user.level = Level::None;
+		}
+
+		// TODO: Check for admin users registered on configuration file.
+
+		// Unauthenticated and guest allowed, return 'guest'
+		Logger::String{"User '",email,"' logged in as guest"}.info();
+		return user.level = Level::Guest;
+	}
+
 	bool Authentication::available() noexcept {
 #if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 		return true;
@@ -315,8 +348,14 @@
 	}
 
 
-	void Authentication::reset() {
+	void Authentication::clear() noexcept {
+		user.level = None;
+		user.name.clear();
+	}
+
+	void Authentication::reset() noexcept {
 #ifdef HAVE_OPENSSL
+		Logger::String{"Updating encryption keys. All active sessions will be terminated."}.warning();
 		Controller::getInstance().reset();
 #else
 		throw runtime_error("Authentication engine is not available");
