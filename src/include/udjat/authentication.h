@@ -149,6 +149,7 @@
 				struct {
 					Level level = None;
 					std::string name;
+					std::string avatar;
 				} user;
 
 

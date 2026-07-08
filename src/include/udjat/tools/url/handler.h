@@ -80,10 +80,17 @@
 		enum Header {
 			/// @brief Request header: Makes a request conditional. The server sends the resource only if it has been modified after the specified date.
 			IF_MODIFIED_SINCE,
+
 			/// @brief Response header: Indicates the date and time the resource was last modified.
 			LAST_MODIFIED,
+			
 			/// @brief Request header: Specifies the media types that are acceptable for the response.
 			ACCEPT,
+
+			AUTHORIZATION,
+			USER_AGENT,
+			
+			HEADER_COUNT
 		};
 
 		static const char * to_string(const Header hdr);

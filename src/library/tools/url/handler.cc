@@ -291,10 +291,12 @@
 
 	const char * URL::Handler::to_string(const URL::Handler::Header hdr) {
 
-		static const char *strings[] = {
+		static const char *strings[HEADER_COUNT] = {
 			"If-Modified-Since",
 			"Last-Modified",
 			"Accept",
+			"Authorization",
+			"User-Agent"
 		};
 
 		if( ((size_t) hdr) >= (sizeof(strings)/sizeof(strings[0]))) {
