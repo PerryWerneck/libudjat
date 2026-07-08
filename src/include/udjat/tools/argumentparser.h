@@ -33,22 +33,27 @@ namespace Udjat {
 	public:
 
 		/// @brief Return codes for argument parser, every non-zero return will stop parsing.
-		enum Result : uint16_t {
-
-			NotHandled		= 0x8000,		///< @brief The optional argument was not handled.
-			Handled			= 0x8001,		///< @brief The optional argument was handled and should be ignored by caller.
-			ExitAfterParse	= 0x8002,		///< @brief Exit with rc=0 after parsing all options.
-			NotFound 		= 0x8004,		///< @brief Argument not found.
-
-			ExitNow			= 0x0000,		///< @brief Exit now with rc = 0.
+		enum Result : uint8_t {
+			NotHandled		= 0x00,		///< @brief The optional argument was not handled.
+			Handled			= 0x01,		///< @brief The optional argument was handled and should be ignored by caller.
+			ExitAfterParse	= 0x02,		///< @brief Exit with rc=0 after parsing all options.
+			ExitNow			= 0x04,		///< @brief Exit now with rc = 0.
+			NotFound 		= 0x08		///< @brief Argument not found.
 		};
 
 		class Argument {
 		public:
 
 			enum Flag : uint8_t {
-				None = 0x00,
+				None 				= 0x00,
 				AllowInteractive	= 0x01
+			};
+
+			enum Mode : uint8_t {
+				Undefined			= '\0',	///< @brief No special mode.
+				LongOption			= 'L',	///< @brief Parsing a long option.
+				ShortOption 		= 'S',	///< @brief Parsing a short option.
+				FileArgument		= 'F',	///< @brief Parsing a file/text argument
 			};
 
 		private:
@@ -59,27 +64,33 @@ namespace Udjat {
 			const char *longname = nullptr;		///< @brief Long name of the option.
 			const char *help = nullptr;			///< @brief Description of the option
 			const char *example = nullptr;		///< @brief Example of the option.
-			const std::function<Result(const char *argument, const char mode)> call = nullptr;
+			const std::function<Result(const char *argument, const Mode mode)> call = nullptr;
 			const Flag flags = None;
 
 		public:
-			Argument(Flag f, char s, const char *l, const char *h, const std::function<Result(const char *argument, const char mode)> &c) :
+
+			/// Build parser for non option.
+			Argument(const std::function<Result(const char *argument, const Mode mode)> &c) :
+				call{c}, flags{None} {
+			}
+
+			Argument(Flag f, char s, const char *l, const char *h, const std::function<Result(const char *argument, const Mode mode)> &c) :
 				shortname{s}, longname{l}, help{h}, call{c}, flags{f} {
 			}
 
-			Argument(Flag f, const char *l, const char *h, const std::function<Result(const char *argument, const char mode)> &c) :
+			Argument(Flag f, const char *l, const char *h, const std::function<Result(const char *argument, const Mode mode)> &c) :
 				longname{l}, help{h}, call{c}, flags{f} {
 			}
 
-			Argument(char s, const char *l, const char *h, const std::function<Result(const char *argument, const char mode)> &c) :
+			Argument(char s, const char *l, const char *h, const std::function<Result(const char *argument, const Mode mode)> &c) :
 				shortname{s}, longname{l}, help{h}, call{c} {
 			}
 
-			Argument(char s, const char *l, const char *h, const char *e, const std::function<Result(const char *argument, const char mode)> &c) :
+			Argument(char s, const char *l, const char *h, const char *e, const std::function<Result(const char *argument, const Mode mode)> &c) :
 				shortname{s}, longname{l}, help{h}, example{e}, call{c} {
 			}
 
-			Argument(const char *l, const char *h, const std::function<Result(const char *argument, const char mode)> &c) :
+			Argument(const char *l, const char *h, const std::function<Result(const char *argument, const Mode mode)> &c) :
 				longname{l}, help{h}, call{c} {
 			}
 
@@ -102,7 +113,7 @@ namespace Udjat {
 				return (bool) (shortname || longname);
 			}
 
-			inline Result exec(const char *argument = nullptr, const char mode = 0) const {
+			inline Result exec(const char *argument = nullptr, const Mode mode = Undefined) const {
 				return call(argument,mode);
 			}
 
@@ -247,8 +258,9 @@ namespace Udjat {
 		void append_help();
 
 		bool show_help() const;
-		Result parse_short(const char *argument, const char *value, const char mode) const;
-		Result parse_long(const char *argument, const char *value, const char mode) const;
+		Result parse_short(const char *argument, const char *value, const Argument::Mode mode) const;
+		Result parse_long(const char *argument, const char *value, const Argument::Mode mode) const;
+		bool parse_activation(const char *activation);
 		bool check_result(Context &context, const Result result);
 
 	};

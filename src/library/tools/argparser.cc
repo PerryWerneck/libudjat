@@ -89,18 +89,48 @@
 
 	};
 
+	/// @brief 
+	/// @param context 
+	/// @param result 
+	/// @return true to stop argument parse.
 	bool ArgumentParser::check_result(Context &context, const ArgumentParser::Result result) {
 
-		if( (result & 0x8000) == 0) {
-			return true;
-		}
-
-		if( (result & 0x0001) && context.ix < context.argc) {
+		debug(__FUNCTION__,"(",to_hex_string(result).c_str(),")");
+		
+		if(result & Handled && context.ix < context.argc) {
+			debug("Argument was handled, skipping one")
 			context.ix++;
 		}
 
-		if( (result & 0x0002) != 0) {
+		if( (result & ExitAfterParse) != 0) {
+			debug("Argumente requested Exit after parse")
 			context.exit = true;
+		}
+
+#ifdef DEBUG 
+		if( (result & ExitNow) != 0) {
+			debug("Argumente requested Exit now")
+		}
+#endif	
+
+		return (result & ExitNow) != 0;
+	}
+
+	bool ArgumentParser::parse_activation(const char *activation) {
+
+		for(const auto &group : groups) {
+			for(const auto &item : group) {
+				if(item.shortname != 0 || item.longname != nullptr) {
+					continue;
+				}
+				auto rc = item.exec(activation,Argument::FileArgument);
+				if(rc & ExitNow) {
+					return true;
+				}
+				if(rc & Handled) {
+					return false;
+				}
+			}
 		}
 
 		return false;
@@ -115,6 +145,9 @@
 			const char *arg = argv[context.ix];
 
 			if(*arg != '-') {
+				if(parse_activation(arg)) {
+					return true;
+				}
 				continue;
 			}
 
@@ -131,7 +164,7 @@
 					ptr++;
 				}
 
-				if(check_result(context,parse_long(arg,ptr,'L'))) {
+				if(check_result(context,parse_long(arg,ptr,Argument::LongOption))) {
 					return true;
 				}
 
@@ -157,7 +190,7 @@
 
 					// Repeat 'arg[1]' times.
 					for(int ix='0';ix < arg[1];ix++) {
-						if(parse_short(arg,nullptr,ix) == ExitNow) {
+						if(parse_short(arg,nullptr,(Argument::Mode) ix) == ExitNow) {
 							return true;
 						}
 					}
@@ -171,7 +204,7 @@
 						throw runtime_error(_("Invalid use of repeated argument"));
 					}
 					
-					if(parse_short(arg,nullptr,index++) == ExitNow) {
+					if(parse_short(arg,nullptr,(Argument::Mode) index++) == ExitNow) {
 						return true;
 					}
 
@@ -185,14 +218,14 @@
 						throw runtime_error(_("Invalid use of repeated argument"));
 					}
 
-					if(parse_short(arg,nullptr,index++) == ExitNow) {
+					if(parse_short(arg,nullptr,(Argument::Mode) index++) == ExitNow) {
 						return true;
 					}
 
 				} else {
 
 					// It's not repeating
-					if(check_result(context,parse_short(arg,value,index))) {
+					if(check_result(context,parse_short(arg,value,(Argument::Mode) index))) {
 						return true;
 					}
 
@@ -293,6 +326,10 @@
 			}
 			for(const auto &arg : group) {
 
+				if(!arg.help) {
+					continue;
+				}
+
 				cout << "  ";
 
 				if(arg.shortname) {
@@ -329,7 +366,7 @@
 		return true; // End application
 	}
 
-	ArgumentParser::Result ArgumentParser::parse_short(const char *argument, const char *value, const char mode) const {
+	ArgumentParser::Result ArgumentParser::parse_short(const char *argument, const char *value, const Argument::Mode mode) const {
 
 		debug(__FUNCTION__,"(",argument,")");
 
@@ -347,7 +384,7 @@
 
 	}
 
-	ArgumentParser::Result ArgumentParser::parse_long(const char *argument, const char *value, const char mode) const {
+	ArgumentParser::Result ArgumentParser::parse_long(const char *argument, const char *value, const Argument::Mode mode) const {
 
 		debug(__FUNCTION__,"(",argument,")");
 
