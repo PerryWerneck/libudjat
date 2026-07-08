@@ -363,7 +363,7 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/tools/http \
 		$(DESTDIR)$(includedir)/udjat/tools/actions \
 		$(DESTDIR)$(includedir)/udjat/tools/url \
-		$(DESTDIR)$(includedir)/udjat/ui
+		$(DESTDIR)$(includedir)/udjat/ui/console
 
 	@$(INSTALL_DATA) \
 		$(srcdir)/src/include/udjat/*.h \
@@ -420,6 +420,10 @@ install-devel: \
 	@$(INSTALL_DATA) \
 		$(srcdir)/src/include/udjat/ui/*.h \
 		$(DESTDIR)$(includedir)/udjat/ui
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/ui/console/*.h \
+		$(DESTDIR)$(includedir)/udjat/ui/console
 
 install-devel-linux: \
 	$(BINRLS)/$(PACKAGE_NAME).a
