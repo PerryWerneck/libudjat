@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-07 13:52-0300\n"
+"POT-Creation-Date: 2026-07-08 18:03-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -96,19 +96,19 @@ msgstr "segundos"
 msgid "Timer option requires a value in seconds"
 msgstr ""
 
-#: src/library/tools/application/loader.cc:90
+#: src/library/tools/application/loader.cc:98
 msgid "Run all unit tests"
 msgstr ""
 
-#: src/library/tools/application/loader.cc:105
+#: src/library/tools/application/loader.cc:113
 msgid "Interactive mode"
 msgstr ""
 
-#: src/library/tools/application/loader.cc:120
+#: src/library/tools/application/loader.cc:128
 msgid "Load module file"
 msgstr ""
 
-#: src/library/tools/application/loader.cc:120
+#: src/library/tools/application/loader.cc:128
 msgid "path"
 msgstr ""
 
@@ -791,7 +791,7 @@ msgid "Application options:\n"
 msgstr "Opções da aplicação:\n"
 
 #: src/library/tools/commandlineparser.cc:257
-#: src/library/tools/argparser.cc:244
+#: src/library/tools/argparser.cc:277
 msgid "Usage:"
 msgstr "Uso:"
 
@@ -867,21 +867,21 @@ msgstr ""
 msgid "Application options"
 msgstr "Opções da aplicação"
 
-#: src/library/tools/argparser.cc:155 src/library/tools/argparser.cc:171
-#: src/library/tools/argparser.cc:185
+#: src/library/tools/argparser.cc:188 src/library/tools/argparser.cc:204
+#: src/library/tools/argparser.cc:218
 msgid "Invalid use of repeated argument"
 msgstr ""
 
-#: src/library/tools/argparser.cc:276
+#: src/library/tools/argparser.cc:309
 msgid "[OPTIONS]"
 msgstr "[OPÇÕES]"
 
-#: src/library/tools/argparser.cc:346
+#: src/library/tools/argparser.cc:383
 #, c++-format
 msgid "Invalid option: -{}"
 msgstr "Opção inválida: -{}"
 
-#: src/library/tools/argparser.cc:363
+#: src/library/tools/argparser.cc:400
 #, c++-format
 msgid "Invalid option: --{}"
 msgstr "Opção inválid: --{}"
