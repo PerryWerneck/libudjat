@@ -86,6 +86,14 @@ namespace Udjat {
 			ArgumentParser & load(ArgumentParser &parser) noexcept override {
 
 				parser.append(
+#ifdef DEBUG
+					ArgumentParser::Argument{
+						[this](const char *arg, char) {
+							debug("File argument ---------------> ",arg);
+							return ArgumentParser::Handled;
+						},
+					},
+#endif
 					ArgumentParser::Argument{
 						't', "run-tests", _("Run all unit tests"),
 						[this](const char *arg, char) {

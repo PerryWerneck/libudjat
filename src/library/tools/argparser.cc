@@ -123,7 +123,7 @@
 				if(item.shortname != 0 || item.longname != nullptr) {
 					continue;
 				}
-				auto rc = item.exec(activation,Argument::FileArgument);
+				auto rc = item.exec(activation,FileArgument);
 				if(rc & ExitNow) {
 					return true;
 				}
@@ -140,7 +140,7 @@
 
 		Context context{argc,argv};
 
-		for(context.ix = 0; context.ix < argc; context.ix++) {
+		for(context.ix = 1; context.ix < argc; context.ix++) {
 
 			const char *arg = argv[context.ix];
 
@@ -164,7 +164,7 @@
 					ptr++;
 				}
 
-				if(check_result(context,parse_long(arg,ptr,Argument::LongOption))) {
+				if(check_result(context,parse_long(arg,ptr,LongOption))) {
 					return true;
 				}
 
@@ -190,7 +190,7 @@
 
 					// Repeat 'arg[1]' times.
 					for(int ix='0';ix < arg[1];ix++) {
-						if(parse_short(arg,nullptr,(Argument::Mode) ix) == ExitNow) {
+						if(parse_short(arg,nullptr,(Mode) ix) == ExitNow) {
 							return true;
 						}
 					}
@@ -204,7 +204,7 @@
 						throw runtime_error(_("Invalid use of repeated argument"));
 					}
 					
-					if(parse_short(arg,nullptr,(Argument::Mode) index++) == ExitNow) {
+					if(parse_short(arg,nullptr,(Mode) index++) == ExitNow) {
 						return true;
 					}
 
@@ -218,14 +218,14 @@
 						throw runtime_error(_("Invalid use of repeated argument"));
 					}
 
-					if(parse_short(arg,nullptr,(Argument::Mode) index++) == ExitNow) {
+					if(parse_short(arg,nullptr,(Mode) index++) == ExitNow) {
 						return true;
 					}
 
 				} else {
 
 					// It's not repeating
-					if(check_result(context,parse_short(arg,value,(Argument::Mode) index))) {
+					if(check_result(context,parse_short(arg,value,(Mode) index))) {
 						return true;
 					}
 
@@ -366,11 +366,11 @@
 		return true; // End application
 	}
 
-	ArgumentParser::Result ArgumentParser::parse_short(const char *argument, const char *value, const Argument::Mode mode) const {
+	ArgumentParser::Result ArgumentParser::parse_short(const char *argument, const char *value, const Mode mode) const {
 
 		debug(__FUNCTION__,"(",argument,")");
 
-		// Parse 'argument'
+		// Parse 'argument'parse_short
 		for(const auto &group : groups) {
 			for(const auto &arg : group) {
 				if(arg == *argument) {
@@ -384,7 +384,7 @@
 
 	}
 
-	ArgumentParser::Result ArgumentParser::parse_long(const char *argument, const char *value, const Argument::Mode mode) const {
+	ArgumentParser::Result ArgumentParser::parse_long(const char *argument, const char *value, const Mode mode) const {
 
 		debug(__FUNCTION__,"(",argument,")");
 

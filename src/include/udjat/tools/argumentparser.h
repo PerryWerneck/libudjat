@@ -41,21 +41,19 @@ namespace Udjat {
 			NotFound 		= 0x08		///< @brief Argument not found.
 		};
 
+		enum Flag : uint8_t {
+			None 				= 0x00,
+			AllowInteractive	= 0x01
+		};
+
+		enum Mode : char {
+			Undefined			= '\0',	///< @brief No special mode.
+			LongOption			= 'L',	///< @brief Parsing a long option.
+			ShortOption 		= 'S',	///< @brief Parsing a short option.
+			FileArgument		= 'F',	///< @brief Parsing a file/text argument
+		};
+
 		class Argument {
-		public:
-
-			enum Flag : uint8_t {
-				None 				= 0x00,
-				AllowInteractive	= 0x01
-			};
-
-			enum Mode : uint8_t {
-				Undefined			= '\0',	///< @brief No special mode.
-				LongOption			= 'L',	///< @brief Parsing a long option.
-				ShortOption 		= 'S',	///< @brief Parsing a short option.
-				FileArgument		= 'F',	///< @brief Parsing a file/text argument
-			};
-
 		private:
 
 			friend class ArgumentParser;
@@ -258,8 +256,8 @@ namespace Udjat {
 		void append_help();
 
 		bool show_help() const;
-		Result parse_short(const char *argument, const char *value, const Argument::Mode mode) const;
-		Result parse_long(const char *argument, const char *value, const Argument::Mode mode) const;
+		Result parse_short(const char *argument, const char *value, const Mode mode) const;
+		Result parse_long(const char *argument, const char *value, const Mode mode) const;
 		bool parse_activation(const char *activation);
 		bool check_result(Context &context, const Result result);
 
