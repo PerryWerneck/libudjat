@@ -351,6 +351,10 @@
 		/// @param object the object to search for properties.
 		String & expand(const Udjat::Abstract::Object &object, bool dynamic = false, bool cleanup = false);
 
+		inline String & expand(const Udjat::Abstract::Object *object, bool dynamic = false, bool cleanup = false) {
+			return expand(*object,dynamic,cleanup);
+		}
+
 		/// @brief Expand ${} macros.
 		/// @param marker The marker.
 		/// @param node XML node from the begin of the value search.
