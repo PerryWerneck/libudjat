@@ -35,6 +35,57 @@
 	Request::~Request() {
 	}
 
+	const char * Request::pop(const char *path, unsigned int &apiver) {
+		
+		apiver = 0;
+		if(!Request::pop("api",path)) {
+			return path;
+		}
+
+		if(path[0] == '/' && isdigit(path[1])) {
+			path++;
+			while(*path && *path != '/') {
+				if(isdigit(*path)) {
+					apiver += (*path - '0');
+				} else if(*path == '.') {
+					apiver *= 100;
+				} else {
+					throw runtime_error(_("Invalid or unexpected API version"));
+				}
+				path++;
+			}
+		} else {
+			apiver = 1000000;
+		}
+		
+		return path;
+	}
+
+	bool Request::pop(const char *prefix, const char * &path) {
+
+		if(path[0] != '/' || path[1] == 0) {
+			debug("Rejecting invalid or empty path");
+			return false;
+		}
+
+		size_t length = strlen(prefix);
+
+		debug(path+1);
+		debug(strncasecmp(path+1,prefix,length));
+		debug(path+(length+1));
+
+		if(strncasecmp(path+1,prefix,length) || path[length+1] != '/') {
+			debug("Path doesnt match '",prefix,"'");
+			return false;
+		}
+
+		debug("Found");
+
+		path += length+1;
+		return true;
+	}
+
+
 	bool Request::cached(const TimeStamp &) const {
 		return false;
 	}

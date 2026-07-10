@@ -74,6 +74,18 @@
 			return apiver;
 		}
 
+		/// @brief Check and extract element from path.
+		/// @param key The prefix to check and extract.
+		/// @param path The current path.
+		/// @return true if the prefix was found and extracted.
+		static bool pop(const char *key, const char * &path);
+
+		/// @brief Extract API info from path.
+		/// @param path The reference path.
+		/// @param apiver The apiver to update (non zero if path begins with /api/)
+		/// @return Path without the API prefix.
+		static const char * pop(const char *path, unsigned int &apiver);
+
 		/// @brief Test if the client is asking for an HTML formatted request.
 		/// @return true if it's an HTML formatted.
 		virtual bool html() const noexcept;
