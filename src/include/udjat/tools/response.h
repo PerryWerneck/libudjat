@@ -56,7 +56,7 @@
 			/// @param e The exception for status.
 			Status(const std::exception &e);
 
-			Status & clear() noexcept;
+			Status & clear(const State st = Success) noexcept;
 			Status & assign(const std::exception &e) noexcept;
 
 			inline Status & operator=(const std::exception &e) noexcept {

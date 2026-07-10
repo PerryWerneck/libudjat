@@ -35,9 +35,9 @@
 		assign(e);
 	}
 
-	Response::Status & Response::Status::clear() noexcept {
-		value = Success;
-		syscode = 0;
+	Response::Status & Response::Status::clear(const State st) noexcept {
+		value = st;
+		syscode = st == Success ? 0 : -1;
 		not_modified = false;
 		title.clear();
 		message.clear();
