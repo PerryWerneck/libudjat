@@ -169,25 +169,6 @@ namespace Udjat {
 			groups.back().push_back(argument);
 		}
 		
-		/*
-		template<typename... Targs>
-		ArgumentParser(const char *str, Targs... Fargs) : ArgumentParser{str} {
-			ArgumentParser::append(Fargs...);
-		}
-
-		template<typename... Targs>
-		void append(const char *str, Targs... Fargs) {
-			append(str);
-			append(Fargs...);
-		}
-
-		template<typename... Targs>
-		void append(const std::string &str, Targs... Fargs) {
-			append(str.c_str());
-			append(Fargs...);
-		}
-		*/
-
 		/// @brief Add argument in the application group.
 		/// @param argument The argument to add.
 		void add_application_argument(const Argument &argument);
@@ -202,13 +183,6 @@ namespace Udjat {
 		/// @brief Add argument in the last group.
 		/// @param argument 
 		// void append(const Argument &argument);
-
-		/// @brief Add group.
-		/// @param text The group title.
-		/// @return The new group.
-		//inline void append(const char *text) {
-		//	add_group(text);
-		//}
 
 		/// @brief Add group.
 		/// @param text The group title.
@@ -228,14 +202,14 @@ namespace Udjat {
 		/// @return The parse result.
 		/// @retval false All the callback have returned false, the application can continue.
 		/// @retval true Some callback have returned true, the application should stop with rc = 0.
-		static bool parse(int argc, char **argv, const Argument *arguments);
+		static bool parse(int argc, char **argv, const Argument *arguments, const char *help = nullptr);
 
 		/// @brief Parse arguments.
 		/// @throw std::exception on failure.
 		/// @return Status of the argument parser.
 		/// @retval false if the application can continue
 		/// @retval true all required processing was done, the application could exit with rc=0.
-		bool parse(int argc, char **argv);
+		bool parse(int argc, char **argv, const char *help = nullptr);
 
 		/// @brief Add options from Logger subsystem in a separate group options.
 		/// @return The same object (for chaining).
@@ -249,6 +223,7 @@ namespace Udjat {
 	private:
 
 		struct Context;
+		const char *help = nullptr;
 
 		/// @brief The optional argument groups.
 		std::list<Group> groups;
@@ -256,10 +231,6 @@ namespace Udjat {
 		void append_help();
 
 		bool show_help() const;
-		Result parse_short(const char *argument, const char *value, const Mode mode) const;
-		Result parse_long(const char *argument, const char *value, const Mode mode) const;
-		bool parse_activation(const char *activation);
-		bool check_result(Context &context, const Result result);
 
 	};
 
