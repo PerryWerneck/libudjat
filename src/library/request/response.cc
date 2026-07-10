@@ -30,6 +30,64 @@
 
  namespace Udjat {
 
+	Response::Status::Status(const std::exception &e) {
+		assign(e);
+	}
+
+	Response::Status & Response::Status::clear() noexcept {
+		value = Success;
+		code = 0;
+		not_modified = false;
+		title.clear();
+		message.clear();
+		details.clear();
+		domain.clear();
+		url.clear();
+		category.clear();
+		return *this;
+	}
+
+	Response::Status & Response::Status::assign(const std::exception &e) noexcept {
+
+		clear();
+
+		value = Failure;
+		code = -1;
+		title = _("Unable to Complete Request");
+		message = _("We're sorry, but we encountered an error while processing your request.");
+		details = e.what();
+		
+		{
+			const Udjat::Exception *except = dynamic_cast<const Udjat::Exception *>(&e);
+			if(except) {
+
+				code = except->syscode();
+				title = except->title();
+				details = except->body();
+				domain = except->domain();
+				url = except->url();
+				return *this;
+
+			}
+		}
+
+		{
+			const std::system_error *except = dynamic_cast<const std::system_error *>(&e);
+			if(except) {
+
+				code = except->code().value();
+				title = _("System error");
+				details = except->code().message();
+				category = except->code().category().name();
+				
+				return *this;
+
+			}
+		}
+
+		return *this;
+	}
+
 	Response::~Response() {
 	}
 
@@ -94,47 +152,14 @@
 
 	Response & Response::failed(const std::exception &e) noexcept {
 
-		status.value = State::Failure;
+		status.assign(e);
+
 		clear(Value::Object);
-
-		status.message = e.what();
-		status.title.clear();
-		status.details.clear();
-		status.code = 0;
-
-		{
-			const Udjat::Exception *except = dynamic_cast<const Udjat::Exception *>(&e);
-			if(except) {
-
-				status.title = except->title();
-				status.details = except->body();
-				status.code = except->syscode();
-
-				(*this)["title"] = status.title;
-				(*this)["details"] = status.details;
-				(*this)["domain"] = except->domain();
-				(*this)["url"] = except->url();
-
-				return *this;
-			}
-		}
-
-		{
-			const std::system_error *except = dynamic_cast<const std::system_error *>(&e);
-			if(except) {
-
-				status.code = except->code().value();
-				status.title = _("System error");
-				status.details = except->code().message();
-
-				(*this)["title"] = status.title;
-				(*this)["details"] = status.details;
-				(*this)["category"] = except->code().category().name();
-				
-				return *this;
-
-			}
-		}
+		(*this)["title"] = status.title;
+		(*this)["details"] = status.details;
+		(*this)["domain"] = status.domain;
+		(*this)["url"] = status.url;
+		(*this)["category"] = status.category;		
 
 		return *this;
 	}

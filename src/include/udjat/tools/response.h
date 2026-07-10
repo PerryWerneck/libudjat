@@ -36,10 +36,41 @@
 			Failure = 2
 		};
 
+		struct Status {
+
+			State value = Success;
+			int code = 0;				///< @brief System code (from errno).
+			bool not_modified = false;
+			std::string title;			///< @brief The response title.
+			std::string message;		///< @brief The status message.
+			std::string details;		///< @brief The status details.
+			std::string domain;
+			std::string url;
+			std::string category;
+
+			/// @brief Build empty status.
+			Status() = default;
+
+			/// @brief Build status from exception.
+			/// @param e The exception for status.
+			Status(const std::exception &e);
+
+			Status & clear() noexcept;
+			Status & assign(const std::exception &e) noexcept;
+
+			inline Status & operator=(const std::exception &e) noexcept {
+				return assign(e);
+			} 
+
+		};
+
 	protected:
 
 		/// @brief Response type.
 		MimeType mimetype = MimeType::none;
+
+		/// @brief The response status.
+		Status status;
 
 		/// @brief Caching information.
 		struct {
@@ -49,15 +80,6 @@
 			/// @brief The last update time.
 			TimeStamp last_modified = 0;
 		} timestamp;
-
-		struct {
-			State value = Success;
-			int code = 0;
-			bool not_modified = false;
-			std::string title;			///< @brief The response title.
-			std::string message;		///< @brief The status message.
-			std::string details;		///< @brief The status details.
-		} status;
 
 		/// @brief Values for content-range & X-Total-Count headers.
 		struct {
