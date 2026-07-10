@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-08 18:04-0300\n"
-"PO-Revision-Date: 2026-06-18 15:37-0300\n"
+"POT-Creation-Date: 2026-07-10 17:17-0300\n"
+"PO-Revision-Date: 2026-07-10 17:20-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -67,11 +67,23 @@ msgstr "Modulo '{}' não foi carregado"
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
 
-#: src/library/request/response.cc:127
+#: src/library/request/request.cc:53
+msgid "Invalid or unexpected API version"
+msgstr "Versão de API inválida ou não esperada"
+
+#: src/library/request/response.cc:101 src/library/request/response.cc:138
+msgid "We're sorry, but we encountered an error while processing your request."
+msgstr ""
+
+#: src/library/request/response.cc:137
+msgid "Unable to Complete Request"
+msgstr ""
+
+#: src/library/request/response.cc:160
 msgid "System error"
 msgstr "Erro de sistema"
 
-#: src/library/request/response.cc:189
+#: src/library/request/response.cc:291
 msgid "Operation failed"
 msgstr "Operação falhou"
 
@@ -102,7 +114,7 @@ msgstr ""
 
 #: src/library/tools/application/loader.cc:113
 msgid "Interactive mode"
-msgstr ""
+msgstr "Modo interativo"
 
 #: src/library/tools/application/loader.cc:128
 msgid "Load module file"
@@ -782,7 +794,8 @@ msgstr ""
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
 
-#: src/library/tools/commandlineparser.cc:166 src/library/tools/argparser.cc:61
+#: src/library/tools/commandlineparser.cc:166
+#: src/library/tools/argparser.cc:158
 msgid "Show this help message"
 msgstr "Mostra essa mensagem de help"
 
@@ -791,7 +804,7 @@ msgid "Application options:\n"
 msgstr "Opções da aplicação:\n"
 
 #: src/library/tools/commandlineparser.cc:257
-#: src/library/tools/argparser.cc:277
+#: src/library/tools/argparser.cc:318
 msgid "Usage:"
 msgstr "Uso:"
 
@@ -804,12 +817,10 @@ msgid "Run in the background"
 msgstr "Rodar no background"
 
 #: src/library/tools/systemservice/args_windows.cc:34
-#, fuzzy
 msgid "Service options"
-msgstr "Opções de log"
+msgstr "Opções do serviço"
 
 #: src/library/tools/systemservice/args_windows.cc:36
-#, fuzzy
 msgid "Run in foreground, as application"
 msgstr "Executar em primeiro plano (como aplicação)"
 
@@ -827,7 +838,7 @@ msgstr "Instalar serviço"
 
 #: src/library/tools/systemservice/args_windows.cc:57
 msgid "description"
-msgstr ""
+msgstr "descrição"
 
 #: src/library/tools/systemservice/args_windows.cc:64
 msgid "Uninstall service"
@@ -860,38 +871,37 @@ msgstr "Selecione opção (Enter para sair): "
 #. Run interactive mode.
 #: src/library/tools/unit-tests.cc:208
 msgid "Available tests"
-msgstr ""
+msgstr "Testes disponíveis"
 
-#. The first group is allways the application options
-#: src/library/tools/argparser.cc:39
-msgid "Application options"
-msgstr "Opções da aplicação"
-
-#: src/library/tools/argparser.cc:188 src/library/tools/argparser.cc:204
-#: src/library/tools/argparser.cc:218
-msgid "Invalid use of repeated argument"
-msgstr ""
-
-#: src/library/tools/argparser.cc:309
-msgid "[OPTIONS]"
-msgstr "[OPÇÕES]"
-
-#: src/library/tools/argparser.cc:383
-#, c++-format
-msgid "Invalid option: -{}"
-msgstr "Opção inválida: -{}"
-
-#: src/library/tools/argparser.cc:400
+#: src/library/tools/argparser.cc:107
 #, c++-format
 msgid "Invalid option: --{}"
 msgstr "Opção inválid: --{}"
 
+#: src/library/tools/argparser.cc:125
+#, c++-format
+msgid "Invalid option: -{}"
+msgstr "Opção inválida: -{}"
+
+#. The first group is allways the application options
+#: src/library/tools/argparser.cc:136
+msgid "Application options"
+msgstr "Opções da aplicação"
+
+#: src/library/tools/argparser.cc:229 src/library/tools/argparser.cc:245
+#: src/library/tools/argparser.cc:259
+msgid "Invalid use of repeated argument"
+msgstr "Uso inválido de argumento repetido"
+
+#: src/library/tools/argparser.cc:350
+msgid "[options]"
+msgstr "[opções]"
+
+#~ msgid "[OPTIONS]"
+#~ msgstr "[OPÇÕES]"
+
 #~ msgid "Agent controller was not initialized"
 #~ msgstr "Controlador de agentes não foi inicializado"
-
-#, fuzzy
-#~ msgid "Test options"
-#~ msgstr "Opções de log"
 
 #, fuzzy
 #~ msgid "Load module from file"
