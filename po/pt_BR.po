@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-10 17:17-0300\n"
+"POT-Creation-Date: 2026-07-11 15:34-0300\n"
 "PO-Revision-Date: 2026-07-10 17:20-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -71,19 +71,23 @@ msgstr "Não sei como executar '{}'"
 msgid "Invalid or unexpected API version"
 msgstr "Versão de API inválida ou não esperada"
 
-#: src/library/request/response.cc:101 src/library/request/response.cc:138
-msgid "We're sorry, but we encountered an error while processing your request."
+#: src/library/request/response.cc:99
+msgid "Failed."
 msgstr ""
 
-#: src/library/request/response.cc:137
+#: src/library/request/response.cc:138
 msgid "Unable to Complete Request"
 msgstr ""
 
-#: src/library/request/response.cc:160
+#: src/library/request/response.cc:139
+msgid "We're sorry, but we encountered an error while processing your request."
+msgstr ""
+
+#: src/library/request/response.cc:161
 msgid "System error"
 msgstr "Erro de sistema"
 
-#: src/library/request/response.cc:291
+#: src/library/request/response.cc:292
 msgid "Operation failed"
 msgstr "Operação falhou"
 

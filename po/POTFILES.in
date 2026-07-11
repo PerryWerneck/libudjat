@@ -196,9 +196,9 @@ src/library/tools/value/sh.cc
 src/library/tools/value/xml.cc
 src/library/tools/value/yaml.cc
 src/library/tools/value/get.cc
-src/library/tools/value/set.cc
 src/library/tools/value/text.cc
 src/library/tools/value/type.cc
+src/library/tools/value/set.cc
 src/library/tools/xml/load.cc
 src/library/tools/xml/attribute.cc
 src/library/tools/xml/document.cc
@@ -321,17 +321,16 @@ src/include/udjat/tools/activatable.h
 src/include/udjat/tools/script.h
 src/include/udjat/tools/configuration.h
 src/include/udjat/tools/object.h
-src/include/udjat/tools/value.h
 src/include/udjat/tools/systemservice.h
 src/include/udjat/tools/loader.h
 src/include/udjat/tools/properties.h
 src/include/udjat/tools/mainloop.h
 src/include/udjat/tools/singleton.h
-src/include/udjat/tools/schema.h
 src/include/udjat/tools/interface.h
 src/include/udjat/tools/url.h
 src/include/udjat/tools/string.h
 src/include/udjat/tools/response.h
+src/include/udjat/tools/schema.h
 src/include/udjat/tools/converters.h
 src/include/udjat/tools/logger.h
 src/include/udjat/tools/application.h
@@ -339,6 +338,7 @@ src/include/udjat/tools/unit-test.h
 src/include/udjat/tools/xml.h
 src/include/udjat/tools/request.h
 src/include/udjat/tools/argumentparser.h
+src/include/udjat/tools/value.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/progress.h
 src/include/udjat/ui/status.h
