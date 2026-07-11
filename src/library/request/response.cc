@@ -57,6 +57,7 @@
 	void Response::Status::serialize(const MimeType &mimetype, std::ostream &out) const {
 
 		Value response{Value::Object};
+		response["syscode"] = syscode;
 		response["title"] = title;
 		response["message"] = message;
 		response["body"] = body;
@@ -72,8 +73,6 @@
 		case Udjat::MimeType::xml:
 			out << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><response><status type='String'>";
 			out << value << "</status>";
-			out << "<code>" << syscode << "</code>";
-			out << "<message>" << message << "</message>";
 			out << "<data>";
 			response.to_xml(out);
 			out << "</data></response>";
@@ -83,7 +82,6 @@
 
 			// Reference: https://github.com/omniti-labs/jsend
 			out << "{\"status\":\"" << value << "\",\"data\":";
-			response["code"] = syscode;
 			response.to_json(out);
 			out << "}";
 			break;
@@ -98,7 +96,7 @@
 				// Show values
 				response.to_html(out);
 			} else {
-				out << "<section id='error-box'><h1 id='error-title'>" << (title.empty() ? _("We're sorry, but we encountered an error while processing your request.") : title.c_str()) << "</h1>";
+				out << "<section id='error-box'><h1 id='error-title'>" << (title.empty() ? _("Failed.") : title.c_str()) << "</h1>";
 				if(!message.empty()) {
 					out << "<p id='error-message'>" << message << "</p>";
 				} else if(syscode) {
@@ -108,6 +106,10 @@
 					out << "<small id='error-body'>" << body << "</small>";
 				}
 				out << "<div id='error-extra'>";
+				response.erase("title");
+				response.erase("message");
+				response.erase("body");
+				response.erase("syscode");
 				response.to_html(out);
 				out << "</div>";
 				out << "</section>";
@@ -121,7 +123,6 @@
 
 		default:
 			response["status"] = std::to_string(value);
-			response["code"] = syscode;
 			response.serialize(out,mimetype);
 
 		}

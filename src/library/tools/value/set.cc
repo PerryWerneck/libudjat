@@ -92,6 +92,20 @@
 		return *this;
 	}
 
+	Value & Value::erase(const char *name) {
+
+		if(type != Object) {
+			throw logic_error(Logger::String{"Unable to erase element into a value type '",std::to_string(type),"'"});
+		}
+
+		if(content.ptr) {
+			(*((map<std::string,Value> *) content.ptr)).erase(name);
+		}
+			
+		return *this;
+
+	}
+
 	Value & Value::append(Value::Type item_type) {
 		if(type == Undefined) {
 			clear(Array);
@@ -133,7 +147,7 @@
 		}
 
 #if __cplusplus >= 201703L
-                for(const auto & [key, value] : *(( map<std::string,Value> *) src.content.ptr))	{
+        for(const auto & [key, value] : *(( map<std::string,Value> *) src.content.ptr))	{
 			(*this)[key.c_str()].set(value);
 		}
 #else
