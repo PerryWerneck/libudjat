@@ -29,6 +29,9 @@
 	class UDJAT_API Schema {
 	public:
 
+		/// @brief Template name, for http outputs.
+		const char *template_name = nullptr;
+
 		class UDJAT_API Item {
 		protected:
 			const char *item_name;			//< @brief The item name.
