@@ -122,9 +122,9 @@
 			{
 				size_t count = getActiveThreads();
 				if(count) {
-					cerr << name << "\tStopping with " << count << " threads on pool" << endl;
+					Logger::String{"Stopping with ",count," threads on pool"}.error();
 				} else {
-					cout << name << "\tStopping with no pending threads" << endl;
+					Logger::String{"Stopping with no pending threads"}.trace();
 				}
 			}
 

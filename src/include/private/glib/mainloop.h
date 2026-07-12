@@ -30,6 +30,9 @@ namespace Udjat {
 		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
 		private:
 
+			/// @brief The MainLoop.
+			void *loop = NULL;
+			
 			/// @brief The MainLoop GSource.
 			void *source;
 

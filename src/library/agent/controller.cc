@@ -26,6 +26,8 @@
  *
  */
 
+ #define LOG_DOMAIN "agent"
+
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/tools/threadpool.h>
@@ -35,10 +37,9 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/file.h>
  #include <udjat/agent/abstract.h>
+ #include <udjat/tools/schema.h>
  #include <unistd.h>
 
- #undef LOG_DOMAIN
- #define LOG_DOMAIN "agent"
  #include <udjat/tools/logger.h>
 
  #include <udjat/tools/intl.h>
@@ -83,7 +84,7 @@ namespace Udjat {
 
 			Logger::String{
 				"Agent ",
-				std::to_string((unsigned long long) ((void *) root.get())),
+				to_hex_string(root.get()).c_str(),
 				" was promoted to root"
 			}.trace(root->name());
 
@@ -94,7 +95,7 @@ namespace Udjat {
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::get() const {
 		if(this->root)
 			return this->root;
-		throw logic_error(_("Agent controller was not initialized"));
+		throw logic_error(_("Root agent is not available"));
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path, bool required) const {
@@ -151,20 +152,22 @@ namespace Udjat {
 
 	void Abstract::Agent::Controller::stop() noexcept {
 
-		Logger::String{
-			"Stopping controller"
-		}.trace("agent");
+		debug("---- Stopping agent controller ----");
 
 		MainLoop::Timer::disable();
 
 		if(root) {
 
 			try {
+				debug("---- Stopping children ----");
 				root->stop();
+				debug("---- Cleaning children ----");
+				root->clear();
+				debug("---- Root agent cleanup is complete ----")
 			} catch(const std::exception &e) {
-				root->error() << "Error '" << e.what() << "' stopping root agent" << endl;
+				Logger::String{"Error '",e.what(),"' stopping root agent"}.error(root->name());
 			} catch(...) {
-				root->error() << "Unexpected error stopping root agent" << endl;
+				Logger::String{"Unexpected error stopping root agent"}.error(root->name());
 			}
 
 			root.reset();
@@ -173,8 +176,13 @@ namespace Udjat {
 			ThreadPool::getInstance().wait();
 			debug("Wait for tasks complete");
 
+		} else {
+
+			Logger::String{"Stopping empty controller"}.trace();
+
 		}
 
+		debug("---- Agent controller stopped ----");
 	}
 
 	void Abstract::Agent::Controller::update_agents() {
@@ -186,13 +194,8 @@ namespace Udjat {
 
 		root->for_each([now,this,&next,&updatelist](std::shared_ptr<Agent> agent) {
 
-			// Ignore agents without 'next' or with forwarded state.
-			if(!agent->update.next || agent->current_state.forwarded()) {
-				debug(
-					"Agent='",agent->name(),"' will not update. Next=",agent->update.next,
-					" Forwarded=",(agent->current_state.forwarded() ? "Yes" : "No"),
-					" (",agent->current_state.selected->summary(),")"
-				);
+			// Ignore agents with on_demand flag active, without 'next' or with forwarded state.
+			if(agent->update.on_demand || !agent->update.next || agent->current_state.forwarded()) {
 				return;
 			}
 
@@ -229,18 +232,18 @@ namespace Udjat {
 
 			} else {
 				next = std::min(next,agent->update.next);
-				debug(
-					"Agent='",agent->name(),
-					"' update set to '",TimeStamp(agent->update.next),
-					", global update set to ",TimeStamp(next)
-				);
+				// debug(
+				// 	"Agent='",agent->name(),
+				// 	"' update set to '",TimeStamp(agent->update.next),
+				// 	", global update set to ",TimeStamp(next)
+				// );
 			}
 		});
 
 		//
 		// Enqueue agent updates
 		//
-		debug(updatelist.size()," agent(s) to update, next update will be ",TimeStamp(next));
+		// debug(updatelist.size()," agent(s) to update, next update will be ",TimeStamp(next));
 
 		if(now < next) {
 			MainLoop::Timer::reset((next-now) * 1000);
@@ -350,17 +353,20 @@ namespace Udjat {
 			AgentProperties() : Udjat::Action{"agent",_("Get agent properties")} {
 			} 
 
-			void introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &call) const override {
+			bool output_schema(Schema &schema) const noexcept override {
 
-				call("icon", Udjat::Value::Icon, false);
-				call("label", Udjat::Value::String, false);
-				call("name", Udjat::Value::String, false);
-				call("state", Udjat::Value::String, false);
-				call("summary", Udjat::Value::String, false);
-				call("system", Udjat::Value::String, false);
-				call("url", Udjat::Value::Url, false);
-				call("value", Udjat::Value::String, false);
+				schema.append(
+					Schema::Item{ "icon",		Udjat::Value::Icon		},
+					Schema::Item{ "label",		Udjat::Value::String	},
+					Schema::Item{ "name",		Udjat::Value::String	},
+					Schema::Item{ "state",		Udjat::Value::String	},
+					Schema::Item{ "summary",	Udjat::Value::String	},
+					Schema::Item{ "system", 	Udjat::Value::String	},
+					Schema::Item{ "url", 		Udjat::Value::Url		},
+					Schema::Item{ "value",		Udjat::Value::String	}
+				);
 
+				return true;
 			}
 
 			int call(Udjat::Request &request, Udjat::Response &response, bool except) override {

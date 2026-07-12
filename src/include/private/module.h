@@ -2,13 +2,14 @@
 #pragma once
 
 #include <config.h>
-#include <udjat/module/abstract.h>
+#include <udjat/module.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/value.h>
 #include <udjat/tools/container.h>
 #include <udjat/tools/xml.h>
 #include <udjat/tools/properties.h>
 #include <mutex>
+#include <vector>
 
 using namespace std;
 
@@ -36,6 +37,10 @@ namespace Udjat {
 	public:
 		Controller();
 		~Controller();
+
+		inline size_t size() const noexcept {
+			return modules.size();
+		}
 
 #ifdef _WIN32
 		static void * get_symbol(HMODULE hModule, const char *name, bool required = true);
@@ -89,6 +94,12 @@ namespace Udjat {
 		/// @retval true The module was already loaded.
 		/// @retval false The module was loaded.
 		bool load(const std::string &filename, const Udjat::Properties &props);
+
+		/// @brief Load module by properties.
+		/// @param props The module properties, including name or filename.
+		/// @retval true The module was already loaded.
+		/// @retval false The module was loaded.
+		bool load(const Udjat::Properties &props);
 		
 		bool for_each(const std::function<bool(Module &module)> &method);
 

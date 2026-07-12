@@ -20,8 +20,13 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.7.0',
-	default_options : ['c_std=c11', 'cpp_std=c++17', 'buildtype=release'],
+	version: '2.7.2',
+	default_options : [
+    'c_std=c11', 
+    'cpp_std=c++17', 
+    'buildtype=release', 
+    'default_library=shared'
+  ],
 	license: 'GPL-3.0-or-later',
 )
 
@@ -66,12 +71,6 @@ if not openssl.found()
   openssl = dependency('openssl', required: false)
 endif
 
-# URIPARSER
-uriparser = dependency(
-  'liburiparser', 
-  required: true,
-)
-
 # VMDETECT (optional)
 vmdetect = dependency(
   'vmdetect', 
@@ -95,7 +94,6 @@ pugixml = dependency(
 
 required_libs = [
   pugixml,
-  uriparser,
 ]
 
 private_libs = [
@@ -103,6 +101,12 @@ private_libs = [
   dmiget,
   openssl
 ]
+
+# URIPARSER
+uriparser = dependency(
+  'liburiparser', 
+  required: false,
+)
 
 pkg_libraries_private = [
 ]
@@ -113,6 +117,38 @@ extra_libs = [
   dl,
   threads,
 ] 
+
+
+if uriparser.found()
+
+  required_libs += uriparser
+
+else
+
+  # Import Meson's CMake interpreter
+  cmake = import('cmake')
+
+  # Configure the CMake project with explicit build options
+  uriparser_opts = cmake.subproject_options()
+  uriparser_opts.add_cmake_defines({
+    'URIPARSER_BUILD_TESTS': 'OFF',
+    'URIPARSER_BUILD_DOCS': 'OFF',
+    'URIPARSER_SHARED_LIBS': 'OFF',
+    'URIPARSER_BUILD_TOOLS': 'OFF',
+    'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
+  })
+
+  # Initialize subproject and pull the target
+  uriparser_sub = cmake.subproject(
+    'uriparser', 
+    options: uriparser_opts
+  )
+  
+  uriparser = uriparser_sub.dependency('uriparser')
+
+  extra_libs += uriparser
+
+endif
 
 #
 # Compiler flags
@@ -178,6 +214,10 @@ if openssl.found()
 
       pkg_libraries_private += [ '-libmtss']
 
+    #
+    # tpm2-tss-engine.h provided by tpm2-tss-engine-devel
+    # requires tss2/tss2_tpm2_types.h provided by tpm2-0-tss-devel
+    #
     elif cxx.compiles('#include <tpm2-tss-engine.h>', name : 'tpm2-tss-engine.h')
 
       app_conf.set('HAVE_TPM2_TSS_ENGINE_H', 1)
@@ -280,7 +320,7 @@ else
   vmdetect_s = dependency(
       'vmdetect',
       required: false,
-      fallback: [ 'vmdetect', 'static_library' ],
+      fallback: [ 'vmdetect' ],
       default_options: ['default_library=static']  
   ) 
   if vmdetect_s.found()
@@ -295,7 +335,7 @@ else
   dmiget_s = dependency(
       'dmiget',
       required: false,
-      fallback: [ 'dmiget', 'static_library' ],
+      fallback: [ 'dmiget' ],
       default_options: ['default_library=static']    
   ) 
   if dmiget_s.found()
@@ -314,6 +354,7 @@ if host_machine.system() != 'windows'
     'libeconf', 
     method : 'pkg-config',
     required: false,
+    default_options: ['default_library=static']    
   )
 
   if econf.found() 
@@ -445,6 +486,7 @@ lib_src += [
   'src/library/tools/quark.cc',
   'src/library/tools/requestpath.cc',
   'src/library/tools/script.cc',
+  'src/library/tools/authentication.cc',
   'src/library/tools/shortcut.cc',
   'src/library/tools/string/xml.cc',
   'src/library/tools/string/expand.cc',
@@ -494,6 +536,10 @@ lib_src += [
   'src/library/tools/action/abstract.cc',
   'src/library/tools/action/controller.cc',
   'src/library/tools/action/factory.cc',
+  'src/library/tools/unit-tests.cc',
+  'src/library/tools/console.cc',
+  'src/library/tools/console/progress.cc',
+  'src/library/tools/console/messages.cc',
   'src/library/request/responsevalue.cc',
   'src/library/module/os/' + host_machine.system() + '/close.cc',
   'src/library/module/os/' + host_machine.system() + '/load.cc',
@@ -501,13 +547,14 @@ lib_src += [
   'src/library/module/os/' + host_machine.system() + '/tools.cc',
   'src/library/tools/os/' + host_machine.system() + '/urlconnect.cc',
   'src/library/tools/os/' + host_machine.system() + '/socket.cc',
-  'src/library/tools/os/' + host_machine.system() + '/console.cc',
+  'src/library/tools/console/screen.cc',
+  'src/library/tools/console/screen_' + host_machine.system() + '.cc',
   'src/library/tools/url/handlers/file.cc',
   'src/library/tools/url/handlers/script.cc',
   'src/library/tools/url/handlers/smbios.cc',
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
-  'src/library/ui/animation.cc',
+  'src/library/tools/console/animation.cc',
   'src/library/ui/menu.cc',
   'src/library/testprogram.cc',
 ]
@@ -738,10 +785,10 @@ else
     description: project_description,
     variables: pkg_variables,
     extra_cflags: pkg_extra_cflags + [
-      '-DUDJAT_STATIC',
+      '-DLIBUDJAT_STATIC',
       '-pthread',
     ],
-    requires: [ pugixml, uriparser, vmdetect, dmiget, econf, systemd ],
+    requires: private_libs + required_libs,
     libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl', '-pthread' ] + pkg_libraries_private,
   )
 
@@ -856,7 +903,7 @@ static_library = declare_dependency(
     meson.project_name(), 
     config_h + lib_src,
     install: true,
-    cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
+    cpp_args: [ '-DLIBUDJAT_STATIC', '-fno-lto' ],
     dependencies: required_libs + private_libs + extra_libs,
     include_directories: includes_dir
   ),
@@ -923,6 +970,7 @@ install_headers(
   'src/include/udjat/alert.h',
   'src/include/udjat/defs.h',
   'src/include/udjat/module.h',
+  'src/include/udjat/authentication.h',
   subdir: 'udjat'  
 )
 
@@ -983,6 +1031,7 @@ install_headers(
   'src/include/udjat/tools/parse.h',
   'src/include/udjat/tools/quark.h',
   'src/include/udjat/tools/response.h',
+  'src/include/udjat/tools/schema.h',
   'src/include/udjat/tools/script.h',
   'src/include/udjat/tools/service.h',
   'src/include/udjat/tools/singleton.h',
@@ -1012,6 +1061,7 @@ install_headers(
   'src/include/udjat/tools/memory.h',
   'src/include/udjat/tools/properties.h',
   'src/include/udjat/tools/loader.h',
+  'src/include/udjat/tools/unit-test.h',
   subdir: 'udjat/tools'  
 )
 
@@ -1047,6 +1097,12 @@ install_headers(
 install_headers(
   'src/include/udjat/tools/actions/abstract.h',
   subdir: 'udjat/tools/actions'  
+)
+
+install_headers(
+  'src/include/udjat/ui/console/menu.h',
+  'src/include/udjat/ui/console/progress.h',
+  subdir: 'udjat/ui/console'
 )
 
 

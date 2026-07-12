@@ -35,6 +35,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/base64.h>
  #include <algorithm>
+ #include <udjat/tools/memory.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -48,6 +49,14 @@
  using namespace std;
 
  namespace Udjat {
+
+	URL::URL(const Properties &props, const char *attrname, bool required) {
+		if(required && !props.contains(attrname)) {
+			throw runtime_error(String{"Required attribute '",attrname,"' is missing"});
+		}
+		assign(props[attrname]);
+		expand(props);
+	}
 
 	String URL::servicename() const {
 		
@@ -172,7 +181,7 @@
 
 		sanitize(result);
 
-		return result;
+		return result.c_str();
 	}
 
 	String URL::name() const {
@@ -290,6 +299,40 @@
 		return *this;
 	}
 
+	String URL::query(bool escape) const {
+
+		String query;
+
+		ParsedUri uri{*this};
+		UriQueryListA *queryList = nullptr;
+		int items = 0; 
+
+		if(!uri.query.first) {
+			return query;
+		}
+
+		if(uriDissectQueryMallocA(&queryList, &items, uri.query.first, uri.query.afterLast) != URI_SUCCESS) {
+			throw runtime_error("Unexpected error on uriDissectQueryMallocA");
+		}
+
+		for (UriQueryListA *node = queryList; node; node = node->next) {
+			if(!query.empty()) {
+				query += "&";
+			}
+			query += node->key;
+			query += "=";
+			if(escape) {
+				query += String{node->value}.escape();
+			} else {
+				query += node->value;
+			}
+		}
+
+		uriFreeQueryListA(queryList);
+
+		return query;
+	}
+
 	bool URL::for_each(const std::function<bool(const char *key, const char *value)> &func) const {
 		ParsedUri uri{*this};
 		UriQueryListA *queryList = nullptr;
@@ -356,6 +399,10 @@
 		return false;
 	}
 
+	int URL::call(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer) {
+		return handler()->perform(method, payload, writer);
+	}
+
 	String URL::call(const HTTP::Method method, const char *payload, const bool console) const {
 		stringstream str;
 		auto hdr = handler();
@@ -363,6 +410,7 @@
 			method, 
 			payload, 
 			[this,&str,console](uint64_t current, uint64_t total, const void *data, size_t len) -> bool {
+				debug("Got '",len,"' bytes");
 				if(data && len) {
 					str.write((const char *) data,len);
 				}
@@ -373,7 +421,7 @@
 			}
 		);
 		hdr->except(rc);
-		return String{str.str()};		
+		return String{str.str().c_str()};		
 	}
 
 	bool URL::get(Udjat::Value &value, const HTTP::Method method, const char *payload) const {
@@ -458,7 +506,7 @@
 	}
 
 	bool URL::progress_to_console(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {
-		return UI::Console{}.progress(prefix,url,current,total);
+		return Console::Screen{}.progress(prefix,url,current,total);
 	}
 
  }

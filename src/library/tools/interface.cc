@@ -28,6 +28,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
 
  using namespace std;
 
@@ -123,8 +124,17 @@
 
 	}
 
-	bool Interface::push_back(const XML::Node &, std::shared_ptr<Action>) {
+	bool Interface::push_back(const Properties &, std::shared_ptr<Action>) {
 		throw logic_error("This interface is unable to handle actions");
+	}
+
+	Interface::Handler & Interface::push_back(const Properties &) {
+		throw logic_error("This interface cant accept dynamic actions");
+	}
+
+	int Interface::call(Udjat::Request &request, Udjat::Response &response) const {
+		Logger::String{"This interface is unable to process request"}.error(name());
+		return ENOTSUP;
 	}
 
 	Interface::Factory::Factory(const char *name, const char *description) : factory_name{name}, factory_description{description} {
@@ -149,84 +159,24 @@
 		value["description"] = description();
 	}
 
-	Interface::Handler::Introspection::Introspection(const XML::Node &node) 
-		: type{Value::TypeFactory(node,"type")}, name{String{node,"name"}.as_quark()} {
+	bool Interface::Handler::input_schema(Schema &schema) const noexcept {
+		return false;
+	}
 
-		int dir = String{node,"direction","out"}.select("none","in","out","both",nullptr);
-		if(dir < 0) {
-			throw runtime_error("Invalid direction, should be none, in, out or both");
-		}
-
-		switch(String{node,"value-from","none"}.select("none","path",nullptr)) {
-		case 0:	// none
-			break;
-
-		case 1:	// path
-			dir |= FromPath;
-			break;
-
-		default:
-			throw runtime_error(Logger::String{"Unexpected value '",String{node,"value-from"}.c_str(),"' on value-from attribute"});			
-		}
-
-		direction = (Direction) dir;
-
-
+	bool Interface::Handler::output_schema(Schema &schema) const noexcept{
+		return false;
 	}
 
 	Interface::Handler::Handler(const char *name) : handler_name{name} {
 	}
 
-	Interface::Handler::Handler(const char *name, const XML::Node &node) : Handler{name} {
-		for(XML::Node child = node.child("arg"); child; child = child.next_sibling("arg")) {
-			introspection.emplace_back(child);
-		}
+	Interface::Handler::Handler(const char *name, const Properties &) : handler_name{name} {
 	}
 
-	Interface::Handler::Handler(const XML::Node &node) : Handler{String{node,"name"}.as_quark(),node} {
+	Interface::Handler::Handler(const Properties &props) : Handler{props["name"].as_quark(),props} {
 	}
 
 	Interface::Handler::~Handler() {
-	}
-
-	bool Interface::Handler::for_each(const std::function<bool(const Introspection &instrospection)> &call) const {
-		for(const auto &val : introspection) {
-			if(call(val)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	void Interface::Handler::introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &call) const {
-
-		if(introspection.empty()) {
-
-			for(const auto &action : actions) {
-				action->introspect(call);
-			}
-
-		} else {
-
-			for(const auto &val : introspection) {
-
-				if(val.direction & Introspection::FromPath) {
-					continue;
-				}
-
-				if(val.direction & Introspection::Input) {
-					call(val.name,val.type,true);
-				}
-
-				if(val.direction & Introspection::Input) {
-					call(val.name,val.type,false);
-				}
-
-			}
-
-
-		}
-
 	}
 
 	void Interface::Handler::push_back(std::shared_ptr<Action> action) {
@@ -253,29 +203,17 @@
 		}
 
 		request.rewind();
-		for(auto &val : introspection) {
 
-			bool frompath = (val.direction & Introspection::FromPath);
-			string value;
-			if(frompath) {
-				debug("Getting '",val.name,"' from path");
-				request.pop(value);
+		// Check input properties
+		{
+			Schema schema;
+			if(input_schema(schema)) {
+				for(const auto &item : schema) {
+					if(!request.contains(item.name())) {
+						throw runtime_error(Logger::String{"Required argument is missing: ",item.description()});
+					}
+				}
 			}
-
-			if( (val.direction & Introspection::Input) && (!request.contains(val.name) || frompath)) {
-
-				// It's an input, update request.
-				request[val.name].set(value.c_str(),val.type);
-				debug("request[",val.name,"]='",value.c_str(),"' '",std::to_string(request[val.name]).c_str(),"'");
-			}
-
-			if( (val.direction & Introspection::Output) && (!response.contains(val.name) || frompath)) {
-
-				// It's an output, update response.
-				response[val.name].set(value.c_str(),val.type);
-				debug("response[",val.name,"]='",value.c_str(),"'");
-			}
-
 		}
 
 		//
@@ -314,26 +252,30 @@
 
 		return 0;
 	}
-
-	Interface::Interface(const XML::Node &node) {
+	
+	Interface::Interface(const Properties &props) : required_auth{Authentication::LevelFactory(props)} {
 
 		// Try type based name
-		String attr{node.attribute("type").as_string("default"),"-name"};
-		interface_name = String{node,attr.c_str()}.as_quark();
+		String attr{props.get("type","default").c_str(),"-name"};
+		interface_name = props[attr.c_str()].as_quark();
 		if(interface_name && *interface_name) {
 			return;
 		}
 
 		// Check names.
-		for(const char *attrname : { "name", "action-name"}) {
-			interface_name = String{node,attrname}.as_quark();
+		for(const char *attrname : { "action-name", "name"}) {
+			interface_name = props[attrname].as_quark();
 			if(interface_name && *interface_name) {
 				return;
 			}
 		}
 
-		throw runtime_error(Logger::String{"Required attribute 'name' or '",node.attribute("type").as_string("default"),"-name","' is missing or empty"});
+		throw runtime_error(Logger::String{"Required attribute 'name' or '",props.get("type","default").c_str(),"-name","' is missing or empty"});
 
+	}
+
+	bool Interface::allow(const Authentication::Level auth) const {
+		return auth >= required_auth;
 	}
 
 	Interface::~Interface() {

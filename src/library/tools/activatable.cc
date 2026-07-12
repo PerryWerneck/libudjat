@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/abstract/object.h>
  #include <udjat/tools/activatable.h>
@@ -32,7 +32,7 @@
 
  namespace Udjat {
 
-	Activatable::Activatable(const XML::Node &node) : object_name{String{node,"name"}.as_quark()} {
+	Activatable::Activatable(const Properties &props) : object_name{props["name"].as_quark()} {
 	}
 
 	Activatable::~Activatable() {
@@ -74,13 +74,13 @@
 		return true;
 	}
 
-	const char * Activatable::payload(const XML::Node &node) {
-		String child(node.child_value());
+	const char * Activatable::payload(const Properties &props) {
+		String child(props.child_value());
 		if(child.empty()) {
-			child = node.attribute("payload").as_string();
+			child = props["payload"];
 		}
-		child.expand(node);
-		if(node.attribute("strip-payload").as_bool(true)) {
+		child.expand(props);
+		if(props.get("strip-payload",true)) {
 			child.strip();
 		}
 		return child.as_quark();

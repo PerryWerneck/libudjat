@@ -167,8 +167,13 @@
 				{ G_LOG_LEVEL_DEBUG,    Udjat::Logger::Debug            },
 		};
 
+		// FIX-ME: Find a better way to ignore glib debug.
+		if(level == G_LOG_LEVEL_DEBUG) {
+			return;
+		}
+
 		if(!domain) {
-			domain = "gtk";
+			domain = "glib";
 		}
 
 		for(const auto &type : types) {

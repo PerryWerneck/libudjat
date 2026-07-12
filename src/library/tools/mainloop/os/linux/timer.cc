@@ -25,7 +25,6 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
- #include <udjat/tools/xml.h>
  #include <udjat/tools/timestamp.h>
  #include <sys/time.h>
  #include <iostream>
@@ -34,7 +33,7 @@
 
  namespace Udjat {
 
-	MainLoop::Timer::Timer(unsigned long milliseconds) {
+	MainLoop::Timer::Timer(int milliseconds) {
 		if(!milliseconds) {
 			throw system_error(EINVAL,system_category(),"Invalid timer value");
 		}
@@ -55,9 +54,14 @@
 		}
 	}
 
-	bool MainLoop::Timer::set(const unsigned long milliseconds) {
+	bool MainLoop::Timer::set(const int milliseconds) {
 
-		if(values.interval == milliseconds) {
+		if(milliseconds < 0) {
+			disable();
+			return true;
+		}
+
+		if(((int) values.interval) == milliseconds) {
 			return false;
 		}
 
@@ -68,6 +72,7 @@
 			MainLoop::getInstance().changed(this,saved,values.activation_time);
 		}
 
+		enable();
 		return true;
 
 	}
@@ -88,7 +93,10 @@
 		return MainLoop::getInstance().enabled(this);
 	}
 
-	bool MainLoop::Timer::enable(unsigned long milliseconds) {
+	bool MainLoop::Timer::enable(int milliseconds) {
+		if(milliseconds < 0) {
+			throw logic_error("Cant enable a negative timer");
+		}
 		values.interval = milliseconds;
 		return enable();
 	}
@@ -107,9 +115,9 @@
 		MainLoop::getInstance().remove(this);
 	}
 
-	bool MainLoop::Timer::set(const XML::Node &xml, const char *attrname) {
+	bool MainLoop::Timer::set(const Properties &props, const char *attrname) {
 
-		String attr{xml,attrname};
+		String attr = props[attrname];
 		if(attr.empty()) {
 			return false;
 		}
@@ -215,11 +223,11 @@
 	/// @return The updated timer value or '0' if timer was disabled.
 	unsigned long check() noexcept;
 
-	MainLoop::Timer * MainLoop::Timer::Factory(unsigned long interval, const std::function<bool()> call) {
+	MainLoop::Timer * MainLoop::Timer::Factory(int interval, const std::function<bool()> call) {
 		return MainLoop::getInstance().TimerFactory(interval, call);
 	}
 
-	MainLoop::Timer * MainLoop::TimerFactory(unsigned long interval, const std::function<bool()> call) {
+	MainLoop::Timer * MainLoop::TimerFactory(int interval, const std::function<bool()> call) {
 
 		class CallBackTimer : public Timer {
 		private:
@@ -228,10 +236,7 @@
 		protected:
 			void on_timer() override {
 
-#ifdef DEBUG
-				clog << "MainLoop\t---> Activating timer " << hex << ((void *) this) << dec
-						<< " " << this->to_string() << endl;
-#endif // DEBUG
+				debug("Activating timer ",to_hex_string((unsigned long ) this)," ",this->to_string());
 
 				bool success = true;
 
@@ -246,27 +251,20 @@
 				}
 
 				if(!success) {
-#ifdef DEBUG
-					clog << "MainLoop\t---> Factored timer " << hex << ((void *) this) << dec
-							<< " has failed and will be deleted" << endl;
-#endif // DEBUG
+					debug("Factored timer ",to_hex_string((unsigned long) this)," has failed and will be deleted");
 					delete this;
 					return;
 				}
 
-#ifdef DEBUG
-				clog << "MainLoop\t---> Factored timer " << hex << ((void *) this) << dec
-						<< " still active" << this->to_string() << endl;
-#endif // DEBUG
+				debug("Factored timer ",to_hex_string((unsigned long) this)," still active");
 			}
 
 		public:
-			CallBackTimer(unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), callback(c) {
-#ifdef DEBUG
-			clog << "MainLoop\t---> Factoring timer " << hex << ((void *) this) << dec
-					<< " " << this->to_string() << endl;
-#endif // DEBUG
-				enable();
+			CallBackTimer(int milliseconds, const std::function<bool()> c) : Timer(milliseconds), callback(c) {
+				debug("Factoring timer ",to_hex_string( (unsigned long) this), " ",this->to_string().c_str());
+				if(milliseconds > 0) {
+					enable();
+				}
 			}
 
 		};

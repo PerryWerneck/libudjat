@@ -60,7 +60,7 @@
 	static const char * unit_names[] = { "B", "KB", "MB", "GB", "TB" };
 
 	void String::append(const char *str) {
-		if(str) {
+		if(str && *str) {
 			std::string::append(str);
 		}
 	}
@@ -340,17 +340,28 @@
 			return -(errno = ENODATA);
 		}
 
-		int index = 0;
-		while(value) {
+		if(!args) {
 
 			if(!strcasecmp(c_str(),value)) {
-				va_end(args);
-				return index;
+				return 0;
 			}
 
-			index++;
-			value = va_arg(args, const char *);
+		} else {
+
+			int index = 0;
+			while(value) {
+
+				if(!strcasecmp(c_str(),value)) {
+					return index;
+				}
+
+				index++;
+				value = va_arg(args, const char *);
+			}
+
+
 		}
+
 		return -(errno = ENOENT);
 	}
 

@@ -30,6 +30,7 @@
  #include <udjat/tools/response.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/activatable.h>
+ #include <udjat/tools/schema.h>
  #include <functional>
  #include <list>
  #include <vector>
@@ -92,9 +93,15 @@
 		Action(const XML::Node &node);
 		virtual ~Action();
 
-		/// @brief Get action instrospection.
-		/// @param call Callback to receive instrospection data.
-		virtual void introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &call) const;
+		/// @brief Retrieves the schema definition for the interface inputs.
+		/// @param[out] schema Object populated with the interface input schema details.
+		/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
+		virtual bool input_schema(Schema &schema) const noexcept;
+
+		/// @brief Retrieves the schema definition for the interface outputs.
+		/// @param[out] schema Object populated with the interface output schema details.
+		/// @return True if the interface defines an output schema; false otherwise (schema remains unmodified).
+		virtual bool output_schema(Schema &schema) const noexcept;
 
 		/// @brief Execute action.
 		/// @param request The client request.

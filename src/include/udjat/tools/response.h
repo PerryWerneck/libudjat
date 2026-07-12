@@ -36,10 +36,45 @@
 			Failure = 2
 		};
 
+		struct Status {
+
+			State value = Success;
+			int syscode = 0;			///< @brief System code (from errno).
+			bool not_modified = false;	///< @brief Not modified flag (to http responses)
+			std::string title;			///< @brief The response title.
+			std::string message;		///< @brief The status message.
+			std::string body;			///< @brief The status details.
+			std::string domain;
+			std::string url;
+			std::string category;
+
+			/// @brief Build empty status.
+			Status(const State st = Success) : value{st} {
+			}
+
+			/// @brief Build status from exception.
+			/// @param e The exception for status.
+			Status(const std::exception &e);
+
+			Status & clear(const State st = Success) noexcept;
+			Status & assign(const std::exception &e) noexcept;
+
+			inline Status & operator=(const std::exception &e) noexcept {
+				return assign(e);
+			} 
+
+			void serialize(const MimeType &mimetype, std::ostream &stream) const;
+			std::string to_string(const MimeType &mimetype) const;
+
+		};
+
 	protected:
 
 		/// @brief Response type.
 		MimeType mimetype = MimeType::none;
+
+		/// @brief The response status.
+		Status status;
 
 		/// @brief Caching information.
 		struct {
@@ -49,15 +84,6 @@
 			/// @brief The last update time.
 			TimeStamp last_modified = 0;
 		} timestamp;
-
-		struct {
-			State value = Success;
-			int code = 0;
-			bool not_modified = false;
-			std::string title;			///< @brief The response title.
-			std::string message;		///< @brief The status message.
-			std::string details;		///< @brief The status details.
-		} status;
 
 		/// @brief Values for content-range & X-Total-Count headers.
 		struct {
@@ -95,11 +121,11 @@
 		}
 
 		inline operator bool() const noexcept {
-			return status.code == 0;
+			return status.syscode == 0;
 		}
 
-		inline int status_code() const noexcept {
-			return status.code;
+		inline int syscode() const noexcept {
+			return status.syscode;
 		}
 
 		/// @brief Set item count for this response.
@@ -132,15 +158,26 @@
 			return status.title.c_str();
 		}
 
+		/// @brief Set response body.
+		inline void body(const char *body) noexcept {
+			status.body = body;
+		}
+
+		/// @brief Get response body.
+		/// @return The response details.
+		inline const char * body() const noexcept {
+			return status.body.c_str();
+		}
+
 		/// @brief Set response details.
 		inline void details(const char *details) noexcept {
-			status.details = details;
+			status.body = details;
 		}
 
 		/// @brief Get response details.
 		/// @return The response details.
 		inline const char * details() const noexcept {
-			return status.details.c_str();
+			return status.body.c_str();
 		}
 
 		/// @brief Set range for this response (Content-Range http header).

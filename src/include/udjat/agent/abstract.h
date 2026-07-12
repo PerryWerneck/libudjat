@@ -201,7 +201,11 @@
 			virtual std::shared_ptr<Abstract::State> computeState();
 
 			/// @brief Set 'on-demand' option.
-			void setOndemand() noexcept;
+			void on_demand(bool opt = true) noexcept;
+
+			inline void setOndemand() noexcept {
+				on_demand(true);
+			}
 
 			/// @brief Set update timer interval.
 			/// @param value New timer interval (0 disable it).
@@ -215,6 +219,9 @@
 			/// @param summary State summary, will be expanded with agent properties.
 			/// @param summary State body, will be expanded with agent properties.
 			std::shared_ptr<Abstract::State> StateFactory(const char *name, const Udjat::Level level, const char *summary = "", const char *body = "");
+
+			/// @brief Clear agent (remove all children)
+			void clear();
 
 		public:
 			class Controller;
@@ -307,7 +314,7 @@
 			/// @return true if the data was updated.
 			virtual bool refresh(bool ondemand = false);
 
-			/// @brief Stop agent.
+			/// @brief Stop agent and children.
 			virtual void stop();
 
 			/// @brief Find child by path.

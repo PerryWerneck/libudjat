@@ -351,6 +351,10 @@
 		/// @param object the object to search for properties.
 		String & expand(const Udjat::Abstract::Object &object, bool dynamic = false, bool cleanup = false);
 
+		inline String & expand(const Udjat::Abstract::Object *object, bool dynamic = false, bool cleanup = false) {
+			return expand(*object,dynamic,cleanup);
+		}
+
 		/// @brief Expand ${} macros.
 		/// @param marker The marker.
 		/// @param node XML node from the begin of the value search.
@@ -463,12 +467,14 @@
 		unsigned long long as_ull() const;
 
 		/// @brief Set byte value, add 'kb', 'gb', 'tb'.
-		/// @param def The default value, used if string is empty.
+		/// @param value The value to set;
+		/// @param precision The number of digits after the decimal point.
 		/// @return Numeric value from string.
 		String & set_byte(unsigned long long value, int precision = 1);
 
 		/// @brief Set byte value, add 'kb', 'gb', 'tb'.
-		/// @param def The default value, used if string is empty.
+		/// @param value The value to set;
+		/// @param precision The number of digits after the decimal point.
 		/// @return Numeric value from string.
 		String & set_byte(double value, int precision = 1);
 
@@ -479,12 +485,23 @@
  namespace std {
 
 	template <typename I> 
-	inline Udjat::String to_hex_string(I w, size_t hex_len = sizeof(I)<<1) {
+	inline string to_hex_string(I w, size_t hex_len = sizeof(I)<<1) {
 		static const char* digits = "0123456789ABCDEF";
-		Udjat::String hexvalue(hex_len,'0');
+		char hexvalue[hex_len+1];
+		memset(hexvalue,0,hex_len);
 		for (size_t i=0, j=(hex_len-1)*4 ; i<hex_len; ++i,j-=4)
 			hexvalue[i] = digits[(w>>j) & 0x0f];
+		hexvalue[hex_len] = 0;
 		return hexvalue;
+	}
+
+	template <typename I> 
+	inline std::string to_hex_string(I *w) {
+#ifdef _WIN32
+		return to_hex_string((size_t) w);
+#else
+		return to_hex_string((unsigned long ) w);
+#endif // _WIN32
 	}
 
 	inline const char * to_string(Udjat::String &str) {

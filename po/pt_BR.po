@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 15:36-0300\n"
-"PO-Revision-Date: 2026-06-18 15:37-0300\n"
+"POT-Creation-Date: 2026-07-12 10:40-0300\n"
+"PO-Revision-Date: 2026-07-10 17:20-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -20,34 +20,6 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.9\n"
 
-#: src/library/agent/root.cc:98 src/library/tools/systemservice.cc:140
-msgid "System is ready"
-msgstr "Sistema em funcionamento"
-
-#: src/library/agent/root.cc:98
-msgid "No abnormal state was detected"
-msgstr "Nenhum estado anormal foi reportado"
-
-#: src/library/agent/agent.cc:193
-msgid "default"
-msgstr "padrão"
-
-#: src/library/agent/agent.cc:195
-msgid "Normal"
-msgstr "Normal"
-
-#: src/library/agent/agent.cc:196
-msgid "Agent has nothing to report"
-msgstr "Agente não tem nada a informar"
-
-#: src/library/agent/controller.cc:97
-msgid "Agent controller was not initialized"
-msgstr "Controlador de agentes não foi inicializado"
-
-#: src/library/agent/controller.cc:350
-msgid "Get agent properties"
-msgstr "Obtém propriedades do agente"
-
 #: src/library/agent/state.cc:145
 msgid "Error activating state"
 msgstr "Erro ao ativar estado"
@@ -56,21 +28,66 @@ msgstr "Erro ao ativar estado"
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
 
-#: src/library/module/module.cc:104
+#: src/library/agent/root.cc:98
+#: src/library/tools/systemservice/systemservice.cc:143
+msgid "System is ready"
+msgstr "Sistema em funcionamento"
+
+#: src/library/agent/root.cc:98
+msgid "No abnormal state was detected"
+msgstr "Nenhum estado anormal foi reportado"
+
+#: src/library/agent/agent.cc:228
+msgid "default"
+msgstr "padrão"
+
+#: src/library/agent/agent.cc:230
+msgid "Normal"
+msgstr "Normal"
+
+#: src/library/agent/agent.cc:231
+msgid "Agent has nothing to report"
+msgstr "Agente não tem nada a informar"
+
+#: src/library/agent/controller.cc:98
+msgid "Root agent is not available"
+msgstr ""
+
+#: src/library/agent/controller.cc:353
+msgid "Get agent properties"
+msgstr "Obtém propriedades do agente"
+
+#: src/library/module/module.cc:103
 #, c++-format
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/library/module/module.cc:120
+#: src/library/module/module.cc:119
 #, c++-format
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
 
-#: src/library/request/response.cc:127
+#: src/library/request/request.cc:53
+msgid "Invalid or unexpected API version"
+msgstr "Versão de API inválida ou não esperada"
+
+#: src/library/request/response.cc:99
+msgid "Failed."
+msgstr ""
+
+#: src/library/request/response.cc:138
+msgid "Unable to Complete Request"
+msgstr ""
+
+#: src/library/request/response.cc:139
+msgid "We're sorry, but we encountered an error while processing your request."
+msgstr ""
+
+#: src/library/request/response.cc:161
 msgid "System error"
 msgstr "Erro de sistema"
 
-#: src/library/request/response.cc:189
+#: src/library/request/response.cc:292
 msgid "Operation failed"
 msgstr "Operação falhou"
 
@@ -82,26 +99,50 @@ msgstr "ligado"
 msgid "off"
 msgstr "desligado"
 
-#: src/library/tools/application/run.cc:70
-#: src/library/tools/application/run.cc:74
-msgid "Unable to set environment variable"
-msgstr "Incapaz de setar variável de ambiente"
+#: src/library/tools/application/argparser.cc:35
+msgid "Enable auto exit timer in seconds"
+msgstr ""
 
-#: src/library/tools/application/run.cc:107
+#: src/library/tools/application/argparser.cc:35
+#: src/library/tools/timestamp.cc:247
+msgid "seconds"
+msgstr "segundos"
+
+#: src/library/tools/application/argparser.cc:39
+msgid "Timer option requires a value in seconds"
+msgstr ""
+
+#: src/library/tools/application/loader.cc:98
+msgid "Run all unit tests"
+msgstr ""
+
+#: src/library/tools/application/loader.cc:113
+msgid "Interactive mode"
+msgstr "Modo interativo"
+
+#: src/library/tools/application/loader.cc:128
+msgid "Load module file"
+msgstr ""
+
+#: src/library/tools/application/loader.cc:128
+msgid "path"
+msgstr ""
+
+#: src/library/tools/application/run.cc:90
 msgid "Loading configuration"
 msgstr "Carregando configuração"
 
 #. Activate the new root agent.
-#: src/library/tools/application/run.cc:155
+#: src/library/tools/application/run.cc:138
 msgid "Activating new configuration"
 msgstr "Ativando nova configuração"
 
-#: src/library/tools/application/run.cc:173
-#: src/library/tools/application/run.cc:259
+#: src/library/tools/application/run.cc:156
+#: src/library/tools/application/run.cc:248
 msgid "Starting services"
 msgstr "Iniciando serviços"
 
-#: src/library/tools/application/run.cc:183
+#: src/library/tools/application/run.cc:166
 msgid "Unexpected error while activating new configuration"
 msgstr "Erro inesperado durante a configuração"
 
@@ -363,41 +404,41 @@ msgstr "Erro HTTP {}"
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:158
-#: src/library/tools/mainloop/os/windows/timer.cc:158
+#: src/library/tools/mainloop/os/linux/timer.cc:166
+#: src/library/tools/mainloop/os/windows/timer.cc:166
 msgid "one second"
 msgstr "um segundo"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:164
-#: src/library/tools/mainloop/os/windows/timer.cc:164
+#: src/library/tools/mainloop/os/linux/timer.cc:172
+#: src/library/tools/mainloop/os/windows/timer.cc:172
 msgid "one hour"
 msgstr "uma hora"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:167
-#: src/library/tools/mainloop/os/windows/timer.cc:167
+#: src/library/tools/mainloop/os/linux/timer.cc:175
+#: src/library/tools/mainloop/os/windows/timer.cc:175
 #, c++-format
 msgid "{} hours"
 msgstr "{} horas"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:173
-#: src/library/tools/mainloop/os/windows/timer.cc:173
+#: src/library/tools/mainloop/os/linux/timer.cc:181
+#: src/library/tools/mainloop/os/windows/timer.cc:181
 msgid "one minute"
 msgstr "um minuto"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:176
-#: src/library/tools/mainloop/os/windows/timer.cc:176
+#: src/library/tools/mainloop/os/linux/timer.cc:184
+#: src/library/tools/mainloop/os/windows/timer.cc:184
 #, c++-format
 msgid "{} minutes"
 msgstr "{} minutos"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:179
-#: src/library/tools/mainloop/os/windows/timer.cc:179
+#: src/library/tools/mainloop/os/linux/timer.cc:187
+#: src/library/tools/mainloop/os/windows/timer.cc:187
 #, c++-format
 msgid " {} seconds"
 msgstr " {} segundos"
 
-#: src/library/tools/mainloop/os/linux/timer.cc:182
-#: src/library/tools/mainloop/os/windows/timer.cc:182
+#: src/library/tools/mainloop/os/linux/timer.cc:190
+#: src/library/tools/mainloop/os/windows/timer.cc:190
 #, c++-format
 msgid " {} milliseconds"
 msgstr " {} millisegundos"
@@ -406,21 +447,21 @@ msgstr " {} millisegundos"
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
 
-#: src/library/tools/os/linux/file/path.cc:118
+#: src/library/tools/os/linux/file/path.cc:119
 msgid "Unable to create an empty dirname"
 msgstr "Incapaz de criar diretório sem nome"
 
-#: src/library/tools/os/linux/file/path.cc:234
+#: src/library/tools/os/linux/file/path.cc:235
 #, c++-format
 msgid "Error creating output file when saving '{}'"
 msgstr "Erro ao criar arquivo de saída salvando '{}'"
 
-#: src/library/tools/os/linux/file/path.cc:267
+#: src/library/tools/os/linux/file/path.cc:268
 #, c++-format
 msgid "Error linking output file when saving '{}'"
 msgstr "Erro ao renomear arquivo de saída para '{}'"
 
-#: src/library/tools/os/linux/file/path.cc:275
+#: src/library/tools/os/linux/file/path.cc:276
 #, c++-format
 msgid "Error setting owner & group on '{}'"
 msgstr "Erro ao setar dono e grupo para '{}'"
@@ -444,10 +485,6 @@ msgstr "Erro no pacote recebido"
 msgid "Failed to connect to '{}'"
 msgstr "Falha ao conectar '{}'"
 
-#: src/library/tools/os/linux/systemservice.cc:46
-msgid "Run in the background"
-msgstr "Rodar no background"
-
 #: src/library/tools/os/linux/tpm.cc:81
 msgid "Unable to initialize IBM TSS context"
 msgstr "Não foi possível inicializar o contexto IBM TSS"
@@ -468,18 +505,6 @@ msgstr "Não foi possível obter o estado da TPM"
 #: src/library/tools/os/linux/ip.cc:125
 msgid "Invalid size on RTA_GATEWAY"
 msgstr "Tamanho inválido em RTA_GATEWAY"
-
-#: src/library/tools/os/linux/console.cc:329
-msgid "Previous page"
-msgstr "Página anterior"
-
-#: src/library/tools/os/linux/console.cc:332
-msgid "Next page"
-msgstr "Página seguinte"
-
-#: src/library/tools/os/linux/console.cc:341
-msgid "Select option (Enter to quit): "
-msgstr "Selecione opção (Enter para sair): "
 
 #. Try translated version
 #: src/library/tools/os/windows/application/description.cc:72
@@ -504,30 +529,6 @@ msgid ""
 msgstr ""
 "Endereço desconhecido. O nome não é um endereço ou apelido oficial, ou não "
 "pôde ser encontrado nas bases de dados consultadas."
-
-#: src/library/tools/os/windows/systemservice.cc:45
-msgid "Start service"
-msgstr "Iniciar serviço"
-
-#: src/library/tools/os/windows/systemservice.cc:46
-msgid "Stop service"
-msgstr "Parar serviço"
-
-#: src/library/tools/os/windows/systemservice.cc:47
-msgid "Install service"
-msgstr "Instalar serviço"
-
-#: src/library/tools/os/windows/systemservice.cc:48
-msgid "Uninstall service"
-msgstr "Desinstalar serviço"
-
-#: src/library/tools/os/windows/systemservice.cc:49
-msgid "Reinstall service"
-msgstr "Reinstalar serviço"
-
-#: src/library/tools/os/windows/systemservice.cc:50
-msgid "Block access to 'net stop' on this service"
-msgstr "Bloquear acesso a 'net stop' no serviço"
 
 #: src/library/tools/report.cc:221 src/library/tools/value/text.cc:78
 msgid "Yes"
@@ -567,79 +568,71 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
 
-#: src/library/tools/systemservice.cc:144
-msgid "System is not ready"
-msgstr "Sistema não está em funcionamento"
-
-#: src/library/tools/timestamp.cc:105
+#: src/library/tools/timestamp.cc:104
 msgid "Less than one minute"
 msgstr "Menos de um minuto"
 
-#: src/library/tools/timestamp.cc:118
+#: src/library/tools/timestamp.cc:117
 msgid "{d} {D}"
 msgstr "{d} {D}"
 
 #. Only days.
-#: src/library/tools/timestamp.cc:119
+#: src/library/tools/timestamp.cc:118
 msgid "{h} {H}"
 msgstr "{h} {H}"
 
 #. Only hours.
-#: src/library/tools/timestamp.cc:120
+#: src/library/tools/timestamp.cc:119
 msgid "{d} {D} and {h} {H}"
 msgstr "{d} {D} e {h} {H}"
 
 #. Days and hours.
-#: src/library/tools/timestamp.cc:121
+#: src/library/tools/timestamp.cc:120
 msgid "{m} {M}"
 msgstr "{m} {M}"
 
 #. Only minutes.
-#: src/library/tools/timestamp.cc:122
+#: src/library/tools/timestamp.cc:121
 msgid "{d} {D} and {m} {M}"
 msgstr "{d} {D} e {m} {M}"
 
 #. Days and minutes.
-#: src/library/tools/timestamp.cc:123
+#: src/library/tools/timestamp.cc:122
 msgid "{h} {H} and {m} {M}"
 msgstr "{h} {H} e {m} {M}"
 
 #. Hours and minutes.
-#: src/library/tools/timestamp.cc:124
+#: src/library/tools/timestamp.cc:123
 msgid "{d} {D}, {h} {H} and {m} {M}"
 msgstr "{d} {D}, {h} {H} e {m} {M}"
 
-#: src/library/tools/timestamp.cc:132 src/library/tools/timestamp.cc:251
+#: src/library/tools/timestamp.cc:131 src/library/tools/timestamp.cc:250
 msgid "days"
 msgstr "dias"
 
-#: src/library/tools/timestamp.cc:132 src/library/tools/timestamp.cc:251
+#: src/library/tools/timestamp.cc:131 src/library/tools/timestamp.cc:250
 msgid "day"
 msgstr "dia"
 
-#: src/library/tools/timestamp.cc:134 src/library/tools/timestamp.cc:250
+#: src/library/tools/timestamp.cc:133 src/library/tools/timestamp.cc:249
 msgid "hours"
 msgstr "horas"
 
-#: src/library/tools/timestamp.cc:134 src/library/tools/timestamp.cc:250
+#: src/library/tools/timestamp.cc:133 src/library/tools/timestamp.cc:249
 msgid "hour"
 msgstr "hora"
 
-#: src/library/tools/timestamp.cc:136 src/library/tools/timestamp.cc:249
+#: src/library/tools/timestamp.cc:135 src/library/tools/timestamp.cc:248
 msgid "minutes"
 msgstr "minutos"
 
-#: src/library/tools/timestamp.cc:136 src/library/tools/timestamp.cc:249
+#: src/library/tools/timestamp.cc:135 src/library/tools/timestamp.cc:248
 msgid "minute"
 msgstr "minuto"
 
-#: src/library/tools/timestamp.cc:248
+#: src/library/tools/timestamp.cc:247
 msgid "second"
 msgstr "segundo"
-
-#: src/library/tools/timestamp.cc:248
-msgid "seconds"
-msgstr "segundos"
 
 #: src/library/tools/value/text.cc:48
 msgid "Item "
@@ -723,28 +716,52 @@ msgstr "Definições XML não foram encontradas"
 msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
-#: src/library/tools/logger/commandline.cc:163
-msgid "Save log to file"
-msgstr "Envia log para arquivo"
+#: src/library/tools/logger/argparser.cc:44
+msgid "Logger options"
+msgstr "Opções de log"
 
-#: src/library/tools/logger/commandline.cc:164
-msgid "Send log to console"
-msgstr "Envia log para o console"
+#: src/library/tools/logger/argparser.cc:46
+msgid "Enable console output"
+msgstr "Habilita saída para console"
 
-#: src/library/tools/logger/commandline.cc:165
-msgid "Set log level to 'verbosity'"
-msgstr "Define nível de log para 'verbosity'"
+#: src/library/tools/logger/argparser.cc:86
+msgid "Disable console output"
+msgstr "Desativa saída para console"
 
-#: src/library/tools/logger/commandline.cc:166
-msgid "Quiet output"
-msgstr "Inibe saídas para console"
+#: src/library/tools/logger/argparser.cc:93
+msgid "Enable log to file"
+msgstr "Habilita log em arquivo"
 
-#: src/library/tools/logger/commandline.cc:168
-#: src/library/tools/logger/argparser.cc:82
+#: src/library/tools/logger/argparser.cc:96
+msgid "Log to file requires a filename"
+msgstr "Log para file existe um nome de arquivo"
+
+#: src/library/tools/logger/argparser.cc:103
+msgid "Set the log verbosity level"
+msgstr "Defíne o nível de detalhes do log"
+
+#: src/library/tools/logger/argparser.cc:116
+#: src/library/tools/logger/commandline.cc:191
 msgid "Enable coredump"
 msgstr "Habilita coredump"
 
-#: src/library/tools/logger/commandline.cc:172
+#: src/library/tools/logger/commandline.cc:186
+msgid "Save log to file"
+msgstr "Envia log para arquivo"
+
+#: src/library/tools/logger/commandline.cc:187
+msgid "Send log to console"
+msgstr "Envia log para o console"
+
+#: src/library/tools/logger/commandline.cc:188
+msgid "Set log level to 'verbosity'"
+msgstr "Define nível de log para 'verbosity'"
+
+#: src/library/tools/logger/commandline.cc:189
+msgid "Quiet output"
+msgstr "Inibe saídas para console"
+
+#: src/library/tools/logger/commandline.cc:195
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 
@@ -776,36 +793,13 @@ msgstr ""
 msgid "debug"
 msgstr ""
 
-#: src/library/tools/logger/argparser.cc:44
-msgid "Logger options"
-msgstr "Opções de log"
-
-#: src/library/tools/logger/argparser.cc:46
-msgid "Enable console output"
-msgstr "Habilita saída para console"
-
-#: src/library/tools/logger/argparser.cc:52
-msgid "Disable console output"
-msgstr "Desativa saída para console"
-
-#: src/library/tools/logger/argparser.cc:59
-msgid "Enable log to file"
-msgstr "Habilita log em arquivo"
-
-#: src/library/tools/logger/argparser.cc:62
-msgid "Log to file requires a filename"
-msgstr "Log para file existe um nome de arquivo"
-
-#: src/library/tools/logger/argparser.cc:69
-msgid "Set the log verbosity level"
-msgstr "Defíne o nível de detalhes do log"
-
-#: src/library/tools/object.cc:284
+#: src/library/tools/object.cc:285
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
 
-#: src/library/tools/commandlineparser.cc:166 src/library/tools/argparser.cc:62
+#: src/library/tools/commandlineparser.cc:166
+#: src/library/tools/argparser.cc:158
 msgid "Show this help message"
 msgstr "Mostra essa mensagem de help"
 
@@ -813,39 +807,115 @@ msgstr "Mostra essa mensagem de help"
 msgid "Application options:\n"
 msgstr "Opções da aplicação:\n"
 
-#: src/library/tools/commandlineparser.cc:180
-msgid "Quit after \"seconds\""
-msgstr "Encerra após \"seconds\""
-
-#: src/library/tools/commandlineparser.cc:192
 #: src/library/tools/commandlineparser.cc:257
-#: src/library/tools/argparser.cc:175
+#: src/library/tools/argparser.cc:318
 msgid "Usage:"
 msgstr "Uso:"
 
-#: src/library/tools/commandlineparser.cc:193
 #: src/library/tools/commandlineparser.cc:258
 msgid "[OPTION..]"
 msgstr "[OPÇÕES..]"
 
-#. The first group is allways the application options
-#: src/library/tools/argparser.cc:40
-msgid "Application options"
-msgstr "Opções da aplicação"
+#: src/library/tools/systemservice/args_linux.cc:43
+msgid "Run in the background"
+msgstr "Rodar no background"
 
-#: src/library/tools/argparser.cc:202
-msgid "[OPTIONS]"
-msgstr "[OPÇÕES]"
+#: src/library/tools/systemservice/args_windows.cc:34
+msgid "Service options"
+msgstr "Opções do serviço"
 
-#: src/library/tools/argparser.cc:276
+#: src/library/tools/systemservice/args_windows.cc:36
+msgid "Run in foreground, as application"
+msgstr "Executar em primeiro plano (como aplicação)"
+
+#: src/library/tools/systemservice/args_windows.cc:43
+msgid "Start service"
+msgstr "Iniciar serviço"
+
+#: src/library/tools/systemservice/args_windows.cc:50
+msgid "Stop service"
+msgstr "Parar serviço"
+
+#: src/library/tools/systemservice/args_windows.cc:57
+msgid "Install service"
+msgstr "Instalar serviço"
+
+#: src/library/tools/systemservice/args_windows.cc:57
+msgid "description"
+msgstr "descrição"
+
+#: src/library/tools/systemservice/args_windows.cc:64
+msgid "Uninstall service"
+msgstr "Desinstalar serviço"
+
+#: src/library/tools/systemservice/args_windows.cc:71
+msgid "Reinstall service"
+msgstr "Reinstalar serviço"
+
+#: src/library/tools/systemservice/args_windows.cc:81
+msgid "Block access to 'net stop' on this service"
+msgstr "Bloquear acesso a 'net stop' no serviço"
+
+#: src/library/tools/systemservice/systemservice.cc:147
+msgid "System is not ready"
+msgstr "Sistema não está em funcionamento"
+
+#: src/library/tools/console.cc:88
+msgid "Previous page"
+msgstr "Página anterior"
+
+#: src/library/tools/console.cc:91
+msgid "Next page"
+msgstr "Página seguinte"
+
+#: src/library/tools/console.cc:99
+msgid "Select option (Enter to quit): "
+msgstr "Selecione opção (Enter para sair): "
+
+#. Run interactive mode.
+#: src/library/tools/unit-tests.cc:208
+msgid "Available tests"
+msgstr "Testes disponíveis"
+
+#: src/library/tools/argparser.cc:107
+#, c++-format
+msgid "Invalid option: --{}"
+msgstr "Opção inválid: --{}"
+
+#: src/library/tools/argparser.cc:125
 #, c++-format
 msgid "Invalid option: -{}"
 msgstr "Opção inválida: -{}"
 
-#: src/library/tools/argparser.cc:293
-#, c++-format
-msgid "Invalid option: --{}"
-msgstr "Opção inválid: --{}"
+#. The first group is allways the application options
+#: src/library/tools/argparser.cc:136
+msgid "Application options"
+msgstr "Opções da aplicação"
+
+#: src/library/tools/argparser.cc:229 src/library/tools/argparser.cc:245
+#: src/library/tools/argparser.cc:259
+msgid "Invalid use of repeated argument"
+msgstr "Uso inválido de argumento repetido"
+
+#: src/library/tools/argparser.cc:350
+msgid "[options]"
+msgstr "[opções]"
+
+#~ msgid "[OPTIONS]"
+#~ msgstr "[OPÇÕES]"
+
+#~ msgid "Agent controller was not initialized"
+#~ msgstr "Controlador de agentes não foi inicializado"
+
+#, fuzzy
+#~ msgid "Load module from file"
+#~ msgstr "Não foi possível ler do arquivo"
+
+#~ msgid "Unable to set environment variable"
+#~ msgstr "Incapaz de setar variável de ambiente"
+
+#~ msgid "Quit after \"seconds\""
+#~ msgstr "Encerra após \"seconds\""
 
 #, fuzzy
 #~ msgid "This help message"
@@ -856,9 +926,6 @@ msgstr "Opção inválid: --{}"
 
 #~ msgid "Configuration file not found"
 #~ msgstr "Arquivo de configuração não encontrado"
-
-#~ msgid "Run in foreground (as application)"
-#~ msgstr "Executar em primeiro plano (como aplicação)"
 
 #~ msgid "Invalid response type"
 #~ msgstr "Resposta de tipo inválido"

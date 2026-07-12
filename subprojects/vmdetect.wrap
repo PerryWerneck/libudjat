@@ -4,3 +4,5 @@ revision = HEAD
 depth = 1
 clone-recursive = true
 
+[provide]
+vmdetect = static_library

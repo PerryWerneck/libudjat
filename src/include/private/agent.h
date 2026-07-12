@@ -26,7 +26,7 @@
 #include <unordered_map>
 #include <udjat/tools/quark.h>
 #include <udjat/tools/xml.h>
-#include <udjat/module/abstract.h>
+#include <udjat/module.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>

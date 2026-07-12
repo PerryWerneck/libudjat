@@ -73,8 +73,30 @@
 		});
 	}
 
-	void Logger::setup(const Properties &properties, const char *prefix) noexcept {
+	void Logger::setup(int argc, char **argv, bool dbg) {
 
+#ifdef LEGACY_CMDLINE_PARSER
+		setup(argc,argv,false,dbg);
+#else
+		if(dbg) {
+			verbosity(9);
+			console(true);
+		}
+
+		auto &controller = Controller::getInstance();
+		ArgumentParser{}.add_logger_group().parse(argc,argv);
+
+#endif // LEGACY_CMDLINE_PARSER
+
+	}
+
+	void Logger::setup(const Properties &properties, const char *prefix, bool dbg) noexcept {
+
+		if(dbg) {
+			verbosity(9);
+			console(true);
+		}
+	
 		auto &controller = Controller::getInstance();
 
 		for(size_t ix = 0; ix < LOGGER_MAX_VERBOSITY; ix++) {
@@ -110,6 +132,7 @@
 
 	}
 
+#ifdef LEGACY_CMDLINE_PARSER
 	void Logger::setup(int &argc, char **argv, bool extract, bool dbg) {
 
 		String optarg;
@@ -178,6 +201,6 @@
 		cout << "\n";
 
 	}
-
+#endif // LEGACY_CMDLINE_PARSER
  }
 

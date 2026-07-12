@@ -41,6 +41,8 @@
 		class Container {
 		protected:
 
+			typedef Container<T> super;
+
 			L objects;
 			mutable std::mutex guard;
 

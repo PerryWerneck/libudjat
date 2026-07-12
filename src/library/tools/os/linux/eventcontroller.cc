@@ -78,7 +78,8 @@
 
 		// Move signal processing to another thread to avoid dead locks.
 		ThreadPool::getInstance().push("SignalHandler",[signum](){
-			cout << "signals\tProcessing signal '" << strsignal(signum) << "' (" << signum << ")" << endl;
+
+			Logger::String{"Processing signal '",strsignal(signum),"' (",signum,")"}.info("signal");
 
 			Controller &instance = getInstance();
 

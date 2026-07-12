@@ -25,6 +25,7 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
+ #include <udjat/authentication.h>
 
  namespace Udjat {
 
@@ -54,6 +55,9 @@
 		/// @brief The requested API version.
 		unsigned int apiver = 0;
 
+		/// @brief Authentication for this request.
+		std::shared_ptr<Authentication> auth;
+
 	public:
 
 #if __cplusplus >= 201703L
@@ -69,6 +73,22 @@
 		inline unsigned int version() const noexcept {
 			return apiver;
 		}
+
+		/// @brief Check and extract element from path.
+		/// @param key The prefix to check and extract.
+		/// @param path The current path.
+		/// @return true if the prefix was found and extracted.
+		static bool pop(const char *key, const char * &path);
+
+		/// @brief Extract API info from path.
+		/// @param path The reference path.
+		/// @param apiver The apiver to update (non zero if path begins with /api/)
+		/// @return Path without the API prefix.
+		static const char * pop(const char *path, unsigned int &apiver);
+
+		/// @brief Test if the client is asking for an HTML formatted request.
+		/// @return true if it's an HTML formatted.
+		virtual bool html() const noexcept;
 
 		/// @brief Get request header.
 		/// @param name Name of the header.
@@ -86,11 +106,22 @@
 			return !(reqpath && *reqpath);
 		}
 
-		bool getProperty(const char *key, std::string &value) const override;
+		/// @brief Check the required authentication level.
+		/// @param auth The required authentication level.
+		/// @return true if this request is valid for the supplied level.
+		bool allow(const Authentication::Level auth) const;
 
-		/// @brief Is this request authenticated?
-		/// @return True if the request has user credentials.
-		virtual bool authenticated() const noexcept;
+		/// @brief Get authentication token.
+		inline std::shared_ptr<Authentication> authentication() const noexcept {
+			return auth;
+		};
+
+
+		/// @brief Get the username for the request.
+		/// @return The username if authenticated, empty string if not.
+		const char *username() const;
+
+		bool getProperty(const char *key, std::string &value) const override;
 
 		/// @brief Check the cache state.
 		/// @param timestamp Current response timestamp.

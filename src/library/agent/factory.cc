@@ -127,7 +127,7 @@
 		// Have type, use it
 		//
 
-		debug(Factories().size()," available factories");
+		debug("Searching '",type.c_str(),"' in ",Factories().size()," available factories");
 		for(const auto factory : Factories()) {
 
 			debug("Checking for type '",type.c_str(),"' on factory '",factory->name,"'");

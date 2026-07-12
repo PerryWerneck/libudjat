@@ -29,6 +29,9 @@
  #include <udjat/win32/container.h>
  #include <iphlpapi.h>
  #include <udjat/net/ip/address.h>
+ #include <udjat/tools/memory.h>
+ #include <udjat/tools/string.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -43,6 +46,22 @@
 			rc += buffer;
 		}
 		return rc;
+	}
+
+	/// @brief Get a table of IP route entries on the local computer.
+	/// @param family The address family.
+	/// @return The table of route entries for the local computer.
+	static shared_ptr<MIB_IPFORWARD_TABLE2> get_route_table(int family = AF_INET) {
+
+		// Retrieve all routing entries
+		PMIB_IPFORWARD_TABLE2 routeTable = NULL;
+    	DWORD dwRetVal = GetIpForwardTable2(family, &routeTable);
+    	if (dwRetVal != NO_ERROR) {
+			throw runtime_error(string{"GetIpForwardTable2 failed with error: ",((int) dwRetVal)});
+		}
+
+		return make_handle<MIB_IPFORWARD_TABLE2>(routeTable,FreeMibTable);
+
 	}
 
 	class UDJAT_PRIVATE Interfaces : public Win32::Container<IP_ADAPTER_INFO> {
@@ -213,7 +232,32 @@
 	}
 
 	std::shared_ptr<Network::Interface> Network::Interface::Default() {
-		throw system_error(ENOTSUP,system_category(),"Default interface detection is not available on windows");
+
+		auto routeTable = get_route_table();
+
+		for (ULONG i = 0; i < routeTable->NumEntries; i++) {
+
+			MIB_IPFORWARD_ROW2 row = routeTable->Table[i];
+			
+			if (row.DestinationPrefix.Prefix.Ipv4.sin_addr.s_addr == 0 && row.DestinationPrefix.PrefixLength == 0) {
+
+				// Convert the LUID to the human-readable Interface Name
+				char interfaceName[NDIS_IF_MAX_STRING_SIZE + 1];
+				memset(interfaceName,0,sizeof(interfaceName));
+
+    			auto status = ConvertInterfaceLuidToNameA(&row.InterfaceLuid, interfaceName, NDIS_IF_MAX_STRING_SIZE);
+    			if (status != NO_ERROR) {
+        			throw runtime_error(String{"Failed to convert LUID to Name. Error: ", ((int)status)});
+				}
+
+				debug("Found default interface ",interfaceName);
+				return Network::Interface::Factory(interfaceName);
+
+			}
+		}
+
+		throw std::system_error(ENOENT,std::system_category(),"Cant find default interface");
+
 	}
 
  }

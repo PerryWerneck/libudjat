@@ -39,6 +39,8 @@
 
  int Udjat::Win32::MainLoop::run() {
 
+	debug("------------------ Starting WIN32 mainlopp -----------------------");
+	
 	int rc = -1;
 
 	if(!PostMessage(hwnd,WM_START,0,0)) {

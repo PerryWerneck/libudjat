@@ -108,6 +108,18 @@
 		virtual int get(const char *attrname, const int def) const;
 		virtual unsigned int get(const char *attrname, const unsigned int def) const;
 		
+		/// @brief Get attribute with fallback to configuration file.
+		/// @param groupname The group on the configuration file to search.
+		/// @param attrname The attribute name.
+		/// @param def The default value if the attribute doesnt exist on properties and config file.
+		/// @return The value found or def if not exist.
+		String get(const char *groupname, const char *attrname, const char * def) const;
+		bool get(const char *groupname, const char *attrname, const bool def) const;
+		double get(const char *groupname, const char *attrname, const double def) const;
+		float get(const char *groupname, const char *attrname, const float def) const;
+		int get(const char *groupname, const char *attrname, const int def) const;
+		unsigned int get(const char *groupname, const char *attrname, const unsigned int def) const;
+
 		/// @brief On XML property get the text inside the node.
 		/// @return The child value.
 		virtual String child_value() const;

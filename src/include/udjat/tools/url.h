@@ -38,7 +38,7 @@
  #include <udjat/tools/http/method.h>
  #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/file/handler.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <memory>
 
  namespace Udjat {
@@ -56,8 +56,7 @@
 		URL(const std::string &str) : String{str} {
 		}
 
-		URL(const XML::Node &node, const char *attrname = "src", bool required = false) : String{node,attrname,required} {
-		}
+		URL(const Properties &props, const char *attrname = "src", bool required = false);
 
 		template<typename... Targs>
 		URL(const char *str, Targs... Fargs) : String{str} {
@@ -88,6 +87,11 @@
 		String path(bool strip = false) const;
 		String name() const;
 		String dirname() const;
+
+		/// @brief Get Query string.
+		/// @param escape If true call String::escape() on the arguments.
+		/// @return the url query.
+		String query(bool escape = false) const;
 
 		/// @brief Extract mimetype from URL path.
 		/// @return The mimetype, 'none' if URL has no extension.
@@ -155,6 +159,8 @@
 		/// @retval -ENODATA Empty URL.
 		/// @retval -ENOTSUP No support for test in protocol handler.
 		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const;
+
+		int call(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer);
 
 		String call(const HTTP::Method method = HTTP::Get, const char *payload = "", const bool console = false) const;
 

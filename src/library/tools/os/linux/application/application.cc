@@ -25,7 +25,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <errno.h>
  #include <fcntl.h>
  #include <unistd.h>
@@ -50,7 +50,7 @@
 		bindtextdomain(gettext_package, STRINGIZE_VALUE_OF(LOCALEDIR));
 		bind_textdomain_codeset(gettext_package, "UTF-8");
 		textdomain(gettext_package);
-		Logger::String{"Getting translations from ",STRINGIZE_VALUE_OF(LOCALEDIR)}.trace(gettext_package);
+//		Logger::String{"Getting translations from ",STRINGIZE_VALUE_OF(LOCALEDIR)}.trace(gettext_package);
 
 #endif // HAVE_LIBINTL
 

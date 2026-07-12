@@ -38,6 +38,7 @@
  #include <iostream>
  #include <unistd.h>
  #include <udjat/tools/event.h>
+ #include <private/signals.h>
 
  #include <csignal>
 
@@ -47,40 +48,45 @@
 
  using namespace std;
 
- static const int signals[] = { SIGTERM, SIGINT };
+ UDJAT_PRIVATE void Udjat::capture_signals(Udjat::MainLoop *mainloop) {
+ 
+	static const int signals[] = { SIGTERM, SIGINT };
 
- int Udjat::Linux::MainLoop::run() {
+	for(const int signal : signals) {
 
-	//
-	// Capture signals
-	//
-	for(size_t signal = 0; signal < (sizeof(signals)/sizeof(signals[0]));signal++) {
+		Logger::String{
+			"Signal '",(const char *) strsignal(signal),"' (",signal,") will trigger a controlled stop"
+		}.write(Logger::Trace,"signal");
 
-			Logger::String{
-				"Signal '",(const char *) strsignal(signals[signal]),"' (",signals[signal],") will trigger a controlled stop"
-			}.write(Logger::Trace,"signal");
+		Udjat::Event::SignalHandler(mainloop,signal,[](){
 
-			Udjat::Event::SignalHandler(this,signals[signal],[this](){
+			std::thread{[](){
 
-				std::thread{[this](){
-
-					debug("Stopping main loop by signal");
+				debug("Stopping main loop by signal");
 #ifdef HAVE_SYSTEMD
-					sd_notify(0,"STATUS=Interrupting by signal");
+				sd_notify(0,"STATUS=Interrupting by signal");
 #endif // HAVE_SYSTEMD
 
-					quit();
+				MainLoop::getInstance().quit();
 
-				}}.detach();
+			}}.detach();
 
-				return true;
-			});
+			return true;
+		});
 
 	}
 
+ } 
+
+
+ int Udjat::Linux::MainLoop::run() {
+
+	debug("------------------ Starting LINUX mainloop -----------------------");
+	
  	//
  	// Main event loop
  	//
+	capture_signals(this);
 
  	this->running = true;
 

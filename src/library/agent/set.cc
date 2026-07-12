@@ -27,19 +27,16 @@
 
  namespace Udjat {
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	bool Abstract::Agent::assign(const char *value) {
+	bool Abstract::Agent::assign(const char *) {
 		throw system_error(ENOTSUP,system_category(),string{"Agent '"} + name() + "' doesnt allow assign method");;
 	}
-	#pragma GCC diagnostic pop
 
-	void Abstract::Agent::setOndemand() noexcept {
+	void Abstract::Agent::on_demand(bool opt) noexcept {
 
-		update.on_demand = true;
+		update.on_demand = opt;
 
-		if(update.timer) {
-			cout << name() << "Disabling timer update (" << update.timer << " seconds)" << endl;
+		if(update.on_demand && update.timer) {
+			debug(name()," Disabling timer update (",update.timer," seconds)");
 			update.timer = 0;
 		}
 	}

@@ -35,6 +35,57 @@
 	Request::~Request() {
 	}
 
+	const char * Request::pop(const char *path, unsigned int &apiver) {
+		
+		apiver = 0;
+		if(!Request::pop("api",path)) {
+			return path;
+		}
+
+		if(path[0] == '/' && isdigit(path[1])) {
+			path++;
+			while(*path && *path != '/') {
+				if(isdigit(*path)) {
+					apiver += (*path - '0');
+				} else if(*path == '.') {
+					apiver *= 100;
+				} else {
+					throw runtime_error(_("Invalid or unexpected API version"));
+				}
+				path++;
+			}
+		} else {
+			apiver = 1000000;
+		}
+		
+		return path;
+	}
+
+	bool Request::pop(const char *prefix, const char * &path) {
+
+		if(path[0] != '/' || path[1] == 0) {
+			debug("Rejecting invalid or empty path");
+			return false;
+		}
+
+		size_t length = strlen(prefix);
+
+		debug(path+1);
+		debug(strncasecmp(path+1,prefix,length));
+		debug(path+(length+1));
+
+		if(strncasecmp(path+1,prefix,length) || path[length+1] != '/') {
+			debug("Path doesnt match '",prefix,"'");
+			return false;
+		}
+
+		debug("Found");
+
+		path += length+1;
+		return true;
+	}
+
+
 	bool Request::cached(const TimeStamp &) const {
 		return false;
 	}
@@ -43,8 +94,18 @@
 		return def;
 	}
 
-	bool Request::authenticated() const noexcept {
-		return false;
+	bool Request::allow(const Authentication::Level level) const {
+		if(!auth) {
+			return level == Authentication::None;
+		}
+		return auth->allow(level);
+	}
+
+	const char * Request::username() const {
+		if(auth) {
+			return auth->c_str();
+		} 
+		return "";
 	}
 
 	bool Request::for_each(const std::function<bool(const char *name, const char *value)> &call) const {
@@ -68,6 +129,11 @@
 			return true;
 		}
 
+		if(!strcasecmp(key,"username")) {
+			value = username();
+			return true;
+		}
+
 		return Value::getProperty(key,value);
 	}
 
@@ -75,54 +141,6 @@
 		Logger::String{"Returning empty value for header '",name,"'"}.trace();
 		return "";
 	}
-
-	/*
-	const char * Request::chk_prefix(const char *prefix) const noexcept {
-
-		debug(__FUNCTION__,"('",prefix,"')");
-
-		//
-		// Get requested prefix.
-		//
-		if(!(prefix && *prefix)) {
-			return nullptr;
-		}
-
-		if(*prefix == '/') {
-			prefix++;
-		}
-
-		//
-		// Get request path.
-		//
-		const char *path = argptr ? argptr : reqpath;
-
-		debug("Path= '",path,"'");
-		debug("Prefix= '",prefix,"'");
-
-		if(*path == '/') {
-			path++;
-		}
-
-		//
-		// Check if 'path' begins with 'prefix'
-		//
-		size_t szPath = strlen(path);
-		size_t szPrefix = strlen(prefix);
-
-		if(szPath < szPrefix) {
-			return nullptr;
-		}
-
-		if( (path[szPrefix] == '/' || path[szPrefix] == 0) && strncasecmp(prefix,path,szPrefix) == 0) {
-			debug("Arguments: '",(path+szPrefix),"'");
-			return path + szPrefix;
-		}
-
-		return nullptr;
-
-	}
-	*/
 
 	bool Request::has_prefix(const char *prefix) const noexcept {
 
@@ -221,6 +239,11 @@
 		Logger::String{"The request path is empty"}.trace();
 		return "";
 	}
+
+	bool Request::html() const noexcept {
+		return false;
+	}
+
 
  }
 

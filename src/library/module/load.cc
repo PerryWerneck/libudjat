@@ -49,6 +49,10 @@ namespace Udjat {
 	}
 
 	bool Module::Controller::parse(const XML::Node &node) {
+		return load(node);
+	}
+
+	bool Module::Controller::load(const Properties &props) {
 
 		static const char * attributes[] = {
 			"name",
@@ -57,45 +61,59 @@ namespace Udjat {
 			"fallback-to"
 		};
 
+		string detected_name;
+
 		std::vector<std::string> paths{Module::search_paths()};
 
 		for(const char *attribute : attributes) {
 
-			const char *name = node.attribute(attribute).as_string();
+			const auto name = props[attribute];
 
-			if(!(name && *name)) {
+			if(name.empty()) {
 				continue;
 			}
 
-			if(*name == '.' || *name == '/') {
-				load(name, node);
+			detected_name = name;
+			if(find_by_name(name.c_str())) {
 				return true;
 			}
 
-			string filename = locate(name,paths);			
-			if(!filename.empty()) {
-				load(filename, node);
+#ifndef LIBUDJAT_STATIC
+			if(name[0] == '.' || name[0] == '/') {
+				load(name.c_str(), props);
 				return true;
 			}
+
+			string filename = locate(name.c_str(),paths);			
+			if(!filename.empty()) {
+				load(filename, props);
+				return true;
+			}
+#endif // !LIBUDJAT_STATIC
 
 		}
 
+		// Invalid
+		if(detected_name.empty()) {
+			throw runtime_error(String{"Required attribute 'name' is missing or invalid at '",props.path().c_str(),"'"});
+		}
+
 		// Not found.
-		if(node.attribute("required").as_bool(true)) {
-			throw runtime_error(string{"Cant load required module '"} + node.attribute(attributes[0]).as_string() + "'");
+		if(props.get("required",true)) {
+#ifdef LIBUDJAT_STATIC
+			throw logic_error(String{"Required module '",detected_name,"' is unavailable"});
+#else
+			throw runtime_error(String{"Cant load required module '",detected_name.c_str(),"'"});
+#endif
 		} else {
-			Logger::String{"Cant load module '",node.attribute(attributes[0]).as_string(),"', ignoring"}.warning();
+			Logger::String{"Cant load module '",detected_name.c_str(),"', ignoring"}.warning();
 		}
 
 		return true;
 	}
 
-	bool Module::load(const std::string &filename, const XML::Node &node) {
-		return Controller::getInstance().load(filename,node);
-	}
-
-	bool Module::load(const XML::Node &node) {
-		return Controller::getInstance().parse(node);
+	bool Module::load(const Properties &props) {
+		return Controller::getInstance().load(props);
 	}
 
 }

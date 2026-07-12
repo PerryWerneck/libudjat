@@ -29,7 +29,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/http/exception.h>
  #include <udjat/tools/http/timestamp.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <private/url.h>
  #include <uriparser/Uri.h>
  #include <private/urlparser.h>
@@ -40,6 +40,25 @@
  using namespace std;
 
  namespace  Udjat {
+
+	std::function<bool(uint64_t, uint64_t)> URL::Handler::default_progress =
+		[](uint64_t, uint64_t) {
+			return false;
+		};
+
+	const std::function<bool(uint64_t current, uint64_t total)> & URL::Handler::get_progress() noexcept {
+		return default_progress;
+	}
+
+	void URL::Handler::set_progress(std::function<bool(uint64_t current, uint64_t total)> &progress) noexcept {
+		default_progress = progress;
+	}
+	
+	void URL::Handler::set_progress() {
+		default_progress = [](uint64_t, uint64_t) {
+			return false;
+		};
+	}
 
  	Container<URL::Handler::Factory> & factories() {
 		static Container<URL::Handler::Factory> factories;
@@ -228,7 +247,7 @@
 	}
 
 	String URL::Handler::get(const HTTP::Method method, const char *payload) {
-		return get(method,payload,[](uint64_t,uint64_t){ return false; });
+		return get(method,payload,default_progress);
 	}
 
 	bool URL::Handler::get(File::Handler &file, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
@@ -267,15 +286,17 @@
 	}
 
 	bool URL::Handler::get(File::Handler &file, const HTTP::Method method, const char *payload) {
-		return get(file,method,payload,[](uint64_t,uint64_t){ return false; });
+		return get(file,method,payload,default_progress);
 	}
 
 	const char * URL::Handler::to_string(const URL::Handler::Header hdr) {
 
-		static const char *strings[] = {
+		static const char *strings[HEADER_COUNT] = {
 			"If-Modified-Since",
 			"Last-Modified",
 			"Accept",
+			"Authorization",
+			"User-Agent"
 		};
 
 		if( ((size_t) hdr) >= (sizeof(strings)/sizeof(strings[0]))) {
@@ -343,7 +364,7 @@
 	}
 
 	bool URL::Handler::get(const char *filename, const HTTP::Method method, const char *payload) {
-		return get(filename,method,payload,[](uint64_t,uint64_t){ return false; });
+		return get(filename,method,payload,default_progress);
 	}
 
  }

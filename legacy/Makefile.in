@@ -69,6 +69,11 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/tools/ssl/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/http/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/mainloop/*.cc) \
+	$(srcdir)/src/library/tools/console/animation.cc \
+	$(srcdir)/src/library/tools/console/messages.cc \
+	$(srcdir)/src/library/tools/console/progress.cc \
+	$(srcdir)/src/library/tools/console/screen.cc \
+	$(srcdir)/src/library/tools/console/screen_linux.cc \
 	$(wildcard $(srcdir)/src/library/tools/mainloop/os/linux/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/os/linux/application/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/os/linux/*.cc) \
@@ -358,7 +363,7 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/tools/http \
 		$(DESTDIR)$(includedir)/udjat/tools/actions \
 		$(DESTDIR)$(includedir)/udjat/tools/url \
-		$(DESTDIR)$(includedir)/udjat/ui
+		$(DESTDIR)$(includedir)/udjat/ui/console
 
 	@$(INSTALL_DATA) \
 		$(srcdir)/src/include/udjat/*.h \
@@ -415,6 +420,10 @@ install-devel: \
 	@$(INSTALL_DATA) \
 		$(srcdir)/src/include/udjat/ui/*.h \
 		$(DESTDIR)$(includedir)/udjat/ui
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/ui/console/*.h \
+		$(DESTDIR)$(includedir)/udjat/ui/console
 
 install-devel-linux: \
 	$(BINRLS)/$(PACKAGE_NAME).a

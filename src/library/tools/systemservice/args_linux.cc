@@ -48,7 +48,7 @@
 					}
 					Logger::console(false);
 
-					return false;
+					return ArgumentParser::NotHandled;
 				}
 			}
 		);

@@ -37,7 +37,7 @@
 
  class ProgressBar;
 	
- class UDJAT_PRIVATE Controller : public Dialog::Progress::Factory, public Container<ProgressBar>, public UI::Console {
+ class UDJAT_PRIVATE Controller : public Dialog::Progress::Factory, public Container<ProgressBar>, public Console::Screen {
  public:
 	Controller() = default;
 
@@ -59,10 +59,10 @@
 	uint64_t current = 0;
 	uint64_t total = 0;
 
-	void update(const Udjat::UI::Console::Foreground color = Udjat::UI::Console::White) const noexcept {
+	void update(const Udjat::Console::Foreground color = Udjat::Console::White) const noexcept {
 		controller->up(line).set(color);
 		controller->progress(prefix.c_str(), text.c_str(), current, total);
-		controller->set(Udjat::UI::Console::White).down(line);
+		controller->set(Udjat::Console::White).down(line);
 	}
 	
  public:
@@ -108,7 +108,7 @@
 
 	Udjat::Dialog::Progress & done(bool success) noexcept override {
 		current = total;
-		update(success ? Udjat::UI::Console::Green : Udjat::UI::Console::Red);
+		update(success ? Udjat::Console::Green : Udjat::Console::Red);
 		return *this;
 	}
 	

@@ -33,7 +33,102 @@
 
  namespace Udjat {
 
-	using Console = UI::Console;
+	struct ArgumentParser::Context {
+		const ArgumentParser &parser;
+		int ix = 0;
+		int argc;
+		char **argv;
+		bool exit = false;
+		const char *help;
+
+		Context(const ArgumentParser &p, int c, char **v, const char *h) : parser{p}, argc{c}, argv{v}, help{h} {			
+		}
+
+		/// @brief 
+		/// @param context 
+		/// @param result 
+		/// @return true to stop argument parse.
+		bool check_result(const ArgumentParser::Result result) {
+
+			debug(__FUNCTION__,"(",to_hex_string(result).c_str(),")");
+			
+			if(result & Handled && ix < argc) {
+				debug("Argument was handled, skipping one")
+				ix++;
+			}
+
+			if( (result & ExitAfterParse) != 0) {
+				debug("Argumente requested Exit after parse")
+				exit = true;
+			}
+
+#ifdef DEBUG 
+			if( (result & ExitNow) != 0) {
+				debug("Argumente requested Exit now")
+			}
+#endif	
+
+			return (result & ExitNow) != 0;
+		}
+
+		bool parse_activation(const char *activation) {
+
+			for(const auto &group : parser.groups) {
+				for(const auto &item : group) {
+					if(item.shortname != 0 || item.longname != nullptr) {
+						continue;
+					}
+					auto rc = item.exec(activation,FileArgument);
+					if(rc & ExitNow) {
+						return true;
+					}
+					if(rc & Handled) {
+						return false;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		ArgumentParser::Result parse_long(const char *argument, const char *value, const Mode mode) const {
+
+			debug(__FUNCTION__,"(",argument,")");
+
+			// Parse 'argument'
+			for(const auto &group : parser.groups) {
+				for(const auto &arg : group) {
+					if(arg == argument) {
+						return arg.exec(value,mode);
+					}
+				}
+			}
+
+			throw runtime_error(Logger::Message{_("Invalid option: --{}"),argument});
+
+		}
+
+		ArgumentParser::Result parse_short(const char *argument, const char *value, const Mode mode) const {
+
+			debug(__FUNCTION__,"(",argument,")");
+
+			// Parse 'argument'parse_short
+			for(const auto &group : parser.groups) {
+				for(const auto &arg : group) {
+					if(arg == *argument) {
+						return arg.exec(value,mode);
+					}
+				}
+			}
+
+			char str[] = {argument[0],0};
+			throw runtime_error(Logger::Message{_("Invalid option: -{}"),str});
+
+		}
+
+
+	};
+
 
 	ArgumentParser::ArgumentParser() {
 
@@ -63,12 +158,12 @@
 			_("Show this help message"),
 			[this](const char *argument, bool) {
 				show_help();
-				return true;
+				return ArgumentParser::ExitNow;
 			}
 		);
 	}
 
-	bool ArgumentParser::parse(const int argc, const char **argv, const Argument *arguments) {
+	bool ArgumentParser::parse(int argc, char **argv, const Argument *arguments, const char *help) {
 
 		ArgumentParser parser;
 
@@ -76,17 +171,24 @@
 			parser.add_application_argument(*arg);
 		}
 
-		return parser.parse(argc,argv);
+		return parser.parse(argc,argv,help);
 
 	}
 
-	bool ArgumentParser::parse(const int argc, const char **argv) const {
+	bool ArgumentParser::parse(int argc, char **argv, const char *help) {
 
-		for(int ix = 0; ix < argc; ix++) {
+		this->help = help;
 
-			const char *arg = argv[ix];
+		Context context{*this,argc,argv,help};
+
+		for(context.ix = 1; context.ix < argc; context.ix++) {
+
+			const char *arg = argv[context.ix];
 
 			if(*arg != '-') {
+				if(context.parse_activation(arg)) {
+					return true;
+				}
 				continue;
 			}
 
@@ -103,7 +205,7 @@
 					ptr++;
 				}
 
-				if(parse_long(arg,ptr,'L')) {
+				if(context.check_result(context.parse_long(arg,ptr,LongOption))) {
 					return true;
 				}
 
@@ -113,8 +215,8 @@
 
 			// Check for short argument
 			const char *value = nullptr;
-			if(ix < (argc-1) && argv[ix+1][0] != '-') {
-				value = argv[ix+1];
+			if(context.ix < (argc-1) && argv[context.ix+1][0] != '-') {
+				value = argv[context.ix+1];
 			}
 
 			char last = 0;
@@ -123,9 +225,13 @@
 
 				if(isdigit(arg[1])) {
 
+					if(value) {
+						throw runtime_error(_("Invalid use of repeated argument"));
+					}
+
 					// Repeat 'arg[1]' times.
 					for(int ix='0';ix < arg[1];ix++) {
-						if(parse_short(arg,value,ix)) {
+						if(context.parse_short(arg,nullptr,(Mode) ix) == ExitNow) {
 							return true;
 						}
 					}
@@ -134,7 +240,12 @@
 				} else if(arg[0] == last) {
 
 					// It's repeating argument
-					if(parse_short(arg,value,index++)) {
+
+					if(value) {
+						throw runtime_error(_("Invalid use of repeated argument"));
+					}
+					
+					if(context.parse_short(arg,nullptr,(Mode) index++) == ExitNow) {
 						return true;
 					}
 
@@ -143,13 +254,19 @@
 					// It's the first one of a repetittion
 					last = arg[1];
 					index = '0';
-					if(parse_short(arg,value,index++)) {
+
+					if(value) {
+						throw runtime_error(_("Invalid use of repeated argument"));
+					}
+
+					if(context.parse_short(arg,nullptr,(Mode) index++) == ExitNow) {
 						return true;
 					}
+
 				} else {
 
 					// It's not repeating
-					if(parse_short(arg,value,'S')) {
+					if(context.check_result(context.parse_short(arg,value,(Mode) index))) {
 						return true;
 					}
 
@@ -160,14 +277,15 @@
 
 		}
 
-		return true;
+		/// Complete without errors
+		return context.exit;
 	}
 
 	void ArgumentParser::add_application_argument(const ArgumentParser::Argument &argument) {
 		groups.front().push_back(argument);
 	}
 
-	void ArgumentParser::add_application_argument(const char shortname, const char *longname, const char *description, const std::function<bool(const char *argument, const char mode)> &call) {
+	void ArgumentParser::add_application_argument(const char shortname, const char *longname, const char *description, const std::function<Result(const char *argument, const char mode)> &call) {
 		groups.front().emplace_back(shortname,longname,description,call);
 	}
 
@@ -177,6 +295,8 @@
 	}
 
 	bool ArgumentParser::show_help() const {
+
+		using namespace Console;
 
 		debug("Running ",__FUNCTION__);
 
@@ -224,13 +344,25 @@
 #endif
 
 		if(decorated) {
-			cout << "\x1B[2m";
+			cout << SetFaint;
 		}
 
-		cout << _("[OPTIONS]");
-		
+		cout << _("[options]");
+
 		if(decorated) {
-			cout << "\x1B[22m";
+			cout << ResetFaint;
+		}
+
+		if(help && *help) {
+
+			cout << " ";
+
+			if(decorated && *help == '[') {
+				cout << SetFaint << help << ResetFaint;
+			} else {
+				cout << help;
+			}
+
 		}
 
 		cout << "\n\n";
@@ -238,7 +370,7 @@
 		for(const auto &group : groups) {
 			if(decorated) {
 
-				cout << "\x1B[1m" << group.c_str() << ":" << "\x1B[22m" << "\n";	
+				cout << SetBold << group.c_str() << ":" << ResetBold << "\n";	
 
 			} else {
 	
@@ -246,6 +378,10 @@
 
 			}
 			for(const auto &arg : group) {
+
+				if(!arg.help) {
+					continue;
+				}
 
 				cout << "  ";
 
@@ -283,40 +419,17 @@
 		return true; // End application
 	}
 
-	bool ArgumentParser::parse_short(const char *argument, const char *value, const char mode) const {
-
-		debug(__FUNCTION__,"(",argument,")");
-
-		// Parse 'argument'
+	ArgumentParser::Result ArgumentParser::call(const char *option) {
 		for(const auto &group : groups) {
 			for(const auto &arg : group) {
-				if(arg == *argument) {
-					return arg.exec(value,mode);
+				if(arg == option) {
+					return arg.exec();
 				}
 			}
 		}
-
-		char str[] = {argument[0],0};
-		throw runtime_error(Logger::Message{_("Invalid option: -{}"),str});
-
+		return ArgumentParser::NotFound;
 	}
 
-	bool ArgumentParser::parse_long(const char *argument, const char *value, const char mode) const {
-
-		debug(__FUNCTION__,"(",argument,")");
-
-		// Parse 'argument'
-		for(const auto &group : groups) {
-			for(const auto &arg : group) {
-				if(arg == argument) {
-					return arg.exec(value,mode);
-				}
-			}
-		}
-
-		throw runtime_error(Logger::Message{_("Invalid option: --{}"),argument});
-
-	}
 
  }
 

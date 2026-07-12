@@ -36,25 +36,9 @@
 
  namespace Udjat {
 
-	Dialog::Menu::Menu(const char *t) : title{t} {
-	}
+	// TODO: Implement console menu.
 
-	Dialog::Menu::~Menu() {
-	}
-
-	void Dialog::Menu::append(const char **options, size_t count) {
-		for(size_t ix = 0; ix < count;ix++) {
-			this->emplace_back(options[ix]);
-		}
-	}
-
-	void Dialog::Menu::append(const char **options) {
-		for(size_t ix = 0; options[ix];ix++) {
-			this->emplace_back(options[ix]);
-		}
-	}
-
-}
+ }
 
 
 

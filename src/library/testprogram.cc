@@ -19,17 +19,23 @@
 
  #include <config.h>
 
- #if defined(DEBUG) and ! defined(STATIC_LIBRARY) 
+ #if defined(DEBUG) and ! defined(LIBUDJAT_STATIC) 
 
  #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
  #include <private/logger.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <udjat/tools/url.h>
  #include <string>
  #include <udjat/net/interface.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/file/temporary.h>
+ #include <udjat/tools/unit-test.h>
+ #include <udjat/tools/memory.h>
+ #include <udjat/ui/console/progress.h>
+ #include <udjat/ui/console.h>
+ #include <udjat/tools/timer.h>
+ #include <udjat/tools/mainloop.h>
 
  #ifdef HAVE_UNISTD_H
  #include <unistd.h>
@@ -41,6 +47,7 @@
 
  #ifdef HAVE_OPENSSL
  #include <udjat/tools/crypto.h>
+ #include <udjat/authentication.h>
  #endif // HAVE_OPENSSL
 
  using namespace Udjat;
@@ -59,162 +66,190 @@
  #endif // HAVE_SMBIOS
 
  #ifdef HAVE_OPENSSL
- static int ssl_test() {
+ 	static void test_ssl(const char *backend) {
 
-	static const char * backends[] = {
-		"legacy",
-#if defined(HAVE_OPENSSL_ENGINE)
-		"engine",
-#endif
-#if defined(HAVE_OPENSSL_PROVIDER)
-		"provider",
-#endif
-	};
+		String filename{"/tmp/test-",backend,".key"};
 
-	for(const auto &backend : backends) {
+		Udjat::Crypto::Key pkey;
 
-		Logger::String{"-----[ Testing backend '",backend,"' ]------------------------------------------------------"}.notice();
-		try {
+		// Test key generation
+		pkey.generate(filename.c_str(),"password",2048,backend);
 
-			String filename{"/tmp/test-",backend,".key"};
+		string pkeystr = pkey.to_string();
+		bool tss = strstr(pkeystr.c_str(),"BEGIN TSS") != nullptr;
 
-			Udjat::Crypto::Key pkey;
+		Logger::String{"Generated private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",pkeystr.c_str()}.info();
+		pkey.save_public(String{"/tmp/test-",backend,".pub"}.c_str());
 
-			// Test key generation
-			pkey.generate(filename.c_str(),"password",2048,backend);
+		// Test encription/decription
+		{
+			size_t encripted_len = 0;
+			size_t decripted_len = 0;
 
-			string pkeystr = pkey.to_string();
-			bool tss = strstr(pkeystr.c_str(),"BEGIN TSS") != nullptr;
+			const char *buffer = "Simple string to test crypto functions";
 
-			Logger::String{"Generated private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",pkeystr.c_str()}.info();
-			pkey.save_public(String{"/tmp/test-",backend,".pub"}.c_str());
+			auto encripted = make_handle<void>(pkey.encrypt(buffer,encripted_len),free);
 
-			// Test encription/decription
-			{
-				size_t encripted_len = 0;
-				size_t decripted_len = 0;
+			Logger::String{"The encripted block has ",encripted_len," bytes"}.info();
 
-				const char *buffer = "Simple string to test crypto functions";
+			auto decrypted = make_handle<void>(pkey.decrypt(encripted.get(),encripted_len,decripted_len),free);
 
-				void *encripted = pkey.encrypt(buffer,encripted_len);
+			debug("Decrypted string: '",((char *) decrypted.get()),"'");
 
-				Logger::String{"The encripted block has ",encripted_len," bytes"}.info();
-
-				void *decrypted = pkey.decrypt(encripted,encripted_len,decripted_len);
-
-				debug("Decrypted string: '",((char *) decrypted),"'");
-
-				if(strcmp(buffer,(const char *) decrypted)) {
-					throw runtime_error("Error decripting data block");
-				} else {
-					Logger::String{"Decripted block is ok"}.info();
-				}
-
-				free(encripted);
-				free(decrypted);
+			if(strcmp(buffer,(const char *) decrypted.get())) {
+				throw runtime_error("Error decripting data block");
+			} else {
+				Logger::String{"Decripted block is ok"}.info();
 			}
 
-			// Test sign/verify
-			{
-				size_t siglen;
-				unsigned int diglen;
+		}
 
-				const char *buffer = "Simple string to test crypto functions";
-				void *digest = pkey.digest(buffer,diglen);
+		// Test sign/verify
+		{
+			size_t siglen;
+			unsigned int diglen;
 
-				Logger::String{"The digest block has ",diglen," bytes"}.info();
+			const char *buffer = "Simple string to test crypto functions";
+			void *digest = pkey.digest(buffer,diglen);
 
-				void *sig = pkey.sign(digest,diglen,siglen);
+			Logger::String{"The digest block has ",diglen," bytes"}.info();
 
-				Logger::String{"The signed block has ",siglen," bytes"}.info();
+			void *sig = pkey.sign(digest,diglen,siglen);
 
-				if(pkey.verify(sig,siglen,digest,diglen)) {
-					Logger::String{"Signed block is ok"}.info();
-				} else {
-					free(digest);
-					free(sig);
-					throw runtime_error("Error sigining data block");
-				}
+			Logger::String{"The signed block has ",siglen," bytes"}.info();
 
+			if(pkey.verify(sig,siglen,digest,diglen)) {
+				Logger::String{"Signed block is ok"}.info();
+			} else {
 				free(digest);
 				free(sig);
+				throw runtime_error("Error sigining data block");
 			}
 
-			// Test key loading
-			Logger::String{"Reloading private key for ",backend," from file."}.info();
-			String loaded = Udjat::Crypto::Key{}.load(filename.c_str(),"password",backend).to_string();
+			free(digest);
+			free(sig);
+		}
 
-			Logger::String{"Reloaded private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",loaded.c_str()}.info();
+		// Test key loading
+		Logger::String{"Reloading private key for ",backend," from file."}.info();
+		String loaded = Udjat::Crypto::Key{}.load(filename.c_str(),"password",backend).to_string();
 
-			if(strcmp(loaded.c_str(),pkeystr.c_str()) != 0) {
-				throw logic_error("Reloaded key does not match generated key.");
-			}
+		Logger::String{"Reloaded private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",loaded.c_str()}.info();
 
-		} catch(const std::exception &e) {
-			Logger::String{"Error testing backend '",backend,"': ",e.what()}.error();
+		if(strcmp(loaded.c_str(),pkeystr.c_str()) != 0) {
+			throw logic_error("Reloaded key does not match generated key.");
 		}
 
 		Logger::String{"-----[ Finished test of backend '",backend,"' ]---------------------------------------------"}.notice();
-	}
-
-
-	/*
-	unlink("/tmp/test-legacy.key");
-	unlink("/tmp/test-legacy.pub");
-	unlink("/tmp/test-engine.key");
-	unlink("/tmp/test-engine.pub");
-	unlink("/tmp/test-provider.key");	
-	unlink("/tmp/test-provider.pub");
-	unlink("/tmp/test-mixed.key");	
-	unlink("/tmp/test-mixed.pub");
-
-	debug("---[ Legacy key test ]------------------------------------------------------------");
-	pkey.generate("/tmp/test-legacy.key","password",2048,"legacy");
-	Logger::String{"Legacy private key:\n",pkey.to_string().c_str()}.info();
-	pkey.save_public("/tmp/test-legacy.pub");
-	pkey.load("/tmp/test-legacy.key","password");
-	Logger::String{"Legacy private key reloaded:\n",pkey.to_string().c_str()}.info();
-
-#if defined(HAVE_OPENSSL_ENGINE) && defined(HAVE_TPM2_TSS_ENGINE_H) && !defined(_WIN32)
-	debug("---[ Engine based TPM test ]------------------------------------------------------");
-	pkey.generate("/tmp/test-engine.key","password",2048,"engine");
-	Logger::String{"Engine private key:\n",pkey.to_string().c_str()}.info();
-	pkey.save_public("/tmp/test-engine.pub");
-	pkey.load("/tmp/test-engine.key","password");
-	Logger::String{"Engine private key reloaded:\n",pkey.to_string().c_str()}.info();
-
-	if(strstr("TSS2 PRIVATE KEY",pkey.to_string().c_str()) == nullptr) {
-		throw logic_error("Engine key does not look like a TPM key.");
-	}
-
-#endif // HAVE_OPENSSL_ENGINE
-
-#if defined(HAVE_OPENSSL_PROVIDER) && !defined(_WIN32)
-	if(access(STRINGIZE_VALUE_OF(LIBDIR) "/ossl-modules/tpm2.so", R_OK) != 0) {
-		Logger::String{"TPM2 provider not found, skipping provider test."}.warning();
-	} else {
-		debug("---[ Provider based TPM test ]----------------------------------------------------");
-		pkey.generate("/tmp/test-provider.key","password",2048,"provider");
-		Logger::String{"Provider private key:\n",pkey.to_string().c_str()}.info();
-		pkey.save_public("/tmp/test-provider.pub");
-		pkey.load("/tmp/test-provider.key","password");
-		Logger::String{"Provider private key reloaded:\n",pkey.to_string().c_str()}.info();
-
-		if(strstr("TSS2 PRIVATE KEY",pkey.to_string().c_str()) == nullptr) {
-			throw logic_error("Provider key does not look like a TPM key.");
-		}
 
 	}
-#endif // HAVE_OPENSSL_PROVIDER
-	*/
-
-return 0;
- }
  #endif // HAVE_OPENSSL
+
+
+//  #ifdef HAVE_OPENSSL
+//  static int ssl_test() {
+
+// 	static const char * backends[] = {
+// 		"legacy",
+// #if defined(HAVE_OPENSSL_ENGINE)
+// 		"engine",
+// #endif
+// #if defined(HAVE_OPENSSL_PROVIDER)
+// 		"provider",
+// #endif
+// 	};
+
+// 	for(const auto &backend : backends) {
+
+// 		Logger::String{"-----[ Testing backend '",backend,"' ]------------------------------------------------------"}.notice();
+// 		try {
+
+// 			String filename{"/tmp/test-",backend,".key"};
+
+// 			Udjat::Crypto::Key pkey;
+
+// 			// Test key generation
+// 			pkey.generate(filename.c_str(),"password",2048,backend);
+
+// 			string pkeystr = pkey.to_string();
+// 			bool tss = strstr(pkeystr.c_str(),"BEGIN TSS") != nullptr;
+
+// 			Logger::String{"Generated private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",pkeystr.c_str()}.info();
+// 			pkey.save_public(String{"/tmp/test-",backend,".pub"}.c_str());
+
+// 			// Test encription/decription
+// 			{
+// 				size_t encripted_len = 0;
+// 				size_t decripted_len = 0;
+
+// 				const char *buffer = "Simple string to test crypto functions";
+
+// 				auto encripted = make_handle<void>(pkey.encrypt(buffer,encripted_len),free);
+
+// 				Logger::String{"The encripted block has ",encripted_len," bytes"}.info();
+
+// 				auto decrypted = make_handle<void>(pkey.decrypt(encripted.get(),encripted_len,decripted_len),free);
+
+// 				debug("Decrypted string: '",((char *) decrypted.get()),"'");
+
+// 				if(strcmp(buffer,(const char *) decrypted.get())) {
+// 					throw runtime_error("Error decripting data block");
+// 				} else {
+// 					Logger::String{"Decripted block is ok"}.info();
+// 				}
+
+// 			}
+
+// 			// Test sign/verify
+// 			{
+// 				size_t siglen;
+// 				unsigned int diglen;
+
+// 				const char *buffer = "Simple string to test crypto functions";
+// 				void *digest = pkey.digest(buffer,diglen);
+
+// 				Logger::String{"The digest block has ",diglen," bytes"}.info();
+
+// 				void *sig = pkey.sign(digest,diglen,siglen);
+
+// 				Logger::String{"The signed block has ",siglen," bytes"}.info();
+
+// 				if(pkey.verify(sig,siglen,digest,diglen)) {
+// 					Logger::String{"Signed block is ok"}.info();
+// 				} else {
+// 					free(digest);
+// 					free(sig);
+// 					throw runtime_error("Error sigining data block");
+// 				}
+
+// 				free(digest);
+// 				free(sig);
+// 			}
+
+// 			// Test key loading
+// 			Logger::String{"Reloading private key for ",backend," from file."}.info();
+// 			String loaded = Udjat::Crypto::Key{}.load(filename.c_str(),"password",backend).to_string();
+
+// 			Logger::String{"Reloaded private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",loaded.c_str()}.info();
+
+// 			if(strcmp(loaded.c_str(),pkeystr.c_str()) != 0) {
+// 				throw logic_error("Reloaded key does not match generated key.");
+// 			}
+
+// 		} catch(const std::exception &e) {
+// 			Logger::String{"Error testing backend '",backend,"': ",e.what()}.error();
+// 		}
+
+// 		Logger::String{"-----[ Finished test of backend '",backend,"' ]---------------------------------------------"}.notice();
+// 	}
+
+
+// 	return 0;
+//  }
+//  #endif // HAVE_OPENSSL
 
  static int network_test() {
 
-#ifndef _WIN32
 	auto nic = Udjat::Network::Interface::Default();
 
 	auto name = nic->name();
@@ -237,7 +272,6 @@ return 0;
 	} else {
 		Logger::String{"Default network interface netmask: ",mask.c_str()}.info();
 	}
- #endif // !_WIN32
  
 	return 0;
  }
@@ -388,47 +422,254 @@ return 0;
  }
 #endif // !_WIN32
 
- UDJAT_API int run_udjat_unit_test(const char *name) {
+ UDJAT_API void enum_udjat_unit_tests(Udjat::UnitTests &tests) noexcept {
 
-	static const struct {
-		const char *name;
-		int (*test)();
-	} tests[] = {
+		debug(__FUNCTION__," begin -> ",tests.size());
+
 #ifndef _WIN32
-		{"sysconfig",	sysconfig_test},
-#endif
+		tests.append(
+			UnitTests::Worker{
+				"Test sysconfig",
+				[]() {
+					sysconfig_test();
+					return true;
+				}
+			},
+#endif // !_WIN32
+
+			UnitTests::Worker{
+				"hexstring", "Test to hex string",
+				[]() {
+					cout << endl;
+					for(size_t ix = 0; ix < 10; ix++) {
+						cout << ix << "=" << to_hex_string(ix) << endl;
+					}
+					cout << endl;
+					{
+						void *ptr = NULL;
+						cout << "NULL = " << to_hex_string(ptr) << endl;
+					}
+					{
+						int x = 1;
+						int *ptr = &x;
+						cout << "intptr = " << to_hex_string(ptr) << endl;
+						cout << "(" << hex << ((unsigned long) ptr) << dec << ")" << endl;
+					}
+					cout << endl;
+					return true;
+				}
+			},
+
 #if defined(HAVE_IBMTSS) && defined(HAVE_OPENSSL)
-		{"tpm",	tpm_test},
+			UnitTests::Worker{
+				"Test TPM access",
+				[]() {
+					tpm_test();
+					return true;
+				}
+			},
 #endif 		
-		{"tmpfile",	tmpfile_test},
-		{"url",		url_test},
- #ifdef HAVE_OPENSSL
-		{"ssl",		ssl_test},
- #endif // HAVE_OPENSSL
- #ifdef HAVE_SMBIOS
-		{"smbios",	smbios_test},
- #endif // HAVE_SMBIOS
-		{"network",	network_test},
-		{"config",	config_test},
-		{"string",	string_test},
-	};
+			UnitTests::Worker{
+				"Test tempfile handler",
+				[]() {
+					tmpfile_test();
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"Test URL engine",
+				[]() {
+					url_test();
+					return true;
+				}
+			},
+#ifdef HAVE_OPENSSL
+			UnitTests::Worker{
+				"ssl-legacy", "Test OpenSSL Legacy backend",
+				[]() {
+					test_ssl("legacy");
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"authtoken", "Authentication token",
+				[]() {
 
-	if(!name) {
-		for(const auto &test : tests) {
-			Logger::String{"Running unit test: ",test.name}.info();
-			test.test();
-		}
-	} else {
-		for(const auto &test : tests) {
-			if(strcasecmp(test.name, name) == 0) {
-				Logger::String{"Running unit test: ",test.name}.info();
-				return test.test();
+					Authentication auth;
+					const char *text = "Testing encripted authentication token";
+
+					auto token = Authentication::encrypt(text,strlen(text));
+					Logger::String{"Encrypted text: ",token.c_str()}.trace();
+
+					auto decripted = auth.decrypt(token);
+					Logger::String{"Decrypted text: ",decripted.c_str()}.trace();
+
+					return strcmp(text,decripted.c_str()) == 0;
+
+				}
+			},
+#if defined(HAVE_OPENSSL_ENGINE)
+			UnitTests::Worker{
+				"ssl-engine", "Test OpenSSL engine backend",
+				[]() {
+					test_ssl("engine");
+					return true;
+				}
+			},
+#endif
+#if defined(HAVE_OPENSSL_PROVIDER)
+			UnitTests::Worker{
+				"ssl-provider", "Test OpenSSL provider backend",
+				[]() {
+					test_ssl("provider");
+					return true;
+				}
+			},
+#endif
+#endif // HAVE_OPENSSL
+#ifdef HAVE_SMBIOS
+			UnitTests::Worker{
+				"smbios","Test SMBIOS Access",
+				[]() {
+					smbios_test();
+					return true;
+				}
+			},
+#endif // HAVE_SMBIOS
+			UnitTests::Worker{
+				"conffile","Test configuration file access",
+				[]() {
+					config_test();
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"string","Test String manipulation engine",
+				[]() {
+					string_test();
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"netinfo", "Obtain NIC info",
+				[]() {
+					network_test();
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"animation", "Test console animations",
+				[]() {
+
+					Console::Animation animations[] = {
+						Console::Animation::Style::PlainText,
+						Console::Animation::Style::Simple,
+						Console::Animation::Style::Braille,
+						Console::Animation::Style::Circle
+					};
+
+					cout << "\n\n" << flush;
+					
+					for(size_t count = 0; count < 100; count++) {
+						cout << '\r';
+						for(auto &animation : animations) {
+							cout << animation << " ";
+						}
+						cout << " " << count << flush;
+						usleep(500000);
+					}
+
+					cout << "\n\n" << flush;
+
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"progress", "Test console progress bar",
+				[]() {
+
+					cout << "\n\n" << flush;
+					
+					{
+						Console::Progress progress{"Testing progress bar"};
+
+						progress.set(Console::BrightWhiteForeground);
+						progress.set(10,10);
+						sleep(5);
+
+						progress.set(Console::GreenForeground);
+						for(size_t ix = 0; ix < 400;ix++) {
+							progress.set(ix/4,100,false);
+							if(ix == 200) {
+								progress.set(Console::YellowForeground);
+							} else if(ix == 250) {
+								progress.set(Console::RedForeground);
+							}
+							usleep(50000);
+						}
+						progress.set(10,10,false);
+					}
+
+					cout << "\n\n" << flush;
+
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"timer", "Test timers",
+				[]() {
+
+					cout << "\n\n" << flush;
+					
+					MainLoop &mainloop = MainLoop::getInstance();
+
+					auto timer = mainloop.TimerFactory(-1,[&](){
+						cout << "Timer expired" << endl;
+						mainloop.quit();
+						return true;
+					});
+
+					cout << "Timer is " << (timer->enabled() ? "enabled" : "disabled") << endl;
+
+					timer->set(10000);
+
+					cout << "Timer is " << (timer->enabled() ? "enabled" : "disabled") << endl;
+
+					mainloop.run();
+
+					cout << endl << endl;
+
+					timer->set(-1);
+
+					cout << "Timer is " << (timer->enabled() ? "enabled" : "disabled") << endl;
+
+					delete timer;
+
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"Test console status message",
+				[]() {
+
+					cout << "\n\n" << flush;
+					
+					Console::status(Logger::Notice,"test","Notification message");
+					Console::status(Logger::Info,"test","Successs message");
+					Console::status(Logger::Warning,"test","Warning message");
+					Console::status(Logger::Error,"test","Error message");
+					Console::status(Logger::Trace,"test","Trace message");
+					Console::status(Logger::Debug,"test","Debug message");
+
+					cout << "\n\n" << flush;
+
+					return true;
+				}
 			}
-		}
-	}
+		);
 
-	return 0;
- }
+ 		debug(__FUNCTION__," end -> ",tests.size());
+}
 
  #endif // DEBUG
 

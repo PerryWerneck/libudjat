@@ -28,7 +28,7 @@
  #include <udjat/tools/argumentparser.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/tools/intl.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <udjat/ui/console.h>
  #include <udjat/tools/intl.h>
  #include <udjat/ui/status.h>
@@ -61,23 +61,6 @@
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
 	}
 	
-// 	bool Application::setProperty(const char *name, const char *value) {
-
-// 		debug("Property: '",name,"'('",(value ? value : "NULL"),"')");
-
-// #ifdef _WIN32
-// 		if(!SetEnvironmentVariable(name,value)) {
-// 			throw Win32::Exception(_("Unable to set environment variable"));
-// 		}
-// #else
-// 		if(setenv(name, value, 1)) {
-// 			throw std::system_error(errno,std::system_category(),_("Unable to set environment variable"));
-// 		}
-// #endif // _WIN32
-
-// 		return true;
-// 	}
-
 	static void dump(std::shared_ptr<Abstract::Agent> agent, size_t level = 0) {
 
 		Logger::String{
@@ -206,6 +189,7 @@
 			Logger::String{"Unexpected error parsing command line arguments"}.error(name());
 		}
 
+		debug("Cancelling application by errors on argument parse");
 		return true;
 	}
 
@@ -213,6 +197,7 @@
 
 		// Parse command line arguments.
 		if(parse_arguments()) {
+			debug("Stopping by parse-arguments request");
 			return 0;
 		}
 

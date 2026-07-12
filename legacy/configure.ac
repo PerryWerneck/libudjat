@@ -103,6 +103,8 @@ core_build_id=$(date +%y%m%d%H)
 AC_SUBST(CORE_BUILD_ID,$core_build_id)
 AC_SUBST(PACKAGE_CORE_BUILD,$core_build_id)
 
+AC_DEFINE(LEGACY_CMDLINE_PARSER,[],[Do we have libssl?])
+
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------

@@ -27,7 +27,7 @@
 	#include <unistd.h>
  #endif // _WIN32
 
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <udjat/tools/system.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
@@ -38,7 +38,7 @@
  #include <udjat/tools/network.h>
  #include <udjat/tools/response.h>
  #include <udjat/alert.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <udjat/agent/abstract.h>
  #include <sstream>
 
@@ -212,9 +212,7 @@
 			}
 
 			virtual ~Agent() {
-				std::stringstream ss;
-				ss << "Root agent " << hex << ((void *) this) << dec << " was destroyed";
-				Logger::String{ss.str()}.trace("agents");
+				Logger::String{"Root agent ",to_hex_string(this).c_str()," was destroyed"}.trace(name());
 			}
 
 			Value & getProperties(Value &value) const override {

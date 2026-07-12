@@ -21,7 +21,7 @@
 
  #include <config.h>
  #include <private/module.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <dlfcn.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
@@ -36,6 +36,12 @@
 
 	bool Module::Controller::load(const std::string &filename, const Udjat::Properties &props) {
 
+#ifdef LIBUDJAT_STATIC
+
+		throw logic_error("Cant use dynamic modules on static libudjat");
+
+#else
+		
 		if(find_by_filename(filename.c_str()) || find_by_name(filename.c_str())) {
 			Logger::String{"Module '",filename.c_str(),"' is already loaded"}.trace();
 			return true;
@@ -70,7 +76,7 @@
 			module->keep_active = props.get("keep-active",false);
 
 			if(props.get("verbose",true) && module->info.description && *module->info.description) {
-				Logger::String{module->info.description," version ",module->info.version," initialized"}.info(module->name());
+				Logger::String{module->info.description," version ",module->info.version," initialized (",size()," module(s) loaded)"}.info(module->name());
 			}
 
 			if(module->info.gettext_package && *module->info.gettext_package) {
@@ -86,7 +92,8 @@
 
 		return false;
 
+#endif // LIBUDJAT_STATIC
 	}
 
- }
+}
 

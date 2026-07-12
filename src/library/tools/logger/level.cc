@@ -75,21 +75,10 @@
 			level = LOGGER_MAX_VERBOSITY;
 		}
 
-#ifdef DEBUG
-		cout << "Selected level:" << level << endl;
-#endif // DEBUG
-
 		enabled_levels = Logger::Level::None;
 		for(int ix=0; ix < level; ix++) {
-#ifdef DEBUG
-			cout << "Enabling log level '" << levels[ix].name << "' value=" << levels[ix].level << endl;
-#endif // DEBUG
 			enabled_levels = (Logger::Level) (enabled_levels|levels[ix].level);
 		}
-
-#ifdef DEBUG
-		cout <<  "Current log level is " << enabled_levels << endl;
-#endif // DEBUG
 
 	}
 
@@ -145,8 +134,12 @@
 				}
 			}
 		}
-
+ 
+#ifdef GETTEXT_PACKAGE
 		return dgettext(GETTEXT_PACKAGE,name);
+#else
+		return name;
+#endif // GETTEXT_PACKAGE
 	}
 
  }

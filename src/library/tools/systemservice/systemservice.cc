@@ -24,6 +24,7 @@
  #include <udjat/tools/activatable.h>
  #include <udjat/tools/intl.h>
  #include <udjat/agent/abstract.h>
+ #include <udjat/tools/logger.h>
 
  #ifdef _WIN32
 	#include <udjat/win32/registry.h>
@@ -46,14 +47,15 @@
 		throw std::system_error(EINVAL,std::system_category(),"System service is not active");
 	}
 
-	SystemService::SystemService(const int argc, const char **argv) : Application(argc,argv) {
+	SystemService::SystemService(int argc, char **argv) : Application(argc,argv) {
 		if(instance) {
 			throw std::system_error(EBUSY,std::system_category(),"System service already active");
 		}
-		instance = this;
-		
-		Logger::console(false);
 
+		Logger::redirect();
+
+		instance = this;
+				
 #ifdef HAVE_SYSTEMD
 		sd_notifyf(0,"STATUS=Starting");
 #endif // HAVE_SYSTEMD

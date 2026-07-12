@@ -20,7 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <ctime>
  #include <string>
  #include <cstdint>
@@ -43,8 +43,8 @@
 
 		explicit TimeStamp(const char *time, const char *format = nullptr);
 
-		TimeStamp(const XML::Node &node, const char *attrname, const char *def = "");
-		TimeStamp(const XML::Node &node, const char *attrname, const time_t def);
+		TimeStamp(const Properties &props, const char *attrname, const char *def = "");
+		TimeStamp(const Properties &props, const char *attrname, const time_t def);
 
 		std::string to_string(const char *format = "%x %X") const noexcept;
 

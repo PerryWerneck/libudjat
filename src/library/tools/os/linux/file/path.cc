@@ -28,6 +28,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/file/path.h>
 
  using namespace std;
 

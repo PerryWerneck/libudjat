@@ -75,7 +75,7 @@
 
 		static void show_command_line_help(size_t width = 20) noexcept;
 
-		SystemService(const int argc, const char **argv);
+		SystemService(int argc, char **argv);
 		virtual ~SystemService();
 
 		/// @brief Parse command line options, run service.

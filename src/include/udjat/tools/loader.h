@@ -46,7 +46,7 @@ namespace Udjat {
 	/// @param argv The command line arguments.
 	/// @param path Path to the XML configuration file or directory (default is "test.xml").
 	/// @return 0 on success, non-zero on failure.
-	int UDJAT_API loader(const int argc, const char *argv[], const char *path = "test.xml");
+	int UDJAT_API loader(int argc, char *argv[], const char *path = "test.xml");
 
 	/// @brief Helper library to test and develop Udjat modules.
 	/// @param argc Number of command line arguments.
@@ -54,7 +54,7 @@ namespace Udjat {
 	/// @param callback Callback method to run tests on initialize app, return true if the mode was processed.
 	/// @param path Path to the XML configuration file or directory (default is "test.xml").
 	/// @return 0 on success, non-zero on failure.
-	int UDJAT_API loader(const int argc, const char *argv[], const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &callback, const char *path = "test.xml");
+	int UDJAT_API loader(int argc, char *argv[], const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &callback, const char *path = "test.xml");
 
 	/// @brief Helper library to test and develop Udjat modules.
 	/// @param argc Number of command line arguments.
@@ -62,6 +62,6 @@ namespace Udjat {
 	/// @param callback Callback method to initialize app.
 	/// @param path Path to the XML configuration file or directory (default is "test.xml").
 	/// @return 0 on success, non-zero on failure.
-	int UDJAT_API loader(const int argc, const char *argv[], const std::function<int(Application &app)> &init, const char *path = "test.xml");
+	[[deprecated]] int UDJAT_API loader(int argc, char *argv[], const std::function<int(Application &app)> &init, const char *path = "test.xml");
 
 }

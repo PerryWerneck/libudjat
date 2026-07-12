@@ -26,45 +26,93 @@
  #include <memory>
  #include <string>
  #include <vector>
+ #include <functional>
 
  namespace Udjat {
 
-	namespace Dialog {
+	namespace Abstract {
 
-		/// @brief Simple popup menu with options.
-		class UDJAT_API Menu : public std::vector<std::string> {
-		protected:
-			Menu(const char *title);
+		class UDJAT_API Menu {
+		private:
 			std::string title;
-			size_t lpp = 26;
+
+		protected:
+			size_t lpp = 20;
 
 		public:
+			Menu(const char *t) : title{t} {			
+			}
 
-			virtual ~Menu();
+			inline Menu & lines_per_page(size_t value) noexcept {
+				lpp = value;
+				return *this;
+			}
+
+			inline size_t lines_per_page(void) const noexcept {
+				return lpp;
+			}
+
+			inline const char *c_str() const noexcept {
+				return title.c_str();
+			}
+
+			virtual size_t size() const noexcept = 0;
 
 			/// @brief Select option, return index or throw system_error(ECANCELLED) if user cancel.
 			/// @param options The options to select.
 			/// @return The index of the selected option.
-			virtual size_t select() = 0;
-			
-			inline void append(const char *option) {
-				this->emplace_back(option);
-			}
+			virtual size_t select() const = 0;
 
-			inline void lines_per_page(size_t value) noexcept {
-				lpp = value;
-			}
-
-			size_t lines_per_page(void) noexcept {
-				return lpp;
-			}
-
-			void append(const char **options, size_t count);
-			void append(const char **options);
+			virtual const std::string label(size_t ix, bool decorated = false) const = 0;
 
 		};
 
 	}
+
+	/// @brief Simple popup menu with options.
+	template <class T>
+	class UDJAT_API Menu : public Abstract::Menu, public std::vector<T> {
+	public:
+
+		typedef Menu<T> super;
+
+		Menu(const char *t) : Abstract::Menu{t} {			
+		}
+
+		template<typename... Targs>
+		Menu(const char *title, Targs... Fargs) : Menu{title} {
+			append(Fargs...);
+		}
+
+		template<typename... Targs>
+		inline void append(const T &option, Targs... Fargs) {
+			this->push_back(option);
+			append(Fargs...);
+		}
+
+		inline Menu & append(const T &option) {
+			this->push_back(option);
+			return *this;
+		}
+
+		const std::string label(size_t ix, bool decorated = false) const override;
+
+		size_t size() const noexcept override {
+			return std::vector<T>::size();
+		}
+
+	};
+
+	// template <class T>
+    // inline const std::string Menu<T>::label(size_t ix, bool decorated) const {
+    //     return std::to_string(this->at(ix)); 
+    // }
+
+	template <>
+	inline const std::string Menu<std::string>::label(size_t ix, bool decorated) const {
+		return this->at(ix);
+	}
+
 
  }
 

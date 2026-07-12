@@ -136,6 +136,9 @@
 		/// @brief Get item count.
 		size_t size() const;
 
+		/// @brief Remove item from object.
+		Value & erase(const char *name);
+
 		/// @brief Append item to array.
 		/// @return The item.
 		Value & append(Value::Type type = Undefined);

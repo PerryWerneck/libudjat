@@ -21,7 +21,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
  #include <udjat/agent.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <udjat/tools/threadpool.h>
  #include <iostream>
  #include <sys/stat.h>

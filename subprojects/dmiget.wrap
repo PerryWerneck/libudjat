@@ -3,3 +3,6 @@ url = https://github.com/PerryWerneck/dmiget.git
 revision = HEAD
 depth = 1
 
+[provide]
+dmiget = static_library
+

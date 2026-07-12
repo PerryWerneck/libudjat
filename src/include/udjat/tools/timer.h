@@ -21,7 +21,8 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
+ #include <string>
 
  namespace Udjat {
 
@@ -56,14 +57,9 @@
 			return values.activation_time;
 		}
 
-		inline unsigned long interval() const noexcept {
-			return values.interval;
+		inline int interval() const noexcept {
+			return (int) values.interval;
 		}
-
-		/// @brief Get Timer value.
-		// inline unsigned long value() const noexcept {
-		//	return next;
-		//}
 
 		/// @brief Activate timer.
 		/// @return The timestamp, in getCurrentTime() units, for next activation (or '0' if timer was disabled).
@@ -83,35 +79,35 @@
 		/// @return true if the timer was enabled.
 		/// @retval true The timer was enabled.
 		/// @retval false The timer was already enabled.
-		bool enable(unsigned long milliseconds);
+		bool enable(int milliseconds);
 
 		/// @brief Disable timer
 		void disable();
 
 		/// @brief Create timer.
 		/// @param interval Timer value in milliseconds.
-		Timer(unsigned long milliseconds);
+		Timer(int milliseconds);
 
 		virtual ~Timer();
 
 		/// @brief Get current timer.
 		static unsigned long getCurrentTime();
 
-		/// @brief Set new interval timer from XML definition.
-		/// @param xml XML node with timer definition.
+		/// @brief Set new interval timer from properties.
+		/// @param properties The timer definitions.
 		/// @return true if the interval was changed.
-		bool set(const XML::Node &xml, const char *attrname = "timer-interval");
+		bool set(const Properties &props, const char *attrname = "timer-interval");
 
 		/// @brief Set new interval timer.
 		/// @param milliseconds The new timer value.
 		/// @return true if the interval was changed.
-		bool set(const unsigned long milliseconds);
+		bool set(const int milliseconds);
 
-		inline void reset(const unsigned long milliseconds) {
+		inline void reset(const int milliseconds) {
 			set(milliseconds);
 		}
 
-		inline Timer & operator = (const unsigned long milliseconds) {
+		inline Timer & operator = (const int milliseconds) {
 			set(milliseconds);
 			return *this;
 		}
@@ -123,7 +119,7 @@
 		/// @param call Method when timer expires, timer will be deleted if it returns 'false'.
 		/// @param interval	Timer interval on milliseconds.
 		/// @return Timer object.
-		static Timer * Factory(unsigned long interval, const std::function<bool()> call);
+		static Timer * Factory(int interval, const std::function<bool()> call);
 
 	};
 

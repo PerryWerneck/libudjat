@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/agent/abstract.h>
 
  namespace Udjat {
 
@@ -91,27 +92,45 @@
 
 				if(value.empty()) {
 
-					LogFactory(this->level())
-							<< this->name()
-							<< "\tStarts with state '"
-							<< this->current_state.selected->summary()
-							<< "' and level '"
-							<< this->level()
-							<< "'"
-							<< endl;
+					Logger::String {
+						"Starts with state '",
+						this->current_state.selected->summary(),
+						"' and level '",
+						std::to_string(this->level()),
+						"'"
+					}.info(this->name());
+
+					// LogFactory(this->level())
+					// 		<< this->name()
+					// 		<< "\tStarts with state '"
+					// 		<< this->current_state.selected->summary()
+					// 		<< "' and level '"
+					// 		<< this->level()
+					// 		<< "'"
+					// 		<< endl;
 
 				} else {
 
-					LogFactory(this->level())
-							<< this->name()
-							<< "\tStarts with value '"
-							<< value
-							<< "', state '"
-							<< this->current_state.selected->summary()
-							<< "' and level '"
-							<< this->level()
-							<< "'"
-							<< endl;
+					Logger::String {
+						"Starts with value '",
+						value,
+						"', state '",
+						this->current_state.selected->summary(),
+						"' and level '",
+						std::to_string(this->level()),
+						"'"
+					}.info(this->name());
+
+					// LogFactory(this->level())
+					// 		<< this->name()
+					// 		<< "\tStarts with value '"
+					// 		<< value
+					// 		<< "', state '"
+					// 		<< this->current_state.selected->summary()
+					// 		<< "' and level '"
+					// 		<< this->level()
+					// 		<< "'"
+					// 		<< endl;
 
 				}
 
