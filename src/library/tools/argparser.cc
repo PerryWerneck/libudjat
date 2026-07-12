@@ -34,14 +34,14 @@
  namespace Udjat {
 
 	struct ArgumentParser::Context {
-		ArgumentParser &parser;
+		const ArgumentParser &parser;
 		int ix = 0;
 		int argc;
 		char **argv;
 		bool exit = false;
 		const char *help;
 
-		Context(ArgumentParser &p, int c, char **v, const char *h) : parser{p}, argc{c}, argv{v}, help{h} {			
+		Context(const ArgumentParser &p, int c, char **v, const char *h) : parser{p}, argc{c}, argv{v}, help{h} {			
 		}
 
 		/// @brief 
