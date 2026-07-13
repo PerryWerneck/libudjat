@@ -31,6 +31,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/activatable.h>
+ #include <udjat/agent/level.h>
 
  namespace Udjat {
 

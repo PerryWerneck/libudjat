@@ -36,8 +36,15 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/intl.h>
+ #include <mutex>
 
-namespace Udjat {
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
+
+ using namespace std;
+
+ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
@@ -69,23 +76,23 @@ namespace Udjat {
 
 	}
 
-	Abstract::Agent::Agent(const XML::Node &node) : Object{node} {
+	Abstract::Agent::Agent(const Properties &props) : Object{props} {
 
-		update.timer = XML::AttributeFactory(node,"update-timer").as_uint((unsigned int) update.timer);
-		update.on_demand = XML::AttributeFactory(node,"update-on-demand").as_bool(update.timer == 0);
+		update.timer = props.get("update-timer",(unsigned int) update.timer);
+		update.on_demand = props.get("update-on-demand",(bool) (update.timer == 0));
 
-		time_t delay = XML::AttributeFactory(node,"delay-on-startup").as_uint((unsigned int) (update.timer ? 1 : 0));
+		time_t delay = props.get("delay-on-startup",(unsigned int) (update.timer ? 1 : 0));
 		if(delay)
 			update.next = time(nullptr) + delay;
 
 #ifndef _WIN32
 		{
 			// Check for signal based update.
-			const char *signame = XML::AttributeFactory(node,"update-signal").as_string();
-			if(*signame && strcasecmp(signame,"none")) {
+			auto signame = props["update-signal"];
+			if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
 
 				// Agent has signal based update.
-				update.sigdelay = (short) XML::AttributeFactory(node,"update-signal-delay").as_uint(0);
+				update.sigdelay = (short) props.get("update-signal-delay",(unsigned int) 0);
 
 				Udjat::Event &event = Udjat::Event::SignalHandler(this, signame, [this](){
 					sched_update(update.sigdelay);
@@ -93,13 +100,17 @@ namespace Udjat {
 				});
 
 				if(update.sigdelay) {
-					info()	<< "An agent update with a "
-							<< update.sigdelay
-							<< " second(s) delay will be triggered by signal '"
-							<< event.to_string() << "'"
-							<< endl;
+					Logger::String{
+						"An agent update with a ",
+						update.sigdelay,
+						" second(s) delay will be triggered by signal '",
+						event.to_string(),
+						"'"					
+					}.info(name());
 				} else {
-					info() << signame << " (" << event.to_string() << ") will trigger an agent update" << endl;
+					Logger::String {						
+						signame," (",event.to_string(),") will trigger an agent update"
+					}.info(name());
 				}
 
 			} else {
@@ -135,7 +146,7 @@ namespace Udjat {
 
 				if(agent->update.running) {
 
-					agent->warning() << "Updating since " << TimeStamp(agent->update.running) << ", waiting" << endl;
+					Logger::String{"Updating since ",TimeStamp(agent->update.running),", waiting"}.warning(agent->name());
 					Config::Value<size_t> delay{"agent-controller","delay-wait-on-stop",100};
 					Config::Value<size_t> max_wait("agent-controller","max-wait-on-stop",1000);
 
@@ -149,7 +160,7 @@ namespace Udjat {
 #endif // _WIN32
 					}
 					if(agent->update.running) {
-						agent->error() << "Still updating, giving up" << endl;
+						Logger::String{"Still updating, giving up"}.error(agent->name());
 					}
 				}
 
@@ -157,11 +168,11 @@ namespace Udjat {
 
 			} catch(const exception &e) {
 
-				agent->error() << "Error '" << e.what() << "' while stopping" << endl;
+				Logger::String{"Error '",e.what(),"' while stopping"}.error(agent->name());
 
 			} catch(...) {
 
-				agent->error() << "Unexpected error while stopping" << endl;
+				Logger::String{"Unexpected error while stopping"}.error(agent->name());
 
 			}
 
@@ -212,12 +223,9 @@ namespace Udjat {
 
 	}
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	std::shared_ptr<Abstract::State> Abstract::Agent::StateFactory(const XML::Node &node) {
+	std::shared_ptr<Abstract::State> Abstract::Agent::StateFactory(const Properties &) {
 		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow states");
 	}
-	#pragma GCC diagnostic pop
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::computeState() {
 
