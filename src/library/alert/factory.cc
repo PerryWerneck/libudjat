@@ -24,6 +24,7 @@
  #include <udjat/tools/container.h>
  #include <udjat/tools/string.h>
  #include <udjat/action.h>
+ #include <udjat/tools/properties.h>
  #include <stdexcept>
 
  #undef LOG_DOMAIN
@@ -47,17 +48,17 @@
 		Factories().remove(this);
 	}
 
-	bool Alert::Factory::probe(const XML::Node &node) const noexcept {
+	bool Alert::Factory::probe(const Properties &) const noexcept {
 		return false;
 	}
 
-	std::shared_ptr<Alert> Alert::Factory::AlertFactory(const Abstract::Object &parent, const XML::Node &node) const {
+	std::shared_ptr<Alert> Alert::Factory::AlertFactory(const Abstract::Object &, const Properties &) const {
 		return std::shared_ptr<Alert>();
 	}
 
-	std::shared_ptr<Alert> Alert::Factory::build(const Abstract::Object &parent, const XML::Node &node) {
+	std::shared_ptr<Alert> Alert::Factory::build(const Abstract::Object &parent, const Properties &props) {
 
-		String type{node,"type"};
+		auto type = props["type"];
 
 		if(type.empty()) {
 
@@ -66,8 +67,8 @@
 
 				try {
 
-					if(factory->probe(node)) {
-						auto alert = factory->AlertFactory(parent,node);
+					if(factory->probe(props)) {
+						auto alert = factory->AlertFactory(parent,props);
 						if(alert) {
 							return alert;
 						}
@@ -95,7 +96,7 @@
 
 					try {
 
-						std::shared_ptr<Alert> alert = factory->AlertFactory(parent,node);
+						std::shared_ptr<Alert> alert = factory->AlertFactory(parent,props);
 
 						if(alert) {
 							return alert;
@@ -116,7 +117,7 @@
 			}
 
 			if(!strcasecmp(type.c_str(),"file")) {
-				return make_shared<FileAlert>(node);
+				return make_shared<FileAlert>(props);
 			}
 
 		}
@@ -127,7 +128,7 @@
 			std::shared_ptr<Action> action;
 
 		public:
-			ActionAlert(const XML::Node &node) : Alert{node}, action{Action::Factory::build(node)} {
+			ActionAlert(const Properties &props) : Alert{props}, action{Action::Factory::build(props)} {
 			}
 
 			int emit() override {
@@ -136,7 +137,7 @@
 
 		};
 
-		return make_shared<ActionAlert>(node);
+		return make_shared<ActionAlert>(props);
 
 	}
 

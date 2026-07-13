@@ -25,16 +25,16 @@
  #include <sys/stat.h>
  #include <fstream>
  #include <udjat/tools/string.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/timestamp.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	FileAlert::FileAlert(const XML::Node &node) : Alert{node},
+	FileAlert::FileAlert(const Properties &props) : Alert{props},
 
-		filename{String{node,"filename"}.as_quark()}, maxage{node.attribute("maxage").as_uint(86400)}, 
+		filename{props["filename"].as_quark()}, maxage{props.get("maxage",86400)}, 
 	
 		payload{Activatable::payload(node)} {
 

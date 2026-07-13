@@ -26,11 +26,12 @@
  #include <udjat/alert.h>
  #include <udjat/tools/logger.h>
 
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/container.h>
  #include <udjat/tools/timer.h>
+ #include <udjat/tools/timestamp.h>
  #include <functional>
 
  namespace Udjat {
@@ -130,27 +131,27 @@
 		Controller::getInstance().remove(this);
 	}
 
-	Alert::Alert(const XML::Node &node) : Alert(String{node,"name","unnamed"}.as_quark()) {
+	Alert::Alert(const Properties &props) : Alert(props.get("name","unnamed").as_quark()) {
 
 		// Seconds to wait before first activation.
-		timers.start = XML::AttributeFactory(node,"delay-before-start").as_uint(timers.start);
+		timers.start = props.get("delay-before-start",timers.start);
 
 		// Seconds to wait on every try.
-		timers.interval = XML::AttributeFactory(node,"delay-before-retry").as_uint(timers.interval);
+		timers.interval = props.get("delay-before-retry",timers.interval);
 
 		// How many success emissions after deactivation or sleep?
-		retry.min = XML::AttributeFactory(node,"min-retries").as_uint(retry.min);
+		retry.min = props.get("min-retries",retry.min);
 
 		// How many retries (success+fails) after deactivation or sleep?
-		retry.max = XML::AttributeFactory(node,"max-retries").as_uint(retry.max);
+		retry.max = props.get("max-retries",retry.max);
 
 		// How many seconds to restart when failed?
-		restart.failed = XML::AttributeFactory(node,"restart-when-failed").as_uint(restart.failed);
+		restart.failed = props.get("restart-when-failed",restart.failed);
 
 		// How many seconds to restart when suceeded?
-		restart.success = XML::AttributeFactory(node,"restart-when-succeeded").as_uint(restart.success);
+		restart.success = props.get("restart-when-succeeded",restart.success);
 
-		if(XML::AttributeFactory(node,"enabled").as_bool(false)) {
+		if(props.get("enabled",false)) {
 			activate();
 		}
 

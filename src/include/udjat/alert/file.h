@@ -51,7 +51,7 @@
 		FileAlert(const char *name, const char *f, const char *p = "") : Alert{name}, filename{f}, payload{p} {
 		}
 
-		FileAlert(const XML::Node &node);
+		FileAlert(const Properties &props);
 
 		virtual ~FileAlert();
 
