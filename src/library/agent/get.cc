@@ -26,8 +26,10 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/object.h>
  #include <list>
+ #include <stdexcept>
+ #include <memory>
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+ using namespace std;
 
  namespace Udjat {
 

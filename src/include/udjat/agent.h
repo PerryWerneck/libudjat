@@ -27,6 +27,7 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/converters.h>
  #include <udjat/tools/schema.h>
+ #include <memory>
 
  namespace Udjat {
 

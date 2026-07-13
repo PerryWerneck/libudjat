@@ -23,6 +23,7 @@
  #include <udjat/tools/argumentparser.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/timestamp.h>
  
  using namespace std;
 

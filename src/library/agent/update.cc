@@ -81,7 +81,7 @@
 
 			// Has timer, use it
 			update.next = (update.last + update.timer);
-			debug("Next update for '",name(),"' set to ",TimeStamp{update.next});
+			debug("Next update for '",name(),"' set to ",TimeStamp{update.next}.to_string().c_str());
 
 		}
 

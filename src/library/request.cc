@@ -42,7 +42,7 @@
 	Request::~Request() {
 	}
 
-	bool Request::pop(const char *prefix, const char * &path) {
+	bool Request::pop(const char *prefix, const char * &path) noexcept {
 
 		if(path[0] != '/' || path[1] == 0) {
 			debug("Rejecting invalid or empty path");
@@ -204,14 +204,6 @@
 	Request & Request::pop(unsigned int &value) {
 		value = (unsigned int) stoi(pop());
 		return *this;
-	}
-
-	const char * Request::c_str() const noexcept {
-		if(reqpath && *reqpath) {
-			return reqpath;
-		}
-		Logger::String{"The request path is empty"}.trace();
-		return "";
 	}
 
  }

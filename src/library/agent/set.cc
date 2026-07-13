@@ -70,7 +70,7 @@
 					}
 				});
 
-				debug("Next agent update will be ",TimeStamp(next)," (",(next-now)," seconds)");
+				debug("Next agent update will be ",TimeStamp(next).to_string().c_str()," (",(next-now)," seconds)");
 
 				if(now > next) {
 					Controller::getInstance().reset( (now-next) * 1000);
