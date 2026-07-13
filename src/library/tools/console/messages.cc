@@ -122,30 +122,44 @@ namespace Udjat {
 		return true;
 	}
 
-	UDJAT_API void Console::status(Logger::Level level, const char *domain, const char *message) noexcept {
+	UDJAT_API void Console::status(Logger::Level level, int column, const char *title, const char *subtitle) noexcept {
 
 		if(!Console::decorated()) {
-			Logger::String{message}.write(level,domain);
+			Logger::String{title}.write(level,"status");
 			return;
 		}
 
 		bool state = Logger::console();
 		Logger::console(false);
-		Logger::String{message}.write(level, domain );
+		Logger::String{title}.write(level, "status" );
 		Logger::console(state);
 
 		// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 		Console::write(String{
 			"\r",
 			ClearEOL,
+			"\x1B[",column,"G",
 			color(level),
 			icon(level),
-			"\x1B[5G",
+			"\x1B[",(column+4),"G",
 			SetBold,
-			message,
+			title,
 			Reset,
 			"\n"
 		}.c_str());
+
+		if(subtitle) {
+			Console::write(String{
+				"\r",
+				ClearEOL,
+				"\x1B[",column+4,"G",
+				color(level),
+				SetFaint,
+				subtitle,
+				Reset,
+				"\n"
+			}.c_str());
+		}
 
 
 	}

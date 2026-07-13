@@ -654,12 +654,12 @@
 
 					cout << "\n\n" << flush;
 					
-					Console::status(Logger::Notice,"test","Notification message");
-					Console::status(Logger::Info,"test","Successs message");
-					Console::status(Logger::Warning,"test","Warning message");
-					Console::status(Logger::Error,"test","Error message");
-					Console::status(Logger::Trace,"test","Trace message");
-					Console::status(Logger::Debug,"test","Debug message");
+					Console::status(Logger::Notice,"Notification message");
+					Console::status(Logger::Info,"Successs message");
+					Console::status(Logger::Warning,"Warning message");
+					Console::status(Logger::Error,"Error message");
+					Console::status(Logger::Trace,"Trace message");
+					Console::status(Logger::Debug,"Debug message","This is a subtitle");
 
 					cout << "\n\n" << flush;
 

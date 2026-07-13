@@ -43,7 +43,11 @@
 		UDJAT_API bool decorated() noexcept;
 
 		/// @brief Show a status message
-		UDJAT_API void status(Logger::Level, const char *domain, const char *message) noexcept;
+		UDJAT_API void status(Logger::Level level, int column, const char *title, const char *subtitle = nullptr) noexcept;
+		
+		inline void status(Logger::Level level, const char *title, const char *subtitle = nullptr) noexcept {
+			status(level,0,title,subtitle);
+		}
 
 		/// @brief Get icon based on logger level
 		UDJAT_API const char * icon(Logger::Level level);
