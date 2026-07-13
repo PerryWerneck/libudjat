@@ -22,7 +22,7 @@
  #include <udjat/defs.h>
  #include <memory>
  #include <udjat/tools/object.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/activatable.h>
 
  namespace Udjat {
@@ -94,18 +94,18 @@
 			/// @brief Verify if this factory can handle the definition.
 			/// @param node XML definition for the new alert.
 			/// @return true if this factory can handle the alert.
-			virtual bool probe(const XML::Node &node) const noexcept;
+			virtual bool probe(const Properties &props) const noexcept;
 
 			/// @brief Create an agent from XML node.
 			/// @param node XML definition for the new alert.
-			virtual std::shared_ptr<Alert> AlertFactory(const Abstract::Object &parent, const XML::Node &node) const;
+			virtual std::shared_ptr<Alert> AlertFactory(const Abstract::Object &parent, const Properties &props) const;
 
-			static std::shared_ptr<Alert> build(const Abstract::Object &parent, const XML::Node &node);
+			static std::shared_ptr<Alert> build(const Abstract::Object &parent, const Properties &props);
 
 		};
 
 		Alert(const char *name);
-		Alert(const XML::Node &node);
+		Alert(const Properties &props);
 
 		virtual ~Alert();
 

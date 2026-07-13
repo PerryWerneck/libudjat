@@ -27,19 +27,13 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
  #include <udjat/agent/state.h>
- #include <cstring>
- #include <udjat/tools/xml.h>
- #include <udjat/tools/expander.h>
+ #include <udjat/agent/level.h>
  #include <udjat/alert.h>
- #include <udjat/agent.h>
- #include <udjat/tools/logger.h>
- #include <udjat/tools/intl.h>
  #include <udjat/action.h>
- #include <udjat/tools/activatable.h>
- #include <iostream>
- #include <udjat/tools/timestamp.h>
- #include <udjat/tools/string.h>
+ #include <udjat/tools/properties.h>
+ #include <udjat/tools/intl.h>
 
  using namespace std;
 
@@ -87,38 +81,38 @@ namespace Udjat {
 
 	}
 
-	Abstract::State::State(const XML::Node &node) : Object{node} {
+	Abstract::State::State(const Properties &props) : Object{props} {
 
 		if(!(Object::properties.icon && *Object::properties.icon)) {
 			Object::properties.icon = IconNameFactory(properties.level);
 		}
 
-		properties.level = LevelFactory(node);
-		properties.body = String{node,"body",properties.body}.as_quark();
-		options.forward = node.attribute("forward-to-children").as_bool(options.forward);
+		properties.level = LevelFactory(props);
+		properties.body = props.get("body",properties.body).as_quark();
+		options.forward = props.get("forward-to-children",options.forward);
 
-		if(node.attribute("alert").as_bool(false) || node.attribute("alert-type")) {
-			listeners.push_back(Alert::Factory::build(*this, node));
-		} else if(node.attribute("action-type")) {
-			listeners.push_back(Action::Factory::build(node));
+		if(props.get("alert",false) || props.contains("alert-type")) {
+			listeners.push_back(Alert::Factory::build(*this, props));
+		} else if(props.contains("alert-type")) {
+			listeners.push_back(Action::Factory::build(props));
 		}
 
 	}
 
-	bool Abstract::State::append_child(const XML::Node &node) {
+	bool Abstract::State::append_child(const Properties &props) {
 
-		if(Udjat::Object::append_child(node)) {
+		if(super::append_child(props)) {
 			return true; // Handled by object.
 		}
 
-		if(strcasecmp(node.name(),"alert") == 0) {
-			listeners.push_back(Alert::Factory::build(*this,node));
+		if(props == "alert") {
+			listeners.push_back(Alert::Factory::build(*this,props));
 			return true;
 		}
 
 		for(const char *nodename : { "action", "script"} ) {
-			if(strcasecmp(node.name(),nodename) == 0) {
-				listeners.push_back(Action::Factory::build(node));
+			if(props == nodename) {
+				listeners.push_back(Action::Factory::build(props));
 				return true;
 			}	
 		}
@@ -160,11 +154,20 @@ namespace Udjat {
 		return "";
 	}
 
-	Value & Abstract::State::getProperties(Value &value) const {
-		Object::getProperties(value);
+	Value & Abstract::State::get_properties(Value &value) const {
+		super::get_properties(value);
 		value["body"] = properties.body;
 		value["level"] = std::to_string(properties.level);
 		return value;
+	}
+
+	bool Abstract::State::output_schema(const char *path, Schema &schema) const noexcept {
+		super::output_schema(path,schema);
+		schema.append(
+			Schema::Item{ "body",	Udjat::Value::String },
+			Schema::Item{ "level",	Udjat::Value::String }
+		);
+		return true;
 	}
 
 	void Abstract::State::activate(const Abstract::Object &object) noexcept {
@@ -181,9 +184,9 @@ namespace Udjat {
 		}
 	}
 
-	bool Abstract::State::getProperty(const char *key, std::string &value) const {
+	bool Abstract::State::get_property(const char *key, std::string &value) const {
 
-		if(Object::getProperty(key,value)) {
+		if(super::get_property(key,value)) {
 			return true;
 		}
 
@@ -203,7 +206,7 @@ namespace Udjat {
 		}
 
 		for(const auto &agent : agents) {
-			if(agent->getProperty(key,value)) {
+			if(agent->get_property(key,value)) {
 				return true;
 			}
 		}

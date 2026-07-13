@@ -20,16 +20,13 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/parse.h>
  #include <udjat/tools/object.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/activatable.h>
  #include <udjat/agent/level.h>
  #include <udjat/agent/state.h>
- #include <udjat/tools/properties.h>
- #include <mutex>
- #include <list>
- #include <cstdint> 
+ #include <udjat/tools/value.h>
  #include <udjat/tools/converters.h>
+ #include <udjat/tools/schema.h>
 
  namespace Udjat {
 
@@ -54,13 +51,11 @@
 				/// @brief Probe if this factory can be used with the properties.
 				/// @param props The properties.
 				/// @return true if the factory recognizes the properties.
-				virtual bool probe(const Properties &props) const noexcept;
+				bool probe(const Properties &props) const noexcept;
 
 				/// @brief Create an agent from properties.
 				/// @param props Properties for the new agent.
 				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Properties &props) const = 0;
-
-				static std::shared_ptr<Abstract::Agent> build(const Properties &props);
 
 			};
 
@@ -164,9 +159,9 @@
 
 			/// @brief Notify state change.
 			/// @param state New agent state.
-			/// @param activate if true the new state will be activated.
+			/// @param activate true if the new state will be activated.
 			/// @param message Message for logfile.
-			/// @return true if the state was really changed.
+			/// @return true if the state was changed.
 			bool onStateChange(std::shared_ptr<State> state, bool activate, const char *message);
 
 		protected:
@@ -206,10 +201,6 @@
 			/// @brief Set 'on-demand' option.
 			void on_demand(bool opt = true) noexcept;
 
-			inline void setOndemand() noexcept {
-				on_demand(true);
-			}
-
 			/// @brief Set update timer interval.
 			/// @param value New timer interval (0 disable it).
 			inline time_t timer(time_t value) noexcept {
@@ -238,23 +229,22 @@
 			Agent(const char *name = "", const char *label = "", const char *summary = "");
 			Agent(const Properties &props);
 
-			virtual ~Agent();
+			~Agent() override;
 
-			/// @brief Append child object from XML definition.
+			/// @brief Append child object from properties.
 			/// @details This method is called by parse_children() for every child.
 			/// @param props The children properties.
 			/// @return true if the properties were parsed and should be ignored by the caller.
 			bool append_child(const Udjat::Properties &props) override;
-
-			inline time_t parse(const char *path) {
-				return Udjat::Object::parse(path);
-			}
 
 			/// @brief Insert object.
 			bool push_back(std::shared_ptr<Abstract::Object> object) override;
 
 			/// @brief Insert object with attributes.
 			bool push_back(const Udjat::Properties &props, std::shared_ptr<Abstract::Object> object) override;
+
+			/// @brief Remove object.
+			void remove(std::shared_ptr<Abstract::Object> object);
 
 			/// @brief Insert listener.
 			void push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
@@ -267,9 +257,6 @@
 
 			/// @brief Factory for the default root agent.
 			static std::shared_ptr<Agent> RootFactory();
-
-			/// @brief Remove object.
-			void remove(std::shared_ptr<Abstract::Object> object);
 
 			/// @brief Get root agent.
 			static std::shared_ptr<Abstract::Agent> root();
@@ -336,7 +323,13 @@
 			/// @param value Object for child properties.
 			/// @retval true if the child was found.
 			/// @retval false if the child was not found.
-			virtual bool get_properties(const char *path, Value &value) const;
+			bool get_properties(const char *path, Value &value) const;
+
+			/// @brief Retrieves the schema definition for the agent outputs.
+			/// @param path The request path for schema.
+			/// @param[out] schema Object populated with the output schema details.
+			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
+			bool output_schema(const char *path, Schema &schema) const noexcept override;
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
@@ -540,6 +533,14 @@
 			return state;
 		}
 
+		bool output_schema(const char *path, Schema &schema) const noexcept override {
+			Abstract::Agent::output_schema(path,schema);
+			schema.append(
+				Schema::Item{ "value",	Udjat::Value::TypeFactory<T>() }
+			);
+			return true;
+		}
+
 		std::string to_string() const noexcept override {
 			return std::to_string(value);
 		}
@@ -625,6 +626,14 @@
 			return state;
 		}
 
+		bool output_schema(const char *path, Schema &schema) const noexcept override {
+			Abstract::Agent::output_schema(path,schema);
+			schema.append(
+				Schema::Item{ "value",	Udjat::Value::String }
+			);
+			return true;
+		}
+
 		std::string to_string() const noexcept override {
 			return value;
 		}
@@ -687,6 +696,15 @@
 			auto state =std::make_shared<State<bool>>(props);
 			states.push_back(state);
 			return state;
+		}
+
+		bool output_schema(const char *path, Schema &schema) const noexcept override {
+			Abstract::Agent::output_schema(path,schema);
+			schema.append(
+				Schema::Item{ "value",	Udjat::Value::Boolean }
+			);
+
+			return true;
 		}
 
 		std::string to_string() const noexcept override {

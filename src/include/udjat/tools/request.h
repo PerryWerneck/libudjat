@@ -20,12 +20,9 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/http/method.h>
+ #include <udjat/authentication.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/value.h>
- #include <udjat/tools/timestamp.h>
- #include <udjat/tools/string.h>
- #include <udjat/authentication.h>
 
  namespace Udjat {
 
@@ -39,11 +36,6 @@
 		/// @brief The processed request path.
 		const char *reqpath = "";
 
-		/// @brief Looks whether the request path begins with prefix.
-		/// @param prefix to check.
-		/// @return true if the request path begins with the argument.
-		bool has_prefix(const char *prefix) const noexcept;
-
 	protected:
 
 		/// @brief Set request path.
@@ -52,7 +44,7 @@
 			argptr = reqpath = path;
 		}
 
-		/// @brief The requested API version.
+		/// @brief The requested API version, 0 if this is not an API call.
 		unsigned int apiver = 0;
 
 		/// @brief Authentication for this request.
@@ -74,21 +66,22 @@
 			return apiver;
 		}
 
+		inline bool apicall() const noexcept {
+			return apiver != 0;
+		}
+
 		/// @brief Check and extract element from path.
 		/// @param key The prefix to check and extract.
 		/// @param path The current path.
 		/// @return true if the prefix was found and extracted.
-		static bool pop(const char *key, const char * &path);
+		static bool pop(const char *key, const char * &path) noexcept;
 
-		/// @brief Extract API info from path.
-		/// @param path The reference path.
-		/// @param apiver The apiver to update (non zero if path begins with /api/)
-		/// @return Path without the API prefix.
-		static const char * pop(const char *path, unsigned int &apiver);
-
-		/// @brief Test if the client is asking for an HTML formatted request.
-		/// @return true if it's an HTML formatted.
-		virtual bool html() const noexcept;
+		/// @brief Test and extract request path.
+		/// @param key The key to check.
+		/// @return true if the request path was equal and it was removed, request is now at next element.
+		inline bool pop(const char *key) noexcept {
+			return pop(key,argptr);
+		}
 
 		/// @brief Get request header.
 		/// @param name Name of the header.
@@ -106,22 +99,63 @@
 			return !(reqpath && *reqpath);
 		}
 
+		/// @brief Get the user authentication level.
+		/// @return The authentication level for current user.
+		/// @retval Authentication::None if not authenticated.
+		Authentication::Level auth_level() const noexcept;
+
+		/// @brief Test if the request can handle the path.
+		/// @param prefix The path being searched.
+		/// @return true if the request path starts with prefix.
+		bool operator ==(const char *prefix) const noexcept;
+
+#if __cplusplus >= 202002L
+
+		int operator <=>(const Authentication::Level auth) const noexcept {
+			return auth_level() - auth;
+		}
+
+#else
+
+		inline bool operator ==(const Authentication::Level auth) const noexcept {
+			return auth_level() == auth;
+		}
+
+		inline bool operator>(const Authentication::Level auth) const noexcept {
+			return auth_level() > auth;
+		}
+
+		inline bool operator<(const Authentication::Level auth) const noexcept {
+			return auth_level() < auth;
+		}
+
+		inline bool operator>=(const Authentication::Level auth) const noexcept {
+			return auth_level() >= auth;
+		}
+
+		inline bool operator<=(const Authentication::Level auth) const noexcept {
+			return auth_level() <= auth;
+		}
+
+#endif
+
 		/// @brief Check the required authentication level.
 		/// @param auth The required authentication level.
 		/// @return true if this request is valid for the supplied level.
-		bool allow(const Authentication::Level auth) const;
+		inline bool allow(const Authentication::Level auth) const noexcept {
+			return *this >= auth;
+		}
 
 		/// @brief Get authentication token.
 		inline std::shared_ptr<Authentication> authentication() const noexcept {
 			return auth;
 		};
 
-
 		/// @brief Get the username for the request.
 		/// @return The username if authenticated, empty string if not.
 		const char *username() const;
 
-		bool getProperty(const char *key, std::string &value) const override;
+		bool get_property(const char *key, std::string &value) const override;
 
 		/// @brief Check the cache state.
 		/// @param timestamp Current response timestamp.
@@ -143,7 +177,9 @@
 		}
 
 		/// @brief Get original request path.
-		const char *c_str() const noexcept;
+		inline const char *c_str() const noexcept {
+			return reqpath;
+		}
 
 		inline operator const char *() const noexcept {
 			return c_str();
@@ -154,24 +190,12 @@
 		/// @return The path remaining after 'pop()' calls.
 		const char * path() const noexcept;
 
-		/// @brief Test if the request can handle the path.
-		/// @param prefix The path being searched.
-		/// @return true if the request path starts with prefix.
-		inline bool operator==(const char *prefix) const noexcept {
-			return has_prefix(prefix);
-		}
-
 		/// @brief pop() first element from path, select it from list.
 		/// @return Index of the selected action or negative if not found.
 		/// @retval -ENODATA The request is empty.
 		/// @retval -ENOENT The action is not in the list.
 		/// @see pop()
 		int select(const char *value, ...) noexcept __attribute__ ((sentinel));
-
-		/// @brief Test and extract request path.
-		/// @param path The path to check.
-		/// @return true if the request path was equal and it was removed, request is now at next parameter.
-		bool pop(const char *path) noexcept;
 
 		/// @brief Pop one element from path.
 		/// @return The first element from current path.

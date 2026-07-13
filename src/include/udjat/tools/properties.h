@@ -67,6 +67,16 @@
 		Properties() = default;
 		virtual ~Properties() = default;
 
+#if __cplusplus >= 202002L
+			inline auto operator <=>(const char *name) const noexcept {
+				return strcasecmp(name,node_name());
+			}
+#else
+			inline bool operator==(const char *name) const noexcept {
+				return strcasecmp(name,node_name()) == 0;
+			}
+#endif
+
 		/// @brief Parse properties, build objects.
 		static bool parse(const Properties &props);
 

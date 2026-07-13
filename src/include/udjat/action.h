@@ -24,7 +24,7 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
@@ -69,16 +69,16 @@
 			/// @brief Verify if this factory can handle the definition.
 			/// @param node XML definition for the new alert.
 			/// @return true if this factory can handle the alert.
-			virtual bool probe(const XML::Node &node) const noexcept;
+			virtual bool probe(const Properties &props) const noexcept;
 
 			/// @brief Build an action from XML node.
 			/// @param node XML definition for the new action.
-			virtual std::shared_ptr<Action> ActionFactory(const XML::Node &node) const = 0;
+			virtual std::shared_ptr<Action> ActionFactory(const Properties &props) const = 0;
 
 			/// @brief Try to build an action from XML definition.
 			/// @param node Action definition.
 			/// @return Pointer to new action.
-			static std::shared_ptr<Action> build(const XML::Node &node);
+			static std::shared_ptr<Action> build(const Properties &props);
 
 			static const std::list<Action::Factory *>::const_iterator begin();
 			static const std::list<Action::Factory *>::const_iterator end();
@@ -90,7 +90,7 @@
 		constexpr Action(const char *n, const char *t = "") : Activatable{n}, title{t} {
 		} 
 
-		Action(const XML::Node &node);
+		Action(const Properties &props);
 		virtual ~Action();
 
 		/// @brief Retrieves the schema definition for the interface inputs.

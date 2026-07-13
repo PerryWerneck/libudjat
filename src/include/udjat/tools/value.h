@@ -31,6 +31,7 @@
  #include <cstdint>
  #include <vector>
  #include <list>
+ #include <string>
 
  namespace Udjat {
 
@@ -58,6 +59,11 @@
 
 			Report		= 'R',			///< @brief The value contains a report (internal use only).
 		};
+
+		template <typename T>
+		constexpr Type TypeFactory() {
+			return Type::Undefined;
+		}
 
 	private:
 
@@ -279,7 +285,42 @@
 
 	};
 
- };
+	template <>
+	constexpr Value::Type Value::TypeFactory<std::string>() {
+		return Type::String;
+	}
+
+	template <>
+	constexpr Value::Type Value::TypeFactory<const char *>() {
+		return Type::String;
+	}
+
+	template <>
+	constexpr Value::Type Value::TypeFactory<TimeStamp>() {
+		return Type::Timestamp;
+	}
+
+	template <>
+	constexpr Value::Type Value::TypeFactory<int>() {
+		return Type::Signed;
+	}
+
+	template <>
+	constexpr Value::Type Value::TypeFactory<unsigned int>() {
+		return Type::Unsigned;
+	}
+
+	template <>
+	constexpr Value::Type Value::TypeFactory<float>() {
+		return Type::Real;
+	}
+
+	template <>
+	constexpr Value::Type Value::TypeFactory<bool>() {
+		return Type::Boolean;
+	}
+
+ }
 
  namespace std {
 

@@ -28,29 +28,12 @@
 
  #pragma once
 
- #include <string>
- #include <udjat/tools/xml.h>
- #include <memory>
- #include <vector>
- #include <mutex>
- #include <functional>
- #include <iostream>
  #include <udjat/defs.h>
- #include <udjat/tools/quark.h>
- #include <udjat/tools/xml.h>
- #include <udjat/tools/activatable.h>
- #include <udjat/tools/value.h>
  #include <udjat/tools/object.h>
- #include <udjat/tools/parse.h>
- #include <cstring>
- #include <ostream>
- #include <udjat/agent/level.h>
- #include <udjat/tools/converters.h>
+ #include <udjat/agent.h>
+ #include <udjat/tools/activatable.h>
 
  namespace Udjat {
-
-	/// @brief Get OStream from level.
-	UDJAT_API std::ostream & LogFactory(Udjat::Level level);
 
 	namespace Abstract {
 
@@ -72,7 +55,7 @@
 			/// @brief State alerts.
 			std::vector<std::shared_ptr<Udjat::Activatable>> listeners;
 
-			struct Properties {
+			struct {
 
 				/// @brief State level.
 				Level level = unimportant;
@@ -97,14 +80,14 @@
 			/// @details This method is called by parse_children() for every child node.
 			/// @param node The XML node with the child definitions.
 			/// @return true if the node was parsed and should be ignored by the caller.
-			bool append_child(const XML::Node &node) override;
+			bool append_child(const Properties &props) override;
 
 			/// @brief Create state using the strings without conversion.
 			State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
 			State(const char *name, const char *level, const char *summary = "", const char *body = "");
 
 			/// @brief Create state from xml node
-			State(const XML::Node &node);
+			State(const Properties &props);
 
 			/// @brief Get state values as string.
 			virtual std::string value() const;
@@ -184,16 +167,21 @@
 			/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
 			const char * icon() const noexcept override;
 
+			/// @brief Retrieves the schema definition for the object outputs.
+			/// @param[out] schema Object populated with the output schema details.
+			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
+			bool output_schema(const char *path, Schema &schema) const noexcept override;
+
 			/// @brief Get property.
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property is valid.
-			bool getProperty(const char *key, std::string &value) const override;
+			bool get_property(const char *key, std::string &value) const override;
 
 			/// @brief Get the state properties.
 			/// @brief Value to receive the properties.
 			/// @return Pointer to value.
-			Value & getProperties(Value &value) const override;
+			Value & get_properties(Value &value) const override;
 
 			/// @brief Create an state from exception.
 			/// @param except The exception.
@@ -227,12 +215,12 @@
 		State(const char *name, const T value, const Level level, const char *summary = "", const char *body = "")
 				: Abstract::State{name,level,summary,body}, from{value},to{value} { }
 
-		State(const XML::Node &node, const T v = (T) 0) : Abstract::State{node}, from{from_xml<T>(node, v)}, to{from_xml<T>(node, v)} {
-			from = from_xml<T>(node,from,"from");
-			to = from_xml<T>(node,to,"to");
+		State(const Properties &props, const T v = (T) 0) : Abstract::State{props}, from{props.get("value",v)}, to{props.get("value",v)} {
+			from = props.get("from",from);
+			to = props.get("to",to);
 		}
 
-		State(const XML::Node &node, T from_value, T to_value) : Abstract::State{node}, from{from_xml<T>(node, from_value)}, to{from_xml<T>(node, to_value)} {
+		State(const Properties &props, T from_value, T to_value) : Abstract::State{props}, from{from_value}, to{to_value} {
 		}
 
 		inline bool compare(T value) {
@@ -274,7 +262,7 @@
 		typedef State<std::string> super;
 
 	public:
-		State(const XML::Node &node) : Abstract::State(node),std::string(Udjat::Attribute(node,"value",false).as_string()) {
+		State(const Properties &props) : Abstract::State(props),std::string(props["value"].c_str()) {
 		}
 
 		bool compare(const std::string &value) {
@@ -321,7 +309,7 @@
 		bool state_value;
 
 	public:
-		State(const XML::Node &node) : Abstract::State(node),state_value(Udjat::Attribute(node,"value",false).as_bool()) {
+		State(const Properties &props) : Abstract::State(props),state_value(props.get("value",false)) {
 		}
 
 		bool compare(const bool value) {
