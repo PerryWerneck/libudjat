@@ -89,9 +89,9 @@
 	/// @brief Called on subprocess abnormal exit.
 	void SubProcess::onSignal(int sig) {
 #ifdef _WIN32
-		error() << "'" << command << "' finishes with signal '" << sig << "'" << endl;
+		Logger::String{"'",command,"' finishes with signal '",sig,"'"}.error(name());
 #else
-		error() << "'" << command << "' finishes with signal '" << strsignal(sig) << "' (" << sig << ")" << endl;
+		Logger::String{"'",command,"' finishes with signal '",strsignal(sig),"' (",sig,")"}.error(name());
 #endif // _WIN32
 	}
 

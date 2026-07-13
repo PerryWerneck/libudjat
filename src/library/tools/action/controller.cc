@@ -101,18 +101,18 @@
 
 	}
 
-	std::shared_ptr<Abstract::Object> Action::Controller::ObjectFactory(const XML::Node &node) const {
+	std::shared_ptr<Abstract::Object> Action::Controller::ObjectFactory(const Udjat::Properties &props) const {
 
 		// Get action type
-		auto type = TypeFactory(node);
+		auto type = TypeFactory(props);
 
 		if(type.empty()) {
 
 			// No type, use probe.
 			for(const auto factory : *this) {
 				
-				if(factory->probe(node)) {
-					auto action = factory->ActionFactory(node);
+				if(factory->probe(props)) {
+					auto action = factory->ActionFactory(props);
 					if(action) {
 						return action;
 					}
@@ -126,7 +126,7 @@
 			for(const auto factory : *this) {
 				
 				if(*factory == type.c_str()) {
-					auto action = factory->ActionFactory(node);
+					auto action = factory->ActionFactory(props);
 					if(action) {
 						return action;
 					}
@@ -149,12 +149,12 @@
 					const MimeType mimetype;
 
 				public:
-					URLAction(const XML::Node &node) 
-						: 	Action{node}, 
-							url{String{node,"url"}.as_quark()},
-							method{HTTP::MethodFactory(node,"get")},
-							text{payload(node)}, 
-							mimetype{MimeTypeFactory(String{node,"payload-format","json"}.c_str())} {
+					URLAction(const Udjat::Properties &props) 
+						: 	Action{props}, 
+							url{props["url"].as_quark()},
+							method{HTTP::MethodFactory(props,"get")},
+							text{payload(props)}, 
+							mimetype{MimeTypeFactory(props.get("payload-format","json").c_str())} {
 
 						if(!url && *url) {
 							throw runtime_error("Required attribute 'url' is missing or empty");
@@ -189,14 +189,14 @@
 
 				};
 
-				return make_shared<URLAction>(node);
+				return make_shared<URLAction>(props);
 			}
 
 		case 1: // shell
 		case 2: // shell-script
 			{
 				// Script action.
-				return make_shared<Script>(node);
+				return make_shared<Script>(props);
 			}
 
 		case 3: // File
@@ -210,12 +210,12 @@
 					const time_t maxage;
 
 				public:
-					FileAction(const XML::Node &node) 
-						: 	Action{node}, 
-							filename{String{node,"filename"}.as_quark()},
-							text{payload(node)}, 
-							mimetype{MimeTypeFactory(String{node,"output-format","text"}.c_str())},
-							maxage{(time_t) TimeStamp{node,"max-age",(time_t) 0}}  {
+					FileAction(const Udjat::Properties &props) 
+						: 	Action{props}, 
+							filename{props["filename"].as_quark()},
+							text{payload(props)}, 
+							mimetype{MimeTypeFactory(props.get("output-format","text").c_str())},
+							maxage{(time_t) TimeStamp{props,"max-age",(time_t) 0}}  {
 
 						if(!(filename && *filename)) {
 							throw runtime_error("Required attribute 'filename' is missing or empty");
@@ -262,7 +262,7 @@
 
 				};
 
-				return make_shared<FileAction>(node);
+				return make_shared<FileAction>(props);
 
 			}
 
@@ -274,17 +274,19 @@
 					std::vector<std::shared_ptr<Action>> actions;
 
 				public:
-					ActionContainer(const Controller *cntrl, const XML::Node &node) : Action{node} {
+					ActionContainer(const Controller *cntrl, const Properties &props) : Action{props} {
 						
 						// Parse standard children
-						for(auto action = node.child("action"); action; action = action.next_sibling("action")) {
+						props.for_each_child("action",[this,cntrl](const Properties &action){
 							push_back(cntrl->ObjectFactory(action));
-						}
+							return false;
+						});
 
 						// Legacy support for <script> children
-						for(auto action = node.child("script"); action; action = action.next_sibling("script")) {
+						props.for_each_child("script",[this,cntrl](const Properties &action){
 							push_back(cntrl->ObjectFactory(action));
-						}
+							return false;
+						});
 					}
 
 					bool push_back(std::shared_ptr<Abstract::Object> child) override {
@@ -318,14 +320,14 @@
 
 				};
 
-				return make_shared<ActionContainer>(this,node);
+				return make_shared<ActionContainer>(this,props);
 			}
 
 		default:
 #ifdef BUILD_LEGACY
 			throw runtime_error(Logger::String{"Unexpected or invalid action type '",type.c_str(),"'"});
 #else	
-			throw runtime_error(Logger::String{"Unexpected or invalid action type '",type.c_str(),"' at ",node.path()});
+			throw runtime_error(Logger::String{"Unexpected or invalid action type '",type.c_str(),"' at ", props.path()});
 #endif
 		}
 

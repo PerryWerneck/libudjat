@@ -96,9 +96,9 @@
 		return false;
 	}
 
-	std::shared_ptr<Action> Action::Factory::build(const XML::Node &node) {		
+	std::shared_ptr<Action> Action::Factory::build(const Properties &props) {		
 		// Abstract::Object object;
-		return std::dynamic_pointer_cast<Action>(Controller::getInstance().ObjectFactory(node));
+		return std::dynamic_pointer_cast<Action>(Controller::getInstance().ObjectFactory(props));
 	}
 
  }

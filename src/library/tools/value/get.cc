@@ -411,7 +411,7 @@
 		throw logic_error(Logger::String{"Unable to get children from a value type '",std::to_string(type),"'"});
 	}
 
-	bool Value::getProperty(const char *key, std::string &value) const {
+	bool Value::get_property(const char *key, std::string &value) const {
 		if(type == Object && content.ptr) {
 			const map<std::string,Value> &children = *((map<std::string,Value> *) content.ptr);
 			auto it = children.find(key);
@@ -421,7 +421,7 @@
 			value = it->second.to_string();
 			return true;
 		}
-		return Object::getProperty(key,value);
+		return Object::get_property(key,value);
 	}
 
 	const Value & Value::operator[](const char *name) const {

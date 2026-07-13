@@ -260,7 +260,7 @@
 
 	Value & Value::set(const Abstract::Object &value) {
 		reset(Object);
-		value.getProperties(*this);
+		value.get_properties(*this);
 		return *this;
 	}
 

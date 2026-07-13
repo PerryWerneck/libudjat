@@ -23,6 +23,7 @@
 #include <udjat/defs.h>
 #include <udjat/action.h>
 #include <udjat/tools/container.h>
+#include <udjat/tools/properties.h>
 
 using namespace std;
 
@@ -34,7 +35,7 @@ namespace Udjat {
 		
 		static Controller & getInstance();
 
-		std::shared_ptr<Abstract::Object> ObjectFactory(const XML::Node &node) const override;
+		std::shared_ptr<Abstract::Object> ObjectFactory(const Udjat::Properties &props) const override;
 
 	};
 

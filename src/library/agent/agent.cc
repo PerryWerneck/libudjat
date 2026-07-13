@@ -147,7 +147,7 @@
 
 				if(agent->update.running) {
 
-					Logger::String{"Updating since ",TimeStamp(agent->update.running),", waiting"}.warning(agent->name());
+					Logger::String{"Updating since ",TimeStamp(agent->update.running).to_string().c_str(),", waiting"}.warning(agent->name());
 					Config::Value<size_t> delay{"agent-controller","delay-wait-on-stop",100};
 					Config::Value<size_t> max_wait("agent-controller","max-wait-on-stop",1000);
 

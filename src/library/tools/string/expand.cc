@@ -95,7 +95,7 @@
 
 	String & String::expand(char marker, const Udjat::Abstract::Object &object, bool dynamic, bool cleanup) {
 		return expand(marker,[&object,dynamic,cleanup](const char *key, std::string &str){
-			if(object.getProperty(key,str))
+			if(object.get_property(key,str))
 				return true;
 			return false;
 		},dynamic,cleanup);

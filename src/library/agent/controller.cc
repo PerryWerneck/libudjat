@@ -378,7 +378,7 @@
 
 					time_t timestamp = agent->last_modified();
 					if(timestamp) {
-						debug("last-modified: ",TimeStamp{timestamp});
+						debug("last-modified: ",TimeStamp{timestamp}.to_string().c_str());
 						response.last_modified(timestamp);
 						if(request.cached(timestamp)) {
 							response.not_modified(true);

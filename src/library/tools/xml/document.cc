@@ -38,6 +38,7 @@
  #include <private/logger.h>
  #include <udjat/module.h>
  #include <udjat/tools/container.h>
+ #include <udjat/tools/timestamp.h>
 
  using namespace std;
 
@@ -103,7 +104,7 @@
 		URL url{node};
 		url.expand();
 
-		if(!url.empty() && File::outdated(filename,TimeStamp{node,"update-timer"})) {
+		if(!url.empty() && File::outdated(filename,TimeStamp{XML::Node{node},"update-timer"})) {
 
 			try {
 				
