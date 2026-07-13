@@ -42,14 +42,14 @@
 
 #ifdef _WIN32
 
-	Script::Script(const XML::Node &node, const char *msg)
-		: 	Action{node},
+	Script::Script(const Properties &props, const char *msg)
+		: 	Action{props},
 #ifdef _WIN32
-			cmdline{Quark(node,"cmdline","").c_str()} {
+			cmdline{props["cmdline"].as_quark()} {
 #else
 			uid{getuid(node)},
 			gid{getgid(node)},
-			shell{node.attribute("shell").as_bool(false)} {
+			shell{props.get("shell",false)} {
 #endif // !WIN32
 
 		if(!(cmdline && *cmdline)) {
@@ -67,11 +67,11 @@
 
 #else
 
- 	static int getuid(const XML::Node &node) {
+ 	static int getuid(const Properties &props) {
 
- 		const char *user = node.attribute("user").as_string("");
+ 		auto user = props["user"];
 
- 		if(!(user && *user)) {
+ 		if(user.empty()) {
 			return -1;
  		}
 
@@ -86,7 +86,7 @@
 		struct passwd pwd;
 		struct passwd *result;
 
-		if(getpwnam_r(user, &pwd, buffer, szBuffer, &result) != 0) {
+		if(getpwnam_r(user.c_str(), &pwd, buffer, szBuffer, &result) != 0) {
 			throw system_error(errno,system_category(),user);
 		};
 
@@ -98,11 +98,11 @@
 
  	}
 
- 	static int getgid(const XML::Node &node) {
+ 	static int getgid(const Properties &props) {
 
- 		const char *group = node.attribute("group").as_string("");
+ 		auto group = props["group"];
 
- 		if(!(group && *group)) {
+ 		if(group.empty()) {
 			return -1;
  		}
 
@@ -117,7 +117,7 @@
 		struct group grp;
 		struct group *result;
 
-		if(getgrnam_r(group, &grp, buffer, szBuffer, &result) != 0) {
+		if(getgrnam_r(group.c_str(), &grp, buffer, szBuffer, &result) != 0) {
 			throw system_error(errno,system_category(),group);
 		};
 
@@ -129,18 +129,18 @@
 
  	}
 
-	Script::Script(const XML::Node &node, const char *t)
-		: 	Action{node},
-			cmdline{String{node,"cmdline",""}.as_quark()},
-			title{String{node,"title",t}.as_quark()},
-			uid{getuid(node)},
-			gid{getgid(node)},
-			shell{node.attribute("shell").as_bool(false)},
-			sudo{node.attribute("sudo").as_bool(false)} {
+	Script::Script(const Properties &props, const char *t)
+		: 	Action{props},
+			cmdline{props["cmdline"].as_quark()},
+			title{props["title"].as_quark()},
+			uid{getuid(props)},
+			gid{getgid(props)},
+			shell{props.get("shell",false)},
+			sudo{props.get("sudo",false)} {
 
 		if(!(cmdline && *cmdline)) {
 
-			String text{node.child_value()};
+			String text = props.child_value();
 			text.strip();
 
 			if(!text.empty()) {
@@ -149,12 +149,12 @@
 #ifdef BUILD_LEGACY
 					throw runtime_error(_("Missing shebang attribute"));
 #else	
-					throw runtime_error(Logger::Message{_("Missing shebang attribute on {}"),node.path()});
+					throw runtime_error(Logger::Message{_("Missing shebang attribute on {}"),props.path()});
 #endif 
 				}
 
 				Logger::String{"Using script from XML node"}.trace(name());
-				if(node.attribute("strip-lines").as_bool(true)) {
+				if(props.get("strip-lines",true)) {
 					String stripped;
 					text.for_each("\n",[&stripped](const String &value) {
 						stripped += const_cast<String &>(value).strip();
@@ -174,7 +174,7 @@
 #ifdef BUILD_LEGACY
 				throw runtime_error(_("Required attribute 'cmdline' missing"));
 #else		
-				throw runtime_error(Logger::Message{_("Required attribute 'cmdline' missing on {}"),node.path()});
+				throw runtime_error(Logger::Message{_("Required attribute 'cmdline' missing on {}"),props.path()});
 #endif 			
 			}
 

@@ -316,6 +316,11 @@
 	}
 
 	template <>
+	constexpr Value::Type Value::TypeFactory<double>() {
+		return Type::Real;
+	}
+
+	template <>
 	constexpr Value::Type Value::TypeFactory<bool>() {
 		return Type::Boolean;
 	}

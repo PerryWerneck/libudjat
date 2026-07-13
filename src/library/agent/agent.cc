@@ -36,6 +36,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/timestamp.h>
  #include <mutex>
 
  #ifdef HAVE_UNISTD_H

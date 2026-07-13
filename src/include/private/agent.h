@@ -54,7 +54,8 @@ namespace Udjat {
 		}
 
 		void set(std::shared_ptr<Abstract::Agent> root);
-
+		std::shared_ptr<Abstract::Agent> get() const;
+		
 		std::shared_ptr<Abstract::Agent> find(const char *path, bool required = false) const;
 
 		void start() noexcept override;

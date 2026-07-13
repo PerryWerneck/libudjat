@@ -38,6 +38,7 @@
  #include <udjat/tools/file.h>
  #include <udjat/agent.h>
  #include <udjat/tools/schema.h>
+ #include <udjat/tools/timestamp.h>
  #include <unistd.h>
 
  #include <udjat/tools/logger.h>
@@ -46,9 +47,7 @@
 
  using namespace std;
 
-//---[ Implement ]------------------------------------------------------------------------------------------
-
-namespace Udjat {
+ namespace Udjat {
 
 	Abstract::Agent::Controller::Controller() 
 		: Service{"agents"}, Action::Factory{"agent"}, Abstract::Object::Factory{"agent"} {
@@ -208,7 +207,9 @@ namespace Udjat {
 					//
 					// Agent still updating.
 					//
-					agent->warning() << "Update is active since " << TimeStamp(agent->update.running) << endl;
+					Logger::String{
+						"Update is active since ",TimeStamp(agent->update.running).to_string().c_str()
+					 }.warning(agent->name());
 					agent->update.next = now + 60;
 					next = std::min(next,agent->update.next);
 
@@ -337,13 +338,13 @@ namespace Udjat {
 
 	}
 
-	std::shared_ptr<Abstract::Object> Abstract::Agent::Controller::ObjectFactory(const XML::Node &node) const {
+	std::shared_ptr<Abstract::Object> Abstract::Agent::Controller::ObjectFactory(const Properties &props) const {
 
-		auto child = Abstract::Agent::Factory::build(node);
+		auto child = Abstract::Agent::Factory::build(props);
 		return child;
 	}
 
-	std::shared_ptr<Action> Abstract::Agent::Controller::ActionFactory(const XML::Node &) const {
+	std::shared_ptr<Action> Abstract::Agent::Controller::ActionFactory(const Properties &) const {
 
 		debug("Build agent action");
 
@@ -385,7 +386,7 @@ namespace Udjat {
 						}
 					}
 
-					agent->getProperties(response);
+					agent->get_properties(response);
 
 					if(agent->update.next) {
 						response.expires(agent->update.next);
