@@ -420,6 +420,9 @@ endif
 # Sources
 #
 lib_src += [
+  'src/library/tools/object/abstract.cc',
+  'src/library/tools/object/named.cc',
+  'src/library/tools/object/object.cc',
   'src/library/agent/agent.cc',
   'src/library/agent/factory.cc',
   'src/library/agent/event.cc',
@@ -530,7 +533,6 @@ lib_src += [
   'src/library/tools/logger/console.cc',
   'src/library/tools/logger/stream.cc',
   'src/library/tools/logger/argparser.cc',
-  'src/library/tools/object.cc',
   'src/library/tools/report.cc',
   'src/library/tools/interface.cc',
   'src/library/tools/action/abstract.cc',
@@ -977,7 +979,6 @@ install_headers(
 install_headers(
   'src/include/udjat/agent/level.h',
   'src/include/udjat/agent/state.h',
-  'src/include/udjat/agent/abstract.h',
   'src/include/udjat/agent/percentage.h',
   subdir: 'udjat/agent'  
 )
@@ -1005,7 +1006,6 @@ install_headers(
 
 install_headers(
   'src/include/udjat/tools/abstract/request-path.h',
-  'src/include/udjat/tools/abstract/object.h',
   subdir: 'udjat/tools/abstract'  
 )
 

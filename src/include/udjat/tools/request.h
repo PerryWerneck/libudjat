@@ -21,7 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/http/method.h>
- #include <udjat/tools/abstract/object.h>
+ #include <udjat/tools/object.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>

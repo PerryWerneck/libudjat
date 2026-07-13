@@ -33,7 +33,7 @@
  #include <udjat/tools/intl.h>
  #include <string>
  #include <udjat/tools/string.h>
- #include <udjat/tools/abstract/object.h>
+ #include <udjat/tools/object.h>
  #include <stdexcept>
  #include <udjat/action.h>
 

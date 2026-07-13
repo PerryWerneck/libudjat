@@ -35,7 +35,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/http/exception.h>
- #include <udjat/tools/abstract/object.h>
+ #include <udjat/tools/object.h>
  #include <list>
  #include <sys/stat.h>
  #include <fstream>

@@ -23,7 +23,7 @@
  #include <string.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/mimetype.h>
- #include <udjat/tools/abstract/object.h>
+ #include <udjat/tools/object.h>
  #include <ostream>
  #include <udjat/tools/properties.h>
  #include <functional>
@@ -261,7 +261,7 @@
 		/// @param key The child name.
 		/// @param value String to update with the property value.
 		/// @return true if the property is valid.
-		bool getProperty(const char *key, std::string &value) const override;
+		bool get_property(const char *key, std::string &value) const override;
 
 		virtual void serialize(std::ostream &out, const MimeType mimetype) const;
 

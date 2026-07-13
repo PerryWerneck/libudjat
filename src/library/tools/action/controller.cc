@@ -25,7 +25,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/abstract/object.h>
+ #include <udjat/tools/object.h>
  #include <udjat/tools/activatable.h>
  #include <udjat/action.h>
  #include <udjat/tools/script.h>

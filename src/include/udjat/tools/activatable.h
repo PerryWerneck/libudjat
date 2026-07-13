@@ -21,7 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/properties.h>
- #include <udjat/tools/abstract/object.h>
+ #include <udjat/tools/object.h>
  #include <memory>
  #include <vector>
 

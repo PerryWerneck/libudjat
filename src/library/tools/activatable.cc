@@ -21,7 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/properties.h>
  #include <udjat/tools/object.h>
- #include <udjat/tools/abstract/object.h>
+ #include <udjat/tools/object.h>
  #include <udjat/tools/activatable.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/http/exception.h>
