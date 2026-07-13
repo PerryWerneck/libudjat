@@ -25,23 +25,18 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/agent.h>
- #include <udjat/agent/state.h>
- #include <udjat/agent.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/container.h>
- #include <udjat/tools/logger.h>
- #include <udjat/tools/subprocess.h>
- #include <udjat/tools/url.h>
- #include <udjat/tools/http/error.h>
- #include <udjat/action.h>
  #include <udjat/tools/script.h>
- #include <udjat/tools/value.h>
  #include <udjat/agent/percentage.h>
+ #include <udjat/tools/http/method.h>
+ #include <udjat/tools/http/error.h>
+ #include <udjat/agent/state.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/url.h>
+ #include <udjat/action.h>
+ #include <udjat/tools/value.h>
 
- #include <cstring>
- #include <list>
- #include <memory>
- #include <stdexcept>
- 
  using namespace std;
 
  namespace Udjat {
@@ -91,25 +86,25 @@
 		Factories().remove(this);
 	}
 
-	bool Abstract::Agent::Factory::probe(const XML::Node &node) const noexcept {
+	bool Abstract::Agent::Factory::probe(const Properties &) const noexcept {
 		return false;
 	}
 
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory::build(const XML::Node &node) {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory::build(const Properties &props) {
 
-		auto type = node["type"];
-
+		auto agent_name = props.get("name",PACKAGE_NAME);
+		auto type = props["type"];
 		if(type.empty()) {
 
 			// No type, try probing the factories.
 
 			for(const auto factory : Factories()) {
 
-				if(!factory->probe(node)) {
+				if(!factory->probe(props)) {
 					continue;
 				}
 
-				auto agent = factory->AgentFactory(node);
+				auto agent = factory->AgentFactory(props);
 				if(agent) {
 					return agent;
 				}
@@ -118,7 +113,7 @@
 			// No factory recognize the node and I have no type, then, cant do anything.
 			
 			throw runtime_error(
-				String{"Cant determine factory for agent '",node.attribute("name").as_string(),"' at ",node.path()}
+				String{"Cant determine factory for agent '",props["name"].c_str(),"' at ",props.path()}
 			);
 
 		}
@@ -135,23 +130,23 @@
 				continue;
 			}
 
-			auto agent = factory->AgentFactory(node);
+			auto agent = factory->AgentFactory(props);
 			if(agent) {
 				debug("Got agent '",type.c_str(),"'")
 				return agent;
 			}
 
-			Logger::String{"Agent '",node["name"].c_str()," rejected by factory '",factory->name,"'"}.trace();
+			Logger::String{"Agent '",props["name"].c_str()," rejected by factory '",factory->name,"'"}.trace();
 
 		}
 
 		// Try internal types
 		if(strcasecmp(type.c_str(),"shell") == 0 || strcasecmp(type.c_str(),"script") == 0 || strcasecmp(type.c_str(),"shell-script") == 0) {
 
-			/// @brief Agent keeping the value of script return code.
+			/// @brief Agent keeping the value of a script return code.
 			class Script : public Udjat::Agent<int32_t>, private Udjat::Script {
 			public:
-				Script(const XML::Node &node) : Udjat::Script{node} {
+				Script(const Properties &props) : Udjat::Script{props} {
 				}
 
 				bool refresh(bool) override {
@@ -162,61 +157,61 @@
 
 			};
 
-			return make_shared<Script>(node);
+			return make_shared<Script>(props);
 		}
 
 		static const struct
 		{
 			const char *type;
-			function< std::shared_ptr<Abstract::Agent>(const XML::Node &node)> build;
+			function< std::shared_ptr<Abstract::Agent>(const Properties &props)> build;
 		} builders[] = {
 
 			{
 				"int32",
-				[](const XML::Node &node) {
-					return make_shared<Udjat::Agent<int32_t>>(node);
+				[](const Properties &props) {
+					return make_shared<Udjat::Agent<int32_t>>(props);
 				}
 			},
 			{
 				"uint32",
-				[](const XML::Node &node) {
-					return make_shared<Udjat::Agent<uint32_t>>(node);
+				[](const Properties &props) {
+					return make_shared<Udjat::Agent<uint32_t>>(props);
 				}
 			},
 			{
 				"integer",
-				[](const XML::Node &node) {
-					return make_shared<Udjat::Agent<int>>(node);
+				[](const Properties &props) {
+					return make_shared<Udjat::Agent<int>>(props);
 				}
 
 			},
 			{
 				"boolean",
-				[](const XML::Node &node) {
-					return make_shared<Udjat::Agent<bool>>(node);
+				[](const Properties &props) {
+					return make_shared<Udjat::Agent<bool>>(props);
 				}
 			},
 			{
 				"string",
-				[](const XML::Node &node) {
-					return make_shared<Udjat::Agent<std::string>>(node);
+				[](const Properties &props) {
+					return make_shared<Udjat::Agent<std::string>>(props);
 				}
 			},
 			{
 				"percentage",
-				[](const XML::Node &node) {
-					return make_shared<Udjat::Agent<Percentage>>(node);
+				[](const Properties &props) {
+					return make_shared<Udjat::Agent<Percentage>>(props);
 				}
 			},
 			{
 				"%",
-				[](const XML::Node &node) {
-					return make_shared<Udjat::Agent<Percentage>>(node);
+				[](const Properties &props) {
+					return make_shared<Udjat::Agent<Percentage>>(props);
 				}
 			},		
 			{
 				"url",
-				[](const XML::Node &node) {
+				[](const Properties &props) {
 
 					/// @brief Agent keeping the value of url status code.
 					class Url : public Udjat::Agent<int32_t> {
@@ -225,7 +220,8 @@
 						HTTP::Method method;
 
 					public:
-						Url(const XML::Node &node) : Udjat::Agent<int32_t>(node), url{Quark(node,"url","").c_str()},method{HTTP::MethodFactory(node.attribute("method").as_string("head"))}  {
+						Url(const Properties &props) 
+							: Udjat::Agent<int32_t>(props), url{props["url"].as_quark()},method{HTTP::MethodFactory(props,"method","head")}  {
 
 							if(!(url && *url)) {
 								throw runtime_error("Required attribute 'url' is missing");
@@ -258,7 +254,7 @@
 
 					};
 
-					return make_shared<Url>(node);
+					return make_shared<Url>(props);
 				}
 			},
 
@@ -266,8 +262,8 @@
 
 		for(auto builder : builders) {
 			if(!strcasecmp(type.c_str(),builder.type)) {
-				Logger::String{"Building agent using internal type '",type,"'"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
-				return builder.build(node);
+				Logger::String{"Building agent using internal type '",type,"'"}.trace(agent_name.c_str());
+				return builder.build(props);
 			}
 		}
 
@@ -280,7 +276,7 @@
 				unsigned int limit = 5;
 
 			public:
-				RandomValue(const XML::Node &node) : Agent<unsigned int>(node) {
+				RandomValue(const Properties &props) : Agent<unsigned int>(props) {
 				}
 
 				std::shared_ptr<Abstract::State> computeState() override {
@@ -310,34 +306,34 @@
 				
 			};
 
-			Logger::String{"Building random value agent"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
-			return make_shared<RandomValue>(node);
+			Logger::String{"Building random value agent"}.trace(agent_name.c_str());
+			return make_shared<RandomValue>(props);
 
 		}
 
 		// Try actions
 		try {
 
-			std::shared_ptr<Action> action = Action::Factory::build(node);
+			std::shared_ptr<Action> action = Action::Factory::build(props);
 
-			Logger::String{"Building action based agent"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
+			Logger::String{"Building action based agent"}.trace(agent_name.c_str());
 
-			switch(Value::TypeFactory(node,"value-type","int")) {
+			switch(Value::TypeFactory(props,"value-type","int")) {
 			case Value::String:
-				return make_shared<ActionAgent<string>>(node,action);
+				return make_shared<ActionAgent<string>>(props,action);
 
 			case Value::Signed:
-				return make_shared<ActionAgent<int>>(node,action);
+				return make_shared<ActionAgent<int>>(props,action);
 
 			case Value::Unsigned:
-				return make_shared<ActionAgent<unsigned int>>(node,action);
+				return make_shared<ActionAgent<unsigned int>>(props,action);
 
 			case Value::Real:
 			case Value::Fraction:
-				return make_shared<ActionAgent<double>>(node,action);
+				return make_shared<ActionAgent<double>>(props,action);
 
 			case Value::Boolean:
-				return make_shared<ActionAgent<bool>>(node,action);
+				return make_shared<ActionAgent<bool>>(props,action);
 
 			default:
 				throw logic_error("Invalid attribute: value-type");
@@ -350,7 +346,7 @@
 		}
 
 		throw runtime_error(
-			String{"Cant find a valid factory for agent '",node.attribute("name").as_string(),"' type '",type,"' at ",node.path()}
+			String{"Cant find a valid factory for agent '",agent_name.c_str(),"' type '",type,"' at ",props.path()}
 		);
 
 	}

@@ -58,6 +58,8 @@
 				/// @param props Properties for the new agent.
 				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Properties &props) const = 0;
 
+				static std::shared_ptr<Abstract::Agent> build(const Properties &props);
+
 			};
 
 			enum Event : uint16_t {

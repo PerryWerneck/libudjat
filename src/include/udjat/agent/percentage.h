@@ -23,7 +23,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/agent.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/percentage.h>
  #include <udjat/agent.h>	
  #include <udjat/agent/state.h>
@@ -89,7 +89,7 @@
 
 	public:
 
-		Agent(const XML::Node &node, const Percentage v = 0) : Abstract::Agent{node}, value{from_xml<float>(node, (float) v)} {
+		Agent(const Properties &props, const Percentage v = 0) : Abstract::Agent{props}, value{props.get("value",0.0)} {
 		}
 
 		Agent(const char *name = "") : Abstract::Agent{name}, value{0.0} {
@@ -130,8 +130,8 @@
 		}
 
 		/// @brief Insert State.
-		std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node) override {
-			auto state = std::make_shared<State<float>>(node);
+		std::shared_ptr<Abstract::State> StateFactory(const Properties &props) override {
+			auto state = std::make_shared<State<float>>(props);
 			states.push_back(state);
 			return state;
 		}

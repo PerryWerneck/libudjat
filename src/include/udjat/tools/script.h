@@ -24,7 +24,7 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/object.h>
  #include <udjat/action.h>
  #include <udjat/tools/logger.h>
@@ -55,7 +55,7 @@
 		constexpr Script(const char *str, const char *name = "script") : Action{name}, cmdline{str} {
 		}
 
-		Script(const XML::Node &node, const char *title = "");
+		Script(const Properties &props, const char *title = "");
 		~Script();
 
 		/// @brief Run script in foreground.
