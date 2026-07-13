@@ -25,11 +25,15 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/value.h>
+
+ #include <string>
+
+ using namespace std;
  
  namespace Udjat {
 
 	template <typename T>
-	bool getFromPath(const Abstract::Agent &agent, const char *path, T &value) {
+	bool get_from_path(const Abstract::Agent &agent, const char *path, T &value) {
 
 		if(!(path && *path)) {
 			debug("Got agent '",agent.name(),"', asking for properties");
@@ -62,20 +66,20 @@
 		return false;
 	}
 
-	bool Abstract::Agent::getProperties(const char *path, Value &value) const {
+	bool Abstract::Agent::get_properties(const char *path, Value &value) const {
 
 		debug("path: '",path,"'");
 
-		if(getFromPath(*this,path,value)) {
+		if(get_from_path(*this,path,value)) {
 			return true;
 		}
 
 		if(!strcasecmp(path,"state") && strlen(path) == 5 && current_state.selected) {
-			current_state.selected->getProperties(value);
+			current_state.selected->get_properties(value);
 			return true;
 		}
 
-		if(Abstract::Object::getProperty(path,value)) {
+		if(Abstract::Object::get_property(path,value)) {
 			debug("Found property '",path,"'");
 			return true;
 		}
@@ -84,7 +88,7 @@
 
 			for_each([this,&value](const Abstract::State &state) {
 				auto &row = value.append(Value::Object);
-				state.getProperties(row);
+				state.get_properties(row);
 				row["active"] = (&state == current_state.selected.get());
 			});
 

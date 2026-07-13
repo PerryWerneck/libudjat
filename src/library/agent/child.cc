@@ -20,6 +20,10 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/quark.h>
+ #include <mutex>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -71,7 +75,7 @@
 		if(autoins) {
 			
 			string name{path,length};
-			auto child = make_shared<Abstract::Agent>(Quark(string(path,length)).c_str());
+			auto child = make_shared<Abstract::Agent>(Quark{name.c_str()}.c_str());
 			
 			push_back((std::shared_ptr<Abstract::Object>)child);
 

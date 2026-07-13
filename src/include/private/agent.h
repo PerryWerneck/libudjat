@@ -21,19 +21,12 @@
 
 #include <config.h>
 #include <udjat/defs.h>
-#include <iostream>
 #include <udjat/agent.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
 #include <udjat/action.h>
 #include <memory>
-
-#ifdef HAVE_UNISTD_H
-	#include <unistd.h>
-#endif // HAVE_UNISTD_H
-
-using namespace std;
 
 namespace Udjat {
 
@@ -62,15 +55,15 @@ namespace Udjat {
 
 		void set(std::shared_ptr<Abstract::Agent> root);
 
-		std::shared_ptr<Abstract::Agent> get() const;
 		std::shared_ptr<Abstract::Agent> find(const char *path, bool required = false) const;
 
 		void start() noexcept override;
 		void stop() noexcept override;
 
-		// ActionFactory
+		// ActionFactory.
 		std::shared_ptr<Action> ActionFactory(const Udjat::Properties &props) const override;
 
+		// Object Factory.
 		std::shared_ptr<Abstract::Object> ObjectFactory(const Udjat::Properties &props) const override;
 
 	};

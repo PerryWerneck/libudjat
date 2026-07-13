@@ -31,7 +31,9 @@
  #include <udjat/tools/string.h>
  #include <mutex>
 
-namespace Udjat {
+ using namespace std;
+
+ namespace Udjat {
 
 	void Abstract::Agent::notify(const Event event) {
 		lock_guard<std::recursive_mutex> lock(guard);

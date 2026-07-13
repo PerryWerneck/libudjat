@@ -22,6 +22,11 @@
  #include <udjat/agent.h>
  #include <private/agent.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/properties.h>
+ #include <mutex>
+ #include <memory>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -55,12 +60,7 @@
 		{
 			auto activatable = std::dynamic_pointer_cast<Activatable>(object);
 			if(activatable) {
-				//debug("Pushing activatable ",object->name()," into agent ",name());
-				//lock_guard<std::recursive_mutex> lock(guard);
-
 				throw runtime_error(Logger::Message{"Activatable {} must be pushed with event trigger",object->name()});
-
-				//return true;
 			}
 		}
 
@@ -76,15 +76,15 @@
 	}
 
 
-	bool Abstract::Agent::push_back(const XML::Node &node, std::shared_ptr<Abstract::Object> object) {
+	bool Abstract::Agent::push_back(const Properties &props, std::shared_ptr<Abstract::Object> object) {
 
 		// Is this an activatable object?
 		{
 			auto activatable = std::dynamic_pointer_cast<Activatable>(object);
 			if(activatable) {
-				debug("Pushing activatable ",object->name()," into agent ",name()," from path ",node.path());
+				debug("Pushing activatable ",object->name()," into agent ",name()," from path ",props.path());
 				lock_guard<std::recursive_mutex> lock(guard);
-				listeners.emplace_back(EventFactory(node,"trigger-event"),activatable);
+				listeners.emplace_back(EventFactory(props,"trigger-event"),activatable);
 				return true;
 			}
 		}

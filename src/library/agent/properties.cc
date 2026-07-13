@@ -21,12 +21,29 @@
  #include <private/agent.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/schema.h>
+ #include <udjat/agent.h>
+ #include <mutex>
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+ using namespace std;
 
  namespace Udjat {
 
-	bool Abstract::Agent::getProperty(const char *key, std::string &value) const {
+	bool Abstract::Agent::output_schema(const char *path, Schema &schema) const noexcept {
+
+		Object::output_schema(path,schema);
+
+		schema.append(
+			Schema::Item{ "path",			Udjat::Value::String		},
+			Schema::Item{ "state_icon",		Udjat::Value::Icon			},
+			Schema::Item{ "state_body",		Udjat::Value::String		},
+			Schema::Item{ "state_level",	Udjat::Value::String		}
+		);
+
+		return true;
+	}
+
+	bool Abstract::Agent::get_property(const char *key, std::string &value) const {
 
 		// Agent name
 		if( !strcasecmp(key,"agent.name") ) {
@@ -47,13 +64,13 @@
 		}
 
 		// State properties
-		if(!strncasecmp(key,"state.",6)) {
-			if(state()->getProperty(key+6,value)) {
+		if(!strncasecmp(key,"state_",6)) {
+			if(state()->get_property(key+6,value)) {
 				return true;
 			}
 		}
 
-		if(Object::getProperty(key, value))
+		if(Object::get_property(key, value))
 			return true;
 
 		// Not found, search children
@@ -71,7 +88,7 @@
 		{
 			lock_guard<std::recursive_mutex> lock(guard);
 			for(auto object : children.objects) {
-				if(object->getProperty(key,value)) {
+				if(object->get_property(key,value)) {
 					return true;
 				}
 			}
