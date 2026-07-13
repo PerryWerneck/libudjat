@@ -21,6 +21,8 @@
  #include <udjat/defs.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/value.h>
 
  using namespace std;
 

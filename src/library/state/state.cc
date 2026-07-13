@@ -32,7 +32,7 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/expander.h>
  #include <udjat/alert.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
  #include <udjat/action.h>

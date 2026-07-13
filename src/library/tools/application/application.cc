@@ -27,7 +27,7 @@
  #include <sys/stat.h>
  #include <sys/types.h>
  #include <udjat/tools/quark.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <udjat/tools/intl.h>
  #include <private/module.h>
 

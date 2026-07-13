@@ -20,7 +20,7 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/tools/logger.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
 
  namespace Udjat {
 

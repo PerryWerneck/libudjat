@@ -23,6 +23,7 @@
  #include <udjat/tools/schema.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/intl.h>
+ #include <memory>
  
  using namespace std;
 

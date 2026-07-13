@@ -36,7 +36,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/file.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <udjat/tools/schema.h>
  #include <unistd.h>
 

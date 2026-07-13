@@ -108,32 +108,11 @@
 		return push_back(child);
 	}
 
-	void Abstract::Object::parse_children(const Properties &props) {
-
+	void Abstract::Object::append_children(const Properties &props) {
 		props.for_each_child([this](const Properties &child){
-
-			if(this->append_child(child)) {
-				return false; // Ignore reserved and already handled nodes.
-			}
-
-			const char *name = child.node_name();
-			debug("Node name for '",child.path()," is '",name,"'");
-
-			// Is it a factory?
-			for(const auto factory : Factories()) {
-
-				if(*factory == name) {
-					auto object = factory->ObjectFactory(child);
-					push_back(child,object);
-					object->parse_children(child);
-					break; 
-				}
-			}
-
+			this->append_child(child);
 			return false;
-
 		});
-
 	}
 	
 	bool Abstract::Object::append_child(const Properties &props) {
@@ -142,15 +121,34 @@
 			return true; // Ignore reserved nodes.
 		}
 
+		const char *name = props.node_name();	// Get property name, for factories.
+		debug("Node name for '",props.path()," is '",name,"'");
+
 		// TODO: Rewrite init actions to use Object::Factory.
 		// if(strcasecmp(props.node_name(),"init") == 0) {
 		// 	Action::Factory::build(props)->call(node);
 		// 	return true; // Handled by action.
 		// }
 
-		// TODO: Search object factories, if found, build object and append it.
+		// Is it a factory?
+		for(const auto factory : Factories()) {
+
+			if(*factory == name) {
+
+				// Apend object.
+				auto object = factory->ObjectFactory(props);
+				push_back(props,object);
+
+				// Append children
+				object->append_children(props);
+
+				// Parsed, return true.
+				return true; 
+			}
+		}
 
 		return false;	// Not handled, maybe the caller can handle it.
+
 	}
 
 	Value & Abstract::Object::get_properties(Value &value) const {
@@ -253,7 +251,7 @@
 	// 	return rc;
 	// }
 
-	time_t Abstract::Object::parse(const char *p) {
+	time_t Abstract::Object::parse_file(const char *p) {
 
 		time_t next = 0;
 
@@ -274,7 +272,7 @@
 			for(const auto &file : files) {
 
 				// Recursive call to parse document.
-				time_t expires = parse(file.c_str());
+				time_t expires = parse_file(file.c_str());
 				if(expires) {
 					expires += time(0);
 					if(expires < next || next == 0) {
@@ -290,46 +288,14 @@
 			Logger::String{"Loading xml definitions from file '",path.c_str(),"'"}.info(name());
 
 			XML::Document document{path.c_str()};
-
-			const auto &root = document.document_element();
-			next = TimeStamp{XML::Node(root),"update-timer"};
+			XML::Node root{document.document_element()};
+			
+			next = TimeStamp{root,"update-timer"};
 			if(next) {
 				next += time(0);
 			}
 
-			// Parse the document, create the children.
-			for(const auto &node : root) {
-
-				if(node.attribute("preload").as_bool(false) || XML::parse(node,true)) {
-					continue; // Ignore reserved, parsed and preloaded nodes.
-				}
-
-				const char *name = node.name();
-
-				// TODO: Rewrite init actions to use Object::Factory.
-				// if(strcasecmp(name,"init") == 0) {
-				// 	Action::Factory::build(node)->call(node);
-				// 	continue; // Handled by action.
-				// }
-
-				for(const auto factory : Factories()) {
-
-					if(*factory == name) {
-		
-#ifndef BUILD_LEGACY
-						if(Logger::enabled(Logger::Debug)) {
-							Logger::String{"Got factory '", factory->c_str(), "' for ",node.path()}.info(this->name());
-						}
-#endif
-						auto nd = XML::Node{node};
-						auto object = factory->ObjectFactory(nd);
-						push_back(nd,object);
-						object->parse_children(nd);
-						break; 
-					}
-				}
-
-			}
+			append_children(root);
 
 		}
 

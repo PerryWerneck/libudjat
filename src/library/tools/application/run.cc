@@ -26,14 +26,13 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/argumentparser.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <udjat/tools/intl.h>
  #include <udjat/module.h>
  #include <udjat/ui/console.h>
  #include <udjat/tools/intl.h>
  #include <udjat/ui/status.h>
  #include <string>
- #include <udjat/agent/abstract.h>
  #include <private/agent.h>
  #include <private/service.h>
 

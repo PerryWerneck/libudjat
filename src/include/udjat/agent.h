@@ -28,7 +28,8 @@
  #include <udjat/tools/properties.h>
  #include <mutex>
  #include <list>
- #include <cstdint> #include <udjat/tools/converters.h>
+ #include <cstdint> 
+ #include <udjat/tools/converters.h>
 
  namespace Udjat {
 
@@ -243,7 +244,7 @@
 			/// @details This method is called by parse_children() for every child.
 			/// @param props The children properties.
 			/// @return true if the properties were parsed and should be ignored by the caller.
-			bool append_child(const Properties &props) override;
+			bool append_child(const Udjat::Properties &props) override;
 
 			inline time_t parse(const char *path) {
 				return Udjat::Object::parse(path);
@@ -253,7 +254,7 @@
 			bool push_back(std::shared_ptr<Abstract::Object> object) override;
 
 			/// @brief Insert object with attributes.
-			bool push_back(const Properties &props, std::shared_ptr<Abstract::Object> object) override;
+			bool push_back(const Udjat::Properties &props, std::shared_ptr<Abstract::Object> object) override;
 
 			/// @brief Insert listener.
 			void push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
@@ -328,14 +329,14 @@
 
 			/// @brief Get agent properties.
 			/// @param value Value to receive the properties.
-			Value & getProperties(Value &value) const override;
+			Value & get_properties(Value &value) const override;
 
 			/// @brief Get child properties by path.
 			/// @param path	Child path.
 			/// @param value Object for child properties.
 			/// @retval true if the child was found.
 			/// @retval false if the child was not found.
-			virtual bool getProperties(const char *path, Value &value) const;
+			virtual bool get_properties(const char *path, Value &value) const;
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
@@ -416,7 +417,7 @@
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property was found.
-			bool getProperty(const char *key, std::string &value) const override;
+			bool get_property(const char *key, std::string &value) const override;
 
 			/// @brief get time of the last modification on this agent.
 			/// @return Timestamp of last modification.
@@ -485,7 +486,7 @@
 
 	public:
 
-		Agent(const Properties &props, const T v = 0) : Abstract::Agent{props}, value{props.get("value",v)} {
+		Agent(const Udjat::Properties &props, const T v = 0) : Abstract::Agent{props}, value{props.get("value",v)} {
 		}
 
 		Agent(const char *name, const Properties &props, const T v = 0) : Abstract::Agent{name,props}, value{props.get("value",v)} {
@@ -572,7 +573,7 @@
 		}
 
 	public:
-		Agent(constProperties &props) : Abstract::Agent(props), value(props["value"]) {
+		Agent(const Udjat::Properties &props) : Abstract::Agent{props}, value{props["value"].c_str()} {
 		}
 
 		Agent(const char *name = "") : Abstract::Agent(name) {
@@ -654,7 +655,7 @@
 		}
 
 	public:
-		Agent(const Properties &props) : Abstract::Agent(props), value(props.get("value",false)) {
+		Agent(const Udjat::Properties &props) : Abstract::Agent{props}, value(props.get("value",false)) {
 		}
 
 		Agent(const char *name = "") : Abstract::Agent(name), value(false) {

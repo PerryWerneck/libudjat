@@ -28,7 +28,7 @@
 
  #include <config.h>
  #include <private/agent.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>

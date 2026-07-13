@@ -230,6 +230,10 @@
 				write(Logger::Error,domain);
 			}
 
+			inline void notice(const char *domain = "") const {
+				write(Logger::Notice,domain);
+			}
+
 		};
 
 		UDJAT_API std::ostream & info();

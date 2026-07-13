@@ -26,7 +26,6 @@
  #include <udjat/tools/timer.h>
  #include <udjat/tools/argumentparser.h>
  #include <udjat/ui/status.h>
- #include <udjat/agent/abstract.h>
  #include <list>
  #include <string>
  #include <ostream>

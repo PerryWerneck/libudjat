@@ -23,7 +23,7 @@
  #include <udjat/tools/event.h>
  #include <udjat/tools/activatable.h>
  #include <udjat/tools/intl.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <udjat/tools/logger.h>
 
  #ifdef _WIN32

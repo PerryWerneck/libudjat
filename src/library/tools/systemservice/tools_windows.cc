@@ -23,7 +23,7 @@
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <stdexcept>
  #include <udjat/tools/event.h>
  #include <udjat/tools/threadpool.h>

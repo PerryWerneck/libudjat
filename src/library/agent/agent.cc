@@ -26,7 +26,7 @@
  */
 
  #include <config.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <private/agent.h>
  #include <cstring>
  #include <udjat/tools/xml.h>

@@ -21,16 +21,6 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/systemservice.h>
-//  #include <udjat/tools/configuration.h>
-//  #include <udjat/tools/logger.h>
-//  #include <udjat/agent/abstract.h>
-//  #include <stdexcept>
-//  #include <udjat/tools/event.h>
-//  #include <udjat/tools/threadpool.h>
-//  #include <udjat/tools/timer.h>
-//  #include <udjat/tools/intl.h>
-//  #include <udjat/ui/console.h>
-//  #include <unistd.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>

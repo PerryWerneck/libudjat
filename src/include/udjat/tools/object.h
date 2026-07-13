@@ -20,13 +20,13 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
  #include <ostream>
  #include <string>
  #include <udjat/tools/properties.h>
  #include <udjat/tools/logger.h>
  #include <cstring>
  #include <functional>
+ #include <memory>
 
  namespace Udjat {
 
@@ -35,7 +35,7 @@
 		/// @brief Abstract object with properties.
 		class UDJAT_API Object {
 		protected:
-			typedef Object Super;
+			typedef Abstract::Object Super;
 
 		public:
 
@@ -72,7 +72,7 @@
 			/// @brief Parse XML file(s), build children.
 			/// @param path The path for a folder or a XML file, nullptr for default.
 			/// @return timestamp for next refresh.
-			time_t parse(const char *path = nullptr);
+			time_t parse_file(const char *path = nullptr);
 
 			/// @brief Append child object from properties.
 			/// @details This method is called by parse_children() for every child node.
@@ -80,7 +80,9 @@
 			/// @return true if the node was parsed and should be ignored by the caller.
 			virtual bool append_child(const Properties &props);
 
-			virtual void parse_children(const Properties &props);
+			/// @brief Enumarate children from props, call append_child for every one.
+			/// @param props The root property.
+			virtual void append_children(const Properties &props);
 
 			/// @brief Add child object (if supported).
 			/// @return True if the object was inserted.
@@ -277,7 +279,7 @@
 
 		typedef NamedObject Super;
 
-		struct Properties {
+		struct {
 
 			/// @brief Object label.
 			const char * label = "";
@@ -293,17 +295,15 @@
 
 		} properties;
 
-		Object(const Udjat::Properties &props);
+		Object(const Properties &props);
 
 	public:
 
 		constexpr Object(const char *name) : NamedObject(name) {
 		}
 
-//		bool append_child(const Properties &props) override;
-
-		inline time_t parse(const char *path) {
-			return Abstract::Object::parse(path);
+		inline time_t parse_file(const char *path) {
+			return Abstract::Object::parse_file(path);
 		}
 
 		bool get_property(const char *key, std::string &value) const override;

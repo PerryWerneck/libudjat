@@ -21,7 +21,7 @@
  #include <udjat/defs.h>
  #include <private/agent.h>
  #include <udjat/tools/object.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/value.h>

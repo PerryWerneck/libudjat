@@ -267,7 +267,6 @@ src/include/udjat.h
 src/include/udjat/agent.h
 src/include/udjat/agent/percentage.h
 src/include/udjat/agent/state.h
-src/include/udjat/agent/abstract.h
 src/include/udjat/agent/level.h
 src/include/udjat/alert.h
 src/include/udjat/alert/file.h

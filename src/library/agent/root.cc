@@ -39,7 +39,7 @@
  #include <udjat/tools/response.h>
  #include <udjat/alert.h>
  #include <udjat/module.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <sstream>
 
  #ifdef HAVE_VMDETECT
