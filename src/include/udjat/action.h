@@ -73,7 +73,7 @@
 
 			/// @brief Build an action from XML node.
 			/// @param node XML definition for the new action.
-			virtual std::shared_ptr<Action> ActionFactory(const Properties &props) const = 0;
+			virtual std::shared_ptr<Action> ActionFactory(const Udjat::Properties &props) const = 0;
 
 			/// @brief Try to build an action from XML definition.
 			/// @param node Action definition.

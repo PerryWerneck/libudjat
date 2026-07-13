@@ -55,7 +55,7 @@
 					return name;
 				}
 
-				virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Properties &props) const = 0;
+				virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Udjat::Properties &props) const = 0;
 
 			};
 

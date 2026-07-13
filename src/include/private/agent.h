@@ -23,10 +23,6 @@
 #include <udjat/defs.h>
 #include <iostream>
 #include <udjat/agent.h>
-#include <unordered_map>
-#include <udjat/tools/quark.h>
-#include <udjat/tools/xml.h>
-#include <udjat/module.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
@@ -73,9 +69,9 @@ namespace Udjat {
 		void stop() noexcept override;
 
 		// ActionFactory
-		std::shared_ptr<Action> ActionFactory(const XML::Node &node) const override;
+		std::shared_ptr<Action> ActionFactory(const Udjat::Properties &props) const override;
 
-		std::shared_ptr<Abstract::Object> ObjectFactory(const XML::Node &node) const override;
+		std::shared_ptr<Abstract::Object> ObjectFactory(const Udjat::Properties &props) const override;
 
 	};
 
