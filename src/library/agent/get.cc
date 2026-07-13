@@ -123,9 +123,9 @@
 
 	}
 
-	Value & Abstract::Agent::getProperties(Value &value) const {
+	Value & Abstract::Agent::get_properties(Value &value) const {
 
-		Object::getProperties(value);
+		Object::get_properties(value);
 
 		try {
 
@@ -150,7 +150,7 @@
 				default:
 				
 					// Get the entire object..
-					this->current_state.selected->getProperties(state);
+					this->current_state.selected->get_properties(state);
 					state["activation"] = TimeStamp(this->current_state.timestamp);
 
 					switch(current_state.activation) {
@@ -173,11 +173,11 @@
 
 		} catch(const std::exception &e) {
 
-			error() << "Error '" << e.what() << "' getting agent properties" << endl;
+			Logger::String{"Error '", e.what(), "' getting agent properties"}.error(name());
 
 		} catch(...) {
 
-			error() << "Unexpected error getting agent properties" << endl;
+			Logger::String{"Unexpected error getting agent properties"}.error(name());
 
 		}
 
