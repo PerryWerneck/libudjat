@@ -29,52 +29,51 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/agent.h>
- #include <udjat/agent/state.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/object.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/action.h>
- #include <udjat/tools/event.h>
- #include <udjat/tools/mainloop.h>
- #include <udjat/tools/logger.h>
- #include <udjat/action.h>
+ #include <udjat/agent/state.h>
  #include <udjat/alert.h>
+ #include <udjat/action.h>
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+ //  #include <udjat/tools/object.h>
+//  #include <udjat/tools/configuration.h>
+//  #include <udjat/action.h>
+//  #include <udjat/tools/event.h>
+//  #include <udjat/tools/mainloop.h>
+//  #include <udjat/tools/logger.h>
 
 namespace Udjat {
 
-	bool Abstract::Agent::append_child(const XML::Node &node) {
+	bool Abstract::Agent::append_child(const Properties &props) {
 
-		if(Udjat::Object::append_child(node)) {
+		if(Udjat::Object::append_child(props)) {
 			return true;
 		}
 
 		// It's a state?
-		if(strcasecmp(node.name(),"state") == 0) {
+		if(props == "state") {
 
-			auto state = StateFactory(node);
+			auto state = StateFactory(props);
 			if(state) {
-				state->parse_children(node);
+				state->append_children(props);
 				return true; // Handled by state.
 			}
 			
 		}
 
 		// It's an alert? Push it as an activatable.
-		if(strcasecmp(node.name(),"alert") == 0) {
-			push_back(node,Alert::Factory::build(*this,node));
+		if(props == "alert") {
+			push_back(props,Alert::Factory::build(*this,props));
 			return true; // Handled by alert.
 		}
 
 		// It's an action? Push it as an activatable.
-		if(strcasecmp(node.name(),"action") == 0 || strcasecmp(node.name(),"script") == 0) {
-			push_back(node,Action::Factory::build(node));
+		if(props == "action" || props == "script") {
+			push_back(props,Action::Factory::build(props));
 			return true; // Handled by action.
 		}
 
-#ifdef DEBUG 
-		Logger::String{"Unexpected node <Agent::",node.name(),">"}.warning(name());
-#endif // DEBUG
+		Logger::String{"Ignoring build of '",props.node_name(),"'"}.warning(name());
 
 		return false;
 	}

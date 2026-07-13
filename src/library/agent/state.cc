@@ -13,10 +13,11 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
  #include <udjat/alert.h>
+ #include <memory>
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+ using namespace std;
 
-namespace Udjat {
+ namespace Udjat {
 
 	/// @brief Activate an error state.
 	void Abstract::Agent::failed(const char *summary, const std::exception &e) noexcept {
@@ -96,11 +97,11 @@ namespace Udjat {
 
 			} catch(const std::exception &e) {
 
-				error() << "Error '" << e.what() << "' deactivating state" << endl;
+				Logger::String{"Error '",e.what(),"' deactivating state"}.error(name());
 
 			} catch(...) {
 
-				error() << "Unexpected error deactivating state" << endl;
+				Logger::String{"Unexpected error deactivating state"}.error(name());
 
 			}
 
@@ -141,12 +142,12 @@ namespace Udjat {
 
 			} catch(const std::exception &e) {
 
-				error() << "Error '" << e.what() << "' activating state" << endl;
+				Logger::String{"Error '",e.what(),"' activating state"}.error(name());
 				current_state.set(Abstract::State::Factory(e,_("Error activating state")));
 
 			} catch(...) {
 
-				error() << "Unexpected error activating state" << endl;
+				Logger::String{"Unexpected error deactivating state"}.error(name());
 				current_state.set(make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error activating state")));
 
 			}
@@ -165,17 +166,11 @@ namespace Udjat {
 		notify(STATE_CHANGED);
 
 		if(message && *message) {
-
-			LogFactory(level)
-				<< name()
-				<< "\t"
-				<< Logger::Message{
-						message,
-						this->state()->summary(),
-						std::to_string(level),
-					}
-				<< endl;
-
+			Logger::Message{
+				message,
+				this->state()->summary(),
+				std::to_string(level),
+			}.write(LogLevelFactory(level),name());
 		}
 
 		if(saved_level != level) {
@@ -203,7 +198,13 @@ namespace Udjat {
 		}
 
 		if(parent && parent->current_state.activated() && parent->current_state.selected->forward()) {
-			info() << "Ignoring state '" << state->summary() << "' by parent (" << parent->name() << ") request" << endl;
+			Logger::String{
+				"Ignoring state '",
+				state->summary(),
+				"' by parent (",
+				parent->name(),
+				") request"
+			 }.info(name());
 			return false;
 		}
 

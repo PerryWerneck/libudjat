@@ -22,8 +22,9 @@
  #include <udjat/agent.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
+ #include <stdexcept>
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+ using namespace std;
 
  namespace Udjat {
 

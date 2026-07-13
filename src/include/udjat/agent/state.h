@@ -77,7 +77,7 @@
 			State & operator=(State &&) = delete;
 
 			/// @brief Append child object from XML definition.
-			/// @details This method is called by parse_children() for every child node.
+			/// @details This method is called by append_children() for every child node.
 			/// @param node The XML node with the child definitions.
 			/// @return true if the node was parsed and should be ignored by the caller.
 			bool append_child(const Properties &props) override;

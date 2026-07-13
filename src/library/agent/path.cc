@@ -59,7 +59,7 @@
 		for(auto child : agent) {
 			if(!strncasecmp(path,child->name(),len)) {
 				debug("Found child '",child->name(),"' (next='",next,"')");
-				return child->getProperties(next,value);
+				return child->get_properties(next,value);
 			}
 		}
 
