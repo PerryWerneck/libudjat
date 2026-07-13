@@ -19,46 +19,27 @@
 
  #include <config.h>
  #include <private/request.h>
- #include <cstring>
- #include <cstdarg>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/intl.h>
  #include <udjat/tools/request.h>
- #include <udjat/tools/string.h>
- #include <udjat/tools/value.h>
- #include <udjat/tools/http/mimetype.h>
- #include <udjat/tools/http/exception.h>
- #include <udjat/tools/configuration.h>
+ #include <udjat/tools/intl.h>
+ #include <cstdarg>
 
  namespace Udjat {
 
-	Request::~Request() {
+	Request::Request(const char *path) : reqpath{path} {
+
+		if(reqpath && *reqpath) {
+			pop(reqpath,apiver);
+		} else {
+			reqpath = "";
+		}
+		
+		rewind();
+
+		debug("Build request for '",reqpath,"'");
 	}
 
-	const char * Request::pop(const char *path, unsigned int &apiver) {
-		
-		apiver = 0;
-		if(!Request::pop("api",path)) {
-			return path;
-		}
-
-		if(path[0] == '/' && isdigit(path[1])) {
-			path++;
-			while(*path && *path != '/') {
-				if(isdigit(*path)) {
-					apiver += (*path - '0');
-				} else if(*path == '.') {
-					apiver *= 100;
-				} else {
-					throw runtime_error(_("Invalid or unexpected API version"));
-				}
-				path++;
-			}
-		} else {
-			apiver = 1000000;
-		}
-		
-		return path;
+	Request::~Request() {
 	}
 
 	bool Request::pop(const char *prefix, const char * &path) {
@@ -85,6 +66,31 @@
 		return true;
 	}
 
+	bool Request::pop(const char * &path, unsigned int &apiver) {
+		
+		apiver = 0;
+		if(!pop("api",path)) {
+			return false;
+		}
+
+		if(path[0] == '/' && isdigit(path[1])) {
+			path++;
+			while(*path && *path != '/') {
+				if(isdigit(*path)) {
+					apiver += (*path - '0');
+				} else if(*path == '.') {
+					apiver *= 100;
+				} else {
+					throw runtime_error(_("Invalid or unexpected API version"));
+				}
+				path++;
+			}
+		} else {
+			apiver = 1000000;
+		}
+		
+		return true;
+	}
 
 	bool Request::cached(const TimeStamp &) const {
 		return false;
@@ -94,11 +100,11 @@
 		return def;
 	}
 
-	bool Request::allow(const Authentication::Level level) const {
+	Authentication::Level Request::auth_level() const noexcept {
 		if(!auth) {
-			return level == Authentication::None;
+			return Authentication::None;
 		}
-		return auth->allow(level);
+		return auth->level();
 	}
 
 	const char * Request::username() const {
@@ -117,7 +123,7 @@
 		});
 	}
 
-	bool Request::getProperty(const char *key, std::string &value) const {
+	bool Request::get_property(const char *key, std::string &value) const {
 
 		if(!strcasecmp(key,"path")) {
 			value = path();
@@ -134,42 +140,12 @@
 			return true;
 		}
 
-		return Value::getProperty(key,value);
+		return Value::get_property(key,value);
 	}
 
 	const char * Request::header(const char *name) const noexcept {
 		Logger::String{"Returning empty value for header '",name,"'"}.trace();
 		return "";
-	}
-
-	bool Request::has_prefix(const char *prefix) const noexcept {
-
-		if(!(prefix && *prefix)) {
-			return false;
-		}
-
-		if(!(argptr && *argptr)) {
-			return false;
-		}
-
-		return (strncasecmp(argptr,prefix,strlen(prefix)) == 0);
-
-	}
-
-	bool Request::pop(const char *prefix) noexcept {
-
-		if(!has_prefix(prefix)) {
-			return false;
-		}
-
-		size_t szprefix = strlen(prefix);
-		if(strlen(argptr) < szprefix || argptr[szprefix] != '/') {
-			return false;
-		}
-
-		argptr += szprefix;
-		return true;
-
 	}
 
 	String Request::pop() {
@@ -216,10 +192,8 @@
 	}
 
 	Request & Request::pop(std::string &value) {
-
 		value = pop();
 		return *this;
-
 	}
 
 	Request & Request::pop(int &value) {
@@ -239,11 +213,6 @@
 		Logger::String{"The request path is empty"}.trace();
 		return "";
 	}
-
-	bool Request::html() const noexcept {
-		return false;
-	}
-
 
  }
 

@@ -21,6 +21,9 @@
  #include <private/agent.h>
  #include <udjat/tools/logger.h>
  #include <udjat/agent.h>
+ #include <mutex>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -56,7 +59,7 @@
 			auto first_state = computeState();
 
 			if(!first_state) {
-				warning() << "Got an invalid state, switching to the default one" << endl;
+				Logger::String{"Got an invalid state, switching to the default one"}.warning(name());
 				first_state = Abstract::Agent::computeState();
 			}
 

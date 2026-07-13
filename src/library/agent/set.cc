@@ -22,6 +22,7 @@
  #include <udjat/agent.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/timestamp.h>
  #include <stdexcept>
 
  using namespace std;

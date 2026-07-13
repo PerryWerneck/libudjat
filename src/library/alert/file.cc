@@ -36,7 +36,7 @@
 
 		filename{props["filename"].as_quark()}, maxage{props.get("maxage",86400)}, 
 	
-		payload{Activatable::payload(node)} {
+		payload{Activatable::payload(props)} {
 
 		if(!(filename && *filename)) {
 			throw runtime_error(String{"Required attribute 'filename' is empty on alert '",name(),"'"});

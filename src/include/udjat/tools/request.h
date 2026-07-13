@@ -50,15 +50,15 @@
 		/// @brief Authentication for this request.
 		std::shared_ptr<Authentication> auth;
 
+		/// @brief Extract prefix /api/[APIVERSION] from string.
+		/// @param path The request path beginning with /api/ (Will be updated).
+		/// @param apiver The extracted API version (will be 0 if the request doesnt begin with /api/)
+		/// @return true if the request begin with /api/ 
+		static bool pop(const char * &path, unsigned int &apiver);
+
 	public:
 
-#if __cplusplus >= 201703L
-		constexpr Request(const char *path = "") : argptr{path}, reqpath{path} {
-		}
-#else
-		Request(const char *path = "") : argptr{path}, reqpath{path} {
-		}
-#endif
+		Request(const char *path = "");
 
 		virtual ~Request();
 
@@ -71,10 +71,10 @@
 		}
 
 		/// @brief Check and extract element from path.
-		/// @param key The prefix to check and extract.
+		/// @param prefix The prefix to check and extract.
 		/// @param path The current path.
 		/// @return true if the prefix was found and extracted.
-		static bool pop(const char *key, const char * &path) noexcept;
+		static bool pop(const char *prefix, const char * &path) noexcept;
 
 		/// @brief Test and extract request path.
 		/// @param key The key to check.

@@ -1,21 +1,31 @@
-/**
- * @file
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
+
+/*
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
  *
- * @brief Implements the agent update methods.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * @author perry.werneck@gmail.com
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include <private/agent.h>
+ #include <udjat/agent.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
 
  using namespace std;
 
-//---[ Implement ]------------------------------------------------------------------------------------------
-
-namespace Udjat {
+ namespace Udjat {
 
 	void Abstract::Agent::chk4refresh(bool forward) noexcept {
 
@@ -113,12 +123,12 @@ namespace Udjat {
 
 		} catch(const exception &e) {
 
-			error() << "Error '" << e.what() << "' switching state" << endl;
+			Logger::String{"Error '", e.what(), "' switching state"}.error(name());
 			set(Abstract::State::Factory(e,"Error switching state"));
 
 		} catch(...) {
 
-			cerr << name() << "\tUnexpected error switching state" << endl;
+			Logger::String{"Unexpected error switching state"}.error(name());
 			set(make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state"));
 
 		}
