@@ -94,11 +94,12 @@
 		return def;
 	}
 
-	bool Request::allow(const Authentication::Level level) const {
+	bool Request::allow(const Authentication::Role role) const {
 		if(!auth) {
-			return level == Authentication::None;
+			// TODO: Build an empty authentication.
+			return role >= Authentication::None;
 		}
-		return auth->allow(level);
+		return auth->allow(role);
 	}
 
 	const char * Request::username() const {

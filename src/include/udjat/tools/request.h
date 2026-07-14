@@ -106,10 +106,10 @@
 			return !(reqpath && *reqpath);
 		}
 
-		/// @brief Check the required authentication level.
-		/// @param auth The required authentication level.
-		/// @return true if this request is valid for the supplied level.
-		bool allow(const Authentication::Level auth) const;
+		/// @brief Check the required role for this interface.
+		/// @param role The current user role.
+		/// @return true if the user has access to this interface.
+		bool allow(const Authentication::Role role = Authentication::None) const;
 
 		/// @brief Get authentication token.
 		inline std::shared_ptr<Authentication> authentication() const noexcept {

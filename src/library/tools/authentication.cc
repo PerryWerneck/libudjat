@@ -43,20 +43,20 @@
  using namespace std;
 
  static const struct {
-	Udjat::Authentication::Level level;
+	Udjat::Authentication::Role level;
 	const char *name;
  } levelnames[] = {
-	{ Udjat::Authentication::None,	"None" 			},
-	{ Udjat::Authentication::Guest, "Guest" 		},
-	{ Udjat::Authentication::Guest,	"Viewer" 		},
-	{ Udjat::Authentication::User,	"User" 			},
-	{ Udjat::Authentication::User,	"Member" 		},
-	{ Udjat::Authentication::Admin,	"Admin" 		},
-	{ Udjat::Authentication::Admin,	"Manager"		},
-	{ Udjat::Authentication::Admin,	"Administrator"	},
-	{ Udjat::Authentication::Owner,	"Owner" 		},
-	{ Udjat::Authentication::Owner,	"Super"			},
-	{ Udjat::Authentication::Owner,	"root"			}
+	{ Udjat::Authentication::None,		"None" 			},
+	{ Udjat::Authentication::Guest, 	"Guest" 		},
+	{ Udjat::Authentication::Guest,		"Viewer" 		},
+	{ Udjat::Authentication::Member,	"User" 			},
+	{ Udjat::Authentication::Member,	"Member" 		},
+	{ Udjat::Authentication::Admin,		"Admin" 		},
+	{ Udjat::Authentication::Admin,		"Manager"		},
+	{ Udjat::Authentication::Admin,		"Administrator"	},
+	{ Udjat::Authentication::Owner,		"Owner" 		},
+	{ Udjat::Authentication::Owner,		"SuperUser"		},
+	{ Udjat::Authentication::Owner,		"root"			}
  };
 
  namespace Udjat {
@@ -309,34 +309,34 @@
 	};
 #endif // HAVE_OPENSSL
 
-	Authentication::Authentication(Level level) {
-		user.level = level;
+	Authentication::Authentication(Role role) {
+		user.role = role;
 	}
 
-	Authentication::Authentication(const char *name, Level level) {
-		user.level = level;
+	Authentication::Authentication(const char *name, Role role) {
+		user.role = role;
 		user.name = name;
 	}
 
-	Authentication::Level Authentication::login(const char *email) noexcept {
+	Authentication::Role Authentication::login(const char *email) noexcept {
 
 		Config::Value<string> owner{"authentication","owner"};
 
 		if(!(owner.empty() || strcasecmp(email,owner.c_str()))){
 			Logger::String{"User '",email,"' logged in as owner"}.info();
-			return user.level = Level::Owner;
+			return user.role = Role::Owner;
 		}
 
 		if(Config::Value<bool>{"authentication","allow-guest",false}) {
 			Logger::String{"Rejecting user '",email,"' (guest not allowed)"}.warning();
-			return user.level = Level::None;
+			return user.role = Role::None;
 		}
 
 		// TODO: Check for admin users registered on configuration file.
 
 		// Unauthenticated and guest allowed, return 'guest'
 		Logger::String{"User '",email,"' logged in as guest"}.info();
-		return user.level = Level::Guest;
+		return user.role = Role::Guest;
 	}
 
 	bool Authentication::available() noexcept {
@@ -347,9 +347,8 @@
 #endif // HAVE_OPENSSL
 	}
 
-
 	void Authentication::clear() noexcept {
-		user.level = None;
+		user.role = Role::None;
 		user.name.clear();
 	}
 
@@ -363,7 +362,6 @@
 	}
 
 	Authentication::~Authentication() {
-
 	}
 
 	String Authentication::encrypt(const void *token, size_t len) {
@@ -394,7 +392,7 @@
 
 	}
 
-	Authentication::Level Authentication::LevelFactory(const char *name) {
+	Authentication::Role Authentication::RoleFactory(const char *name) {
 		
 		if(name && *name) {
 			for(const auto &level : levelnames) {
@@ -412,13 +410,13 @@
 
 	}
 
-	Authentication::Level Authentication::LevelFactory(const Properties &props) {
-		return LevelFactory(props["required-authentication-level"].c_str());
+	Authentication::Role Authentication::RoleFactory(const Properties &props) {
+		return RoleFactory(props["role"].c_str());
 	}
 
-	Authentication::Level Authentication::LevelFactory(const Properties &props, Authentication::Level def) {
-		if(props.contains("required-authentication-level")) {
-			return LevelFactory(props);
+	Authentication::Role Authentication::RoleFactory(const Properties &props, Authentication::Role def) {
+		if(props.contains("role")) {
+			return RoleFactory(props);
 		}
 		return def;
 	}
@@ -427,7 +425,7 @@
 
  namespace std {
 
-	UDJAT_API const char * to_string(const Udjat::Authentication::Level lvl) {
+	UDJAT_API const char * to_string(const Udjat::Authentication::Role lvl) {
 		for(const auto &level : levelnames) {
 			if(level.level == lvl) {
 				return level.name;

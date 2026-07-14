@@ -153,7 +153,10 @@
 		}
 #endif
 
-		bool allow(const Authentication::Level auth) const;
+		/// @brief Check the required role for this interface.
+		/// @param role The current user role.
+		/// @return true if the user has access to this interface.
+		bool allow(const Authentication::Role role = Authentication::None) const;
 
 		/// @brief Call handler actions.
 		/// @param request The request data.
@@ -174,7 +177,7 @@
 
 	private:
 		const char *interface_name;
-		Authentication::Level required_auth = Authentication::None;
+		Authentication::Role role = Authentication::None;
 
 	protected:
 
