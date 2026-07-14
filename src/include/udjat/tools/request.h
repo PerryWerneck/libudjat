@@ -102,7 +102,7 @@
 		/// @brief Get the user authentication level.
 		/// @return The authentication level for current user.
 		/// @retval Authentication::None if not authenticated.
-		Authentication::Level auth_level() const noexcept;
+		Authentication::Role role() const noexcept;
 
 		/// @brief Test if the request can handle the path.
 		/// @param prefix The path being searched.
@@ -111,39 +111,39 @@
 
 #if __cplusplus >= 202002L
 
-		int operator <=>(const Authentication::Level auth) const noexcept {
-			return auth_level() - auth;
+		int operator <=>(const Authentication::Role role) const noexcept {
+			return this->role() - role;
 		}
 
 #else
 
-		inline bool operator ==(const Authentication::Level auth) const noexcept {
-			return auth_level() == auth;
+		inline bool operator ==(const Authentication::Role role) const noexcept {
+			return this->role() == role;
 		}
 
-		inline bool operator>(const Authentication::Level auth) const noexcept {
-			return auth_level() > auth;
+		inline bool operator>(const Authentication::Role role) const noexcept {
+			return this->role() > role;
 		}
 
-		inline bool operator<(const Authentication::Level auth) const noexcept {
-			return auth_level() < auth;
+		inline bool operator<(const Authentication::Role role) const noexcept {
+			return this->role() < role;
 		}
 
-		inline bool operator>=(const Authentication::Level auth) const noexcept {
-			return auth_level() >= auth;
+		inline bool operator>=(const Authentication::Role role) const noexcept {
+			return this->role() >= role;
 		}
 
-		inline bool operator<=(const Authentication::Level auth) const noexcept {
-			return auth_level() <= auth;
+		inline bool operator<=(const Authentication::Role role) const noexcept {
+			return this->role() <= role;
 		}
 
 #endif
 
-		/// @brief Check the required authentication level.
-		/// @param auth The required authentication level.
-		/// @return true if this request is valid for the supplied level.
-		inline bool allow(const Authentication::Level auth) const noexcept {
-			return *this >= auth;
+		/// @brief Check the required role for this interface.
+		/// @param role The current user role.
+		/// @return true if the user has access to this interface.
+		bool allow(const Authentication::Role role = Authentication::None) const {
+			authentication()->allow(role);
 		}
 
 		/// @brief Get authentication token.

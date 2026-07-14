@@ -253,7 +253,7 @@
 		return 0;
 	}
 	
-	Interface::Interface(const Properties &props) : required_auth{Authentication::LevelFactory(props)} {
+	Interface::Interface(const Properties &props) : role{Authentication::RoleFactory(props)} {
 
 		// Try type based name
 		String attr{props.get("type","default").c_str(),"-name"};
@@ -274,8 +274,8 @@
 
 	}
 
-	bool Interface::allow(const Authentication::Level auth) const {
-		return auth >= required_auth;
+	bool Interface::allow(const Authentication::Role role) const {
+		return role >= this->role;
 	}
 
 	Interface::~Interface() {

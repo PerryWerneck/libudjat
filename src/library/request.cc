@@ -100,11 +100,20 @@
 		return def;
 	}
 
+<<<<<<< HEAD:src/library/request.cc
 	Authentication::Level Request::auth_level() const noexcept {
 		if(!auth) {
 			return Authentication::None;
 		}
 		return auth->level();
+=======
+	bool Request::allow(const Authentication::Role role) const {
+		if(!auth) {
+			// TODO: Build an empty authentication.
+			return role >= Authentication::None;
+		}
+		return auth->allow(role);
+>>>>>>> develop:src/library/request/request.cc
 	}
 
 	const char * Request::username() const {

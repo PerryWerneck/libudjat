@@ -40,22 +40,22 @@
 				/// @brief Reset authentication engine, generate a new key.
 				static void reset() noexcept;
 
-				enum Level : uint8_t {
+				enum Role : uint8_t {
 					None,	///< @brief Non authenticated user.
 					Guest,  ///< @brief Guest/Viewer: Read-only access to specific resources.
-					User,	///< @brief User/Member: Can create, edit, and view their own data, but cannot see global settings.
+					Member,	///< @brief User/Member: Can create, edit, and view their own data, but cannot see global settings.
 					Admin,	///< @brief Admin/Manager: Can invite/remove regular users, change application settings, and manage content.Standard 
 
 					// Owner is allways the higher one.
 					Owner,	///< @brief Owner/Super: Full system control, billing management, and account deletion. (Strictly 1 or 2 users).
 				};
 
-				static Level LevelFactory(const char *name = nullptr);
-				static Level LevelFactory(const Properties &props);
-				static Level LevelFactory(const Properties &props, Level level);
+				static Role RoleFactory(const char *name = nullptr);
+				static Role RoleFactory(const Properties &props);
+				static Role RoleFactory(const Properties &props, Role level);
 			
-				Authentication(Level level = None);
-				Authentication(const char *username, Level level = Guest);
+				Authentication(Role role = None);
+				Authentication(const char *username, Role role = Guest);
 
 				/// @brief Encrypt token, return base64.
 				/// @param token The token to encrypt.
@@ -98,30 +98,30 @@
 
 #if __cplusplus >= 202002L
 
-				inline int operator <=>(const Level level) const noexcept {
-					return current_level - level;
+				inline int operator <=>(const Role role) const noexcept {
+					return user.role - role;
 				}
 
 #else
 
-				inline bool operator ==(const Level level) const noexcept {
-					return user.level == level;
+				inline bool operator ==(const Role role) const noexcept {
+					return user.role == role;
 				}
 
-				inline bool operator>(const Level level) const noexcept {
-					return user.level > level;
+				inline bool operator>(const Role role) const noexcept {
+					return user.role > role;
 				}
 
-				inline bool operator<(const Level level) const noexcept {
-					return user.level < level;
+				inline bool operator<(const Role role) const noexcept {
+					return user.role < role;
 				}
 
-				inline bool operator>=(const Level level) const noexcept {
-					return user.level >= level;
+				inline bool operator>=(const Role role) const noexcept {
+					return user.role >= role;
 				}
 
-				inline bool operator<=(const Level level) const noexcept {
-					return user.level <= level;
+				inline bool operator<=(const Role role) const noexcept {
+					return user.role <= role;
 				}
 
 #endif
@@ -130,12 +130,12 @@
 					return user.name.c_str();
 				}
 
-				inline bool allow(Level level) const noexcept {
-					return user.level >= level;
+				inline bool allow(Role role) const noexcept {
+					return user.role >= role;
 				}
 
-				inline Level level() const noexcept {
-					return user.level;
+				inline Role role() const noexcept {
+					return user.role;
 				}
 
 				inline const char *name() const noexcept {
@@ -147,15 +147,15 @@
 					user.name = name;
 				}
 
-				/// @brief Set login name to 'email', update access level.
+				/// @brief Set login name to 'email', update role.
 				/// @param email The user e-mail.
-				/// @return The new access level.
-				virtual Level login(const char *email) noexcept;
+				/// @return The new role.
+				virtual Role login(const char *email) noexcept;
 				
 			private:
 
 				struct {
-					Level level = None;
+					Role role = None;
 					std::string name;
 				} user;
 
@@ -166,10 +166,10 @@
 
  namespace std {
 
-	UDJAT_API const char * to_string(const Udjat::Authentication::Level level);
+	UDJAT_API const char * to_string(const Udjat::Authentication::Role role);
 
-	inline ostream & operator<< (ostream& os, const Udjat::Authentication::Level level) {
-		return os << to_string(level);
+	inline ostream & operator<< (ostream& os, const Udjat::Authentication::Role role) {
+		return os << to_string(role);
 	}
 
 
