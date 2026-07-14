@@ -20,7 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/intl.h>
- #include <udjat/tools/xml.h>
+ #include <private/pugixml.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/script.h>
  #include <udjat/tools/quark.h>

@@ -36,6 +36,7 @@
  #include <udjat/tools/base64.h>
  #include <algorithm>
  #include <udjat/tools/memory.h>
+ #include <udjat/tools/properties.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>

@@ -6,7 +6,7 @@
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/value.h>
 #include <udjat/tools/container.h>
-#include <udjat/tools/xml.h>
+#include <private/pugixml.h>
 #include <udjat/tools/properties.h>
 #include <mutex>
 #include <vector>

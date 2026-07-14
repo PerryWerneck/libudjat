@@ -28,10 +28,8 @@
 
  #include <config.h>
  #include <cstring>
- #include <udjat/tools/xml.h>
  #include <iostream>
  #include <limits.h>
- #include <udjat/tools/parse.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
 

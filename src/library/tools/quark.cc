@@ -21,11 +21,11 @@
 #include <udjat/defs.h>
 #include <iostream>
 #include <udjat/tools/quark.h>
-#include <udjat/tools/xml.h>
 #include <udjat/tools/string.h>
 #include <mutex>
 #include <unordered_set>
 #include <udjat/tools/quark.h>
+#include <private/pugixml.h>
 
 #ifdef DEBUG
 	#undef DEBUG // Disable debug messages
@@ -159,10 +159,6 @@ namespace Udjat {
 		}
 	}
 
-	Quark::Quark(const pugi::xml_attribute &attribute) {
-		this->value = Controller::getInstance().find(attribute.as_string(),true);
-	}
-
 	Quark::Quark(const Properties &props,const char *name,const char *def) {
 		this->value = Controller::getInstance().find(props.get(name,def).c_str(),true);
 	}
@@ -199,11 +195,6 @@ namespace Udjat {
 
 	Quark & Quark::operator=(const std::string &str) {
 		this->value = Controller::getInstance().find(str.c_str(),true);
-		return *this;
-	}
-
-	Quark & Quark::operator=(const pugi::xml_attribute &attribute) {
-		this->value = Controller::getInstance().find(attribute.as_string(),true);
 		return *this;
 	}
 
@@ -250,77 +241,5 @@ namespace Udjat {
 		set(text.c_str());
 		return *this;
 	}
-
-// #ifdef HAVE_PUGIXML
-// 	const Quark & Quark::set(const XML::Node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate) {
-
-// 		if(!node)
-// 			return *this;
-
-// 		auto attribute = node.attribute(xml_attribute);
-
-// 		if(attribute) {
-// 			set(attribute.as_string(),translate);
-// 			return *this;
-// 		}
-
-// 		// Check children for <attribute name=>
-// 		for(XML::Node child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
-
-// 			if(strcasecmp(xml_attribute,child.attribute("name").as_string()) == 0) {
-// 				set(child.attribute("value").as_string(),translate);
-// 				return *this;
-// 			}
-
-// 		}
-
-// 		// If upsearch is true repeat the query on parent node.
-// 		if(upsearch) {
-// 			return set(node.parent(),xml_attribute,true,translate);
-// 		}
-
-// 		return *this;
-
-// 	}
-
-// 	const Quark & Quark::set(const XML::Node &node, const char *xml_attribute, bool upsearch) {
-
-// 		if(!node)
-// 			return *this;
-
-// 		auto attribute = node.attribute(xml_attribute);
-
-// 		if(attribute) {
-// 			set(attribute.as_string());
-// 			return *this;
-// 		}
-
-// 		// Check children for <attribute name=>
-// 		for(XML::Node child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
-
-// 			if(strcasecmp(xml_attribute,child.attribute("name").as_string()) == 0) {
-// 				set(child.attribute("value").as_string());
-// 				return *this;
-// 			}
-
-// 		}
-
-// 		// If upsearch is true repeat the query on parent node.
-// 		if(upsearch) {
-// 			return set(node.parent(),xml_attribute,true);
-// 		}
-
-// 		return *this;
-
-// 	}
-// #else // HAVE_PUGIXML
-// 	const Quark & Quark::set(const XML::Node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate) {
-// 		throw runtime_error("XML support not available");
-// 	}
-
-// 	const Quark & Quark::set(const XML::Node &node, const char *xml_attribute, bool upsearch) {
-// 		throw runtime_error("XML support not available");
-// 	}
-// #endif // HAVE_PUGIXML
 
 }

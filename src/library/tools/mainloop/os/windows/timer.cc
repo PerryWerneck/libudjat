@@ -24,7 +24,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
- #include <udjat/tools/xml.h>
+ #include <private/pugixml.h>
  #include <udjat/tools/timestamp.h>
  #include <private/win32/mainloop.h>
  #include <sys/time.h>

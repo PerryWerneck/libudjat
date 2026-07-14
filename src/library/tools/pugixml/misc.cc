@@ -20,7 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <cstring>
- #include <udjat/tools/xml.h>
+ #include <private/pugixml.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/expander.h>
  #include <udjat/tools/object.h>

@@ -29,11 +29,7 @@
 #include <private/module.h>
 #include <udjat/tools/unit-test.h>
 #include <udjat/tools/logger.h>
-
-#ifdef HAVE_PUGIXML
-	#include <udjat/tools/properties.h>
-	#include <udjat/tools/xml.h>
-#endif // HAVE_PUGIXML
+#include <udjat/tools/properties.h>
 
 #ifndef _WIN32
 	#include <dlfcn.h>

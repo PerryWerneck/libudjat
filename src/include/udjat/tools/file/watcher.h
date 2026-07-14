@@ -23,7 +23,8 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
+ #include <stdint.h>
 
  namespace Udjat {
 

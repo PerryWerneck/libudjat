@@ -12,13 +12,13 @@
 	#define UDJAT_THREADPOOL_H_INCLUDED
 
 	#include <udjat/defs.h>
-	#include <udjat/tools/xml.h>
 	#include <thread>
 	#include <mutex>
 	#include <atomic>
 	#include <queue>
 	#include <condition_variable>
 	#include <functional>
+	#include <udjat/tools/properties.h>
 
 	namespace Udjat {
 

@@ -26,7 +26,6 @@
  #include <vector>
  #include <functional>
  #include <udjat/tools/properties.h>
- #include <udjat/tools/xml.h>
 
  namespace Udjat {
 

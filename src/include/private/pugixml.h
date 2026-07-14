@@ -17,15 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * @file src/include/udjat/tools/xml.h
- *
- * @brief Declare the udjat XML classes and tools
- *
- * @author perry.werneck@gmail.com
- *
- */
-
  #pragma once
 
  #include <udjat/defs.h>

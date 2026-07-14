@@ -38,7 +38,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/configuration.h>
-// #include <private/updater.h>
+ #include <udjat/tools/properties.h>
  #include <list>
 
  #ifdef HAVE_SYSTEMD

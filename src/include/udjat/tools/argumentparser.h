@@ -25,6 +25,7 @@
 #include <functional>
 #include <list>
 #include <cstring>
+#include <cstdint>
 #include <udjat/tools/logger.h>
 
 namespace Udjat {

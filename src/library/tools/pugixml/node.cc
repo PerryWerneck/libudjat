@@ -21,7 +21,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/xml.h>
+ #include <private/pugixml.h>
  #include <udjat/tools/properties.h>
  #include <udjat/tools/properties.h>
  #include <udjat/tools/string.h>

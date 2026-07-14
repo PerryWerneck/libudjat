@@ -26,6 +26,8 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/schema.h>
 
+ #include <private/pugixml.h>
+
  #include <cstdarg>
 
  using namespace std;

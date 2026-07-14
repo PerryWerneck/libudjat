@@ -30,7 +30,6 @@
  #include <udjat/action.h>
  #include <udjat/tools/script.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/xml.h>
  #include <udjat/tools/properties.h>
  #include <private/action.h>
  #include <udjat/tools/url.h>

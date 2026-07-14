@@ -17,106 +17,100 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef QUARK_H_INCLUDED
+#pragma once
 
-	#define QUARK_H_INCLUDED
+#include <udjat/defs.h>
+#include <cstring>
+#include <functional>
+#include <ostream>
+#include <udjat/tools/properties.h>
 
-	#include <udjat/defs.h>
-	#include <udjat/tools/xml.h>
-	#include <cstring>
-	#include <functional>
-	#include <ostream>
+namespace Udjat {
 
-	namespace Udjat {
+	/// @brief Single instance string.
+	class UDJAT_API Quark {
+	private:
+		class Controller;
+		friend class Controller;
 
-		/// @brief Single instance string.
-		class UDJAT_API Quark {
-		private:
-			class Controller;
-			friend class Controller;
+		const char *value;
 
-			const char *value;
+	public:
 
-		public:
+		/// @brief Initialize Quark Engine.
+		static void init();
 
-			/// @brief Initialize Quark Engine.
-			static void init();
+		static Quark getFromStatic(const char *str);
 
-			static Quark getFromStatic(const char *str);
+		Quark() : value(nullptr) {}
 
-			Quark() : value(nullptr) {}
+		Quark(const char *str);
+		Quark(const std::string &str);
+		Quark(const Quark &src);
+		Quark(const Quark *src);
 
-			Quark(const char *str);
-			Quark(const std::string &str);
-			Quark(const Quark &src);
-			Quark(const Quark *src);
-			Quark(const pugi::xml_attribute &attribute);
+		/// @brief Create quark from XML attribute
+		/// @param node	XML node.
+		/// @param Attribute name.
+		/// @param def Default value.
+		/// @param upsearch If true search the parent nodes.
+		Quark(const Properties &props,const char *name,const char *def="");
 
-			/// @brief Create quark from XML attribute
-			/// @param node	XML node.
-			/// @param Attribute name.
-			/// @param def Default value.
-			/// @param upsearch If true search the parent nodes.
-			Quark(const Properties &props,const char *name,const char *def="");
+		Quark & operator=(const char *str);
+		Quark & operator=(const std::string &str);
 
-			Quark & operator=(const char *str);
-			Quark & operator=(const std::string &str);
-			Quark & operator=(const pugi::xml_attribute &attribute);
-
-			Quark & operator=(const Quark &src) {
-				value = src.value;
-				return *this;
-			}
-
-			Quark & operator=(const Quark *src) {
-				value = src->value;
-				return *this;
-			}
-
-			const char * c_str() const;
-
-			size_t hash() const;
-
-			operator bool() const {
-				return value != nullptr && *value;
-			}
-
-			bool operator==(const Quark &src) const {
-				return this->value == src.value;
-			}
-
-			bool operator==(const char *str) const {
-				return compare(str);
-			}
-
-			bool compare(const char *str) const {
-				return strcmp(c_str(),str);
-			}
-
-			const Quark & set(const char *str);
-			const Quark & set(const char *str, const std::function<const char * (const char *key)> translate);
-
-			// const Quark & set(const XML::Node &node, const char *xml_attribute, bool upsearch = false);
-			// const Quark & set(const XML::Node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate);
-
-		};
-	}
-
-	#define I_(str) Udjat::Quark::getFromStatic(str)
-
-	namespace std {
-
-		template <>
-		struct hash<Udjat::Quark> {
-			inline size_t operator() (const Udjat::Quark &quark) const {
-				return std::hash<std::string>{}(quark.c_str());
-			}
-		};
-
-		inline ostream& operator<< (ostream& os, const Udjat::Quark &quark ) {
-			return os << ((const char *)quark.c_str());
+		Quark & operator=(const Quark &src) {
+			value = src.value;
+			return *this;
 		}
 
+		Quark & operator=(const Quark *src) {
+			value = src->value;
+			return *this;
+		}
+
+		const char * c_str() const;
+
+		size_t hash() const;
+
+		operator bool() const {
+			return value != nullptr && *value;
+		}
+
+		bool operator==(const Quark &src) const {
+			return this->value == src.value;
+		}
+
+		bool operator==(const char *str) const {
+			return compare(str);
+		}
+
+		bool compare(const char *str) const {
+			return strcmp(c_str(),str);
+		}
+
+		const Quark & set(const char *str);
+		const Quark & set(const char *str, const std::function<const char * (const char *key)> translate);
+
+		// const Quark & set(const XML::Node &node, const char *xml_attribute, bool upsearch = false);
+		// const Quark & set(const XML::Node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate);
+
+	};
+}
+
+#define I_(str) Udjat::Quark::getFromStatic(str)
+
+namespace std {
+
+	template <>
+	struct hash<Udjat::Quark> {
+		inline size_t operator() (const Udjat::Quark &quark) const {
+			return std::hash<std::string>{}(quark.c_str());
+		}
+	};
+
+	inline ostream& operator<< (ostream& os, const Udjat::Quark &quark ) {
+		return os << ((const char *)quark.c_str());
 	}
 
-#endif // QUARK_H_INCLUDED
+}

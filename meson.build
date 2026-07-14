@@ -514,11 +514,11 @@ lib_src += [
   'src/library/tools/value/report.cc',
   'src/library/tools/value/yaml.cc',
   'src/library/tools/value/text.cc',
-  'src/library/tools/xml/document.cc',
-  'src/library/tools/xml/attribute.cc',
-  'src/library/tools/xml/misc.cc',
-  'src/library/tools/xml/load.cc',
-  'src/library/tools/xml/node.cc',
+  'src/library/tools/pugixml/document.cc',
+  'src/library/tools/pugixml/attribute.cc',
+  'src/library/tools/pugixml/misc.cc',
+  'src/library/tools/pugixml/load.cc',
+  'src/library/tools/pugixml/node.cc',
   'src/library/tools/exception.cc',
   'src/library/tools/logger/commandline.cc',
   'src/library/tools/logger/controller.cc',
@@ -1002,11 +1002,6 @@ install_headers(
 )
 
 install_headers(
-  'src/include/udjat/tools/abstract/request-path.h',
-  subdir: 'udjat/tools/abstract'  
-)
-
-install_headers(
   'src/include/udjat/tools/url/handler.h',
   subdir: 'udjat/tools/url'  
 )
@@ -1025,7 +1020,6 @@ install_headers(
   'src/include/udjat/tools/interface.h',
   'src/include/udjat/tools/network.h',
   'src/include/udjat/tools/object.h',
-  'src/include/udjat/tools/parse.h',
   'src/include/udjat/tools/quark.h',
   'src/include/udjat/tools/response.h',
   'src/include/udjat/tools/schema.h',
@@ -1049,7 +1043,6 @@ install_headers(
   'src/include/udjat/tools/string.h',
   'src/include/udjat/tools/timer.h',
   'src/include/udjat/tools/url.h',
-  'src/include/udjat/tools/xml.h',
   'src/include/udjat/tools/system.h',
   'src/include/udjat/tools/interface.h',
   'src/include/udjat/tools/report.h',

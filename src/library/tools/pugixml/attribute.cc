@@ -20,7 +20,7 @@
  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
  #include <config.h>
- #include <udjat/tools/xml.h>
+ #include <private/pugixml.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>

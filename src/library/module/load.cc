@@ -30,7 +30,7 @@
 #include <udjat/tools/object.h>
 #include <udjat/tools/logger.h>
 
-#include <udjat/tools/xml.h>
+#include <private/pugixml.h>
 
 namespace Udjat {
 
