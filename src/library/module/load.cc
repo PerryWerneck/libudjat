@@ -48,8 +48,8 @@ namespace Udjat {
 
 	}
 
-	bool Module::Controller::parse(const XML::Node &node) {
-		return load(node);
+	bool Module::Controller::build(const Properties &props) {
+		return load(props);
 	}
 
 	bool Module::Controller::load(const Properties &props) {

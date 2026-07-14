@@ -39,7 +39,7 @@ namespace Udjat {
 		return instance;
 	}
 
-	Module::Controller::Controller() : XML::Parser{"module"} {
+	Module::Controller::Controller() : Properties::ObjectBuilder{"module"} {
 		Logger::String{"Starting controller"}.trace();
 	}
 

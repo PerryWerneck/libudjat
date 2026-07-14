@@ -31,6 +31,10 @@
 #include <udjat/tools/logger.h>
 #include <udjat/tools/properties.h>
 
+#ifdef HAVE_PUGIXML
+	#include <private/pugixml.h>
+#endif
+
 #ifndef _WIN32
 	#include <dlfcn.h>
 	#include <link.h>

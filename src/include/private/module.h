@@ -6,7 +6,6 @@
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/value.h>
 #include <udjat/tools/container.h>
-#include <private/pugixml.h>
 #include <udjat/tools/properties.h>
 #include <mutex>
 #include <vector>
@@ -15,7 +14,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Module::Controller : private XML::Parser {
+	class Module::Controller : private Properties::ObjectBuilder {
 	private:
 		friend class MainLoop;
 
@@ -83,10 +82,10 @@ namespace Udjat {
 		/// @brief Unload all modules.
 		void unload();
 
-		/// @brief Load module by xml definition.
+		/// @brief Load module by properties.
 		/// @param node Module definitions.
 		/// @return true if the node was parsed and should be ignored by the caller.
-		bool parse(const XML::Node &node) override;
+		bool build(const Properties &props) override;
 
 		/// @brief Load module by filename.
 		/// @param filename The module filename.

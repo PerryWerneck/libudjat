@@ -28,15 +28,14 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/properties.h>
- #include <private/pugixml.h>
-
+ 
  using namespace std;
 
  namespace Udjat {
 
-	class UDJAT_PRIVATE InterfaceFactories : public Container<Interface::Factory>, public XML::Parser {
+	class UDJAT_PRIVATE InterfaceFactories : public Container<Interface::Factory>, public Properties::ObjectBuilder {
 	public:
-		InterfaceFactories() : XML::Parser{"interface"} {
+		InterfaceFactories() : Properties::ObjectBuilder{"interface"} {
 			debug("Interface factories initialized");
 		}
 
@@ -44,8 +43,8 @@
 			debug("Interface factories destroyed");
 		}
 
-		bool parse(const XML::Node &node) override {
-			Interface::Factory::build(node);
+		bool build(const Properties &props) override {
+			Interface::Factory::build(props);
 			return true; // Node was parsed.
 		}
 

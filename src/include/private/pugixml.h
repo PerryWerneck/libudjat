@@ -120,42 +120,6 @@
 			time_t parse() const;
 
 		};
-
-		
-		/// @brief XML parser, used to parse XML nodes.
-		/// @details This class is used to parse XML nodes and build objects from them.
-		class UDJAT_API Parser {
-		private:
-			const char *parser_name = nullptr;
-
-		public:
-			Parser(const char *name);
-			virtual ~Parser();
-
-#if __cplusplus >= 202002L
-			inline auto operator <=>(const char *name) const noexcept {
-				return strcasecmp(name,parser_name);
-			}
-#else
-			inline bool operator==(const char *name) const noexcept {
-				return strcasecmp(name,parser_name) == 0;
-			}
-#endif
-
-			/// @brief Parse XML node.
-			/// @param node XML node to parse.
-			/// @return true if the node was parsed and should be ignored by the caller.
-			virtual bool parse(const XML::Node &node) = 0;
-
-			inline const char *c_str() const noexcept {
-				return parser_name;
-			}
-
-			inline const char *name() const noexcept {
-				return parser_name;
-			}
-
-		};
 		
 		/// @brief Test if attribute is 'true', parse URL is necessary.
 		/// @param node Start node.

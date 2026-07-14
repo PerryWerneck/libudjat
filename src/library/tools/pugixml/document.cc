@@ -44,21 +44,6 @@
 
  namespace Udjat {
 
-	static Container<XML::Parser> & Factories() {
-		static Container<XML::Parser> instance;
-		return instance;
-	}
-
-	XML::Parser::Parser(const char *n) : parser_name{n} {
-		Logger::String{"Registering parser for <",parser_name,">"}.trace();
-		Factories().push_back(this);
-	}
-
-	XML::Parser::~Parser() {
-		Logger::String{"Unregistering parser for <",parser_name,">"}.trace();
-		Factories().remove(this);
-	}
-
 	/// @brief Load XML file, check if it's valid.
  	static void load(XML::Document *document, const char *filename) {
 
@@ -173,29 +158,8 @@
 			return true; // Ignore reserved nodes.
 		}
 
-		if(Properties::build(props)) {
-			return true; // Handled.
-		}
-
-		const char *name = node.name();
-	
-		for(const auto factory : Factories()) {
-			if(*factory == name) {
-
-				if(!factory->parse(props)) {
-					continue; // Not handled.
-				}
-
-				// Handled, parse children too?
-				if(recursive) {
-					parse_children(node,recursive);
-				}
-
-				return true; // Handled.
-			}
-		}
-
-		return false; // Not handled.
+		// Forward to properties builder.
+		return Properties::build(props);
 
 	}
 
