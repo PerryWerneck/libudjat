@@ -39,7 +39,6 @@
  #include <udjat/tools/http/method.h>
  #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/file/handler.h>
- #include <private/pugixml.h>
  #include <memory>
 
  namespace Udjat {

@@ -19,7 +19,7 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <private/pugixml.h>
+ #include <udjat/tools/properties.h>
  #include <memory>
  #include <vector>
 
