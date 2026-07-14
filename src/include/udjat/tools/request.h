@@ -142,8 +142,8 @@
 		/// @brief Check the required role for this interface.
 		/// @param role The current user role.
 		/// @return true if the user has access to this interface.
-		bool allow(const Authentication::Role role = Authentication::None) const {
-			authentication()->allow(role);
+		inline bool allow(const Authentication::Role role = Authentication::None) const {
+			return authentication()->allow(role);
 		}
 
 		/// @brief Get authentication token.
