@@ -536,6 +536,7 @@ lib_src += [
   'src/library/tools/action/abstract.cc',
   'src/library/tools/action/controller.cc',
   'src/library/tools/action/factory.cc',
+  'src/library/tools/template.cc',
   'src/library/tools/unit-tests.cc',
   'src/library/tools/console.cc',
   'src/library/tools/console/progress.cc',
