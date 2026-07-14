@@ -7,137 +7,133 @@
  *
  */
 
-#ifndef UDJAT_THREADPOOL_H_INCLUDED
+ #pragma once
 
-	#define UDJAT_THREADPOOL_H_INCLUDED
+#include <udjat/defs.h>
+#include <thread>
+#include <mutex>
+#include <atomic>
+#include <queue>
+#include <condition_variable>
+#include <functional>
+#include <udjat/tools/properties.h>
 
-	#include <udjat/defs.h>
-	#include <thread>
-	#include <mutex>
-	#include <atomic>
-	#include <queue>
-	#include <condition_variable>
-	#include <functional>
-	#include <udjat/tools/properties.h>
+namespace Udjat {
 
-	namespace Udjat {
+	class UDJAT_API ThreadPool {
+	private:
 
-		class UDJAT_API ThreadPool {
-		private:
+		/// @brief Pool name
+		const char *name;
 
-			/// @brief Pool name
-			const char *name;
+		/// @brief Lock guard to prevent multiple accesses to the queue.
+		std::mutex guard;
 
-			/// @brief Lock guard to prevent multiple accesses to the queue.
-			std::mutex guard;
+		/// @brief Task queue.
+		struct Task {
+			const char				* name;		///< @brief Task name.
+			std::function<void()>	  callback;	///< @brief Task method.
+			Task(const char *n, std::function<void()> c) : name(n), callback(c) {
+			}
 
-			/// @brief Task queue.
-			struct Task {
-				const char				* name;		///< @brief Task name.
-				std::function<void()>	  callback;	///< @brief Task method.
-				Task(const char *n, std::function<void()> c) : name(n), callback(c) {
-				}
+			Task() : name(nullptr) {};
+		};
+		std::queue<Task> tasks;
 
-				Task() : name(nullptr) {};
-			};
-			std::queue<Task> tasks;
+		static void worker(ThreadPool *pool) noexcept;
 
-			static void worker(ThreadPool *pool) noexcept;
+		bool pop(Task &task) noexcept;
 
-			bool pop(Task &task) noexcept;
-
-			/// @brief Wake up one worker.
-			void wakeup() noexcept;
+		/// @brief Wake up one worker.
+		void wakeup() noexcept;
 
 #ifdef _WIN32
 
-			class Controller;
+		class Controller;
 
-			HANDLE hEvent;
-			struct {
-				size_t	  active		= 0;		///< @brief Number of active threads.
-				size_t	  waiting		= 0;		///< @brief Número of idle threads.
-			} threads;
+		HANDLE hEvent;
+		struct {
+			size_t	  active		= 0;		///< @brief Number of active threads.
+			size_t	  waiting		= 0;		///< @brief Número of idle threads.
+		} threads;
 
 #else
-			struct {
-				std::atomic<size_t>	  active;		///< @brief Number of active threads.
-				std::atomic<size_t>	  waiting;		///< @brief Número of idle threads.
-			} threads;
+		struct {
+			std::atomic<size_t>	  active;		///< @brief Number of active threads.
+			std::atomic<size_t>	  waiting;		///< @brief Número of idle threads.
+		} threads;
 
-			struct {
-				std::mutex m;
-				std::condition_variable cv;
-			} event;
+		struct {
+			std::mutex m;
+			std::condition_variable cv;
+		} event;
 
 #endif // _WIN32
 
-		protected:
+	protected:
 
-			struct {
-				size_t threads	= 3;	///< @brief Limit the number of threads.
-				size_t tasks	= 1000;	///< @brief Limit the number of tasks.
-				size_t idle		= 5;	///< @brief How many seconds a thread stay idle before finish.
-			} limits;
+		struct {
+			size_t threads	= 3;	///< @brief Limit the number of threads.
+			size_t tasks	= 1000;	///< @brief Limit the number of tasks.
+			size_t idle		= 5;	///< @brief How many seconds a thread stay idle before finish.
+		} limits;
 
-		public:
+	public:
 
-			static ThreadPool & getInstance();
+		static ThreadPool & getInstance();
 
-			/// @brief Create a new threadpool
-			/// @param name Pool name (should be an static string).
-			ThreadPool(const char *name);
+		/// @brief Create a new threadpool
+		/// @param name Pool name (should be an static string).
+		ThreadPool(const char *name);
 
-			~ThreadPool();
+		~ThreadPool();
 
-			void stop();
-			void set(const Properties &props);
+		void stop();
+		void set(const Properties &props);
 
-			inline void setMaxThreads(size_t maxthreads) {
-				limits.threads = maxthreads;
-			}
+		inline void setMaxThreads(size_t maxthreads) {
+			limits.threads = maxthreads;
+		}
 
-			bool empty() const noexcept {
-				return (threads.active + threads.waiting) == 0;
-			}
+		bool empty() const noexcept {
+			return (threads.active + threads.waiting) == 0;
+		}
 
-			inline operator bool() const noexcept {
-				return threads.active > 0;
-			}
+		inline operator bool() const noexcept {
+			return threads.active > 0;
+		}
 
-			/// @brief Get number of active threads.
-			inline size_t getActiveThreads() const noexcept {
-				return threads.active;
-			}
+		/// @brief Get number of active threads.
+		inline size_t getActiveThreads() const noexcept {
+			return threads.active;
+		}
 
-			/// @brief Get number of waiting threads.
-			inline size_t getWaitingThreads() const noexcept {
-				return threads.waiting;
-			}
+		/// @brief Get number of waiting threads.
+		inline size_t getWaitingThreads() const noexcept {
+			return threads.waiting;
+		}
 
-			size_t size();
+		size_t size();
 
-			/// @brief Wait for pool cleanup.
-			/// @param seconds time to wait
-			bool wait(time_t seconds);
+		/// @brief Wait for pool cleanup.
+		/// @param seconds time to wait
+		bool wait(time_t seconds);
 
-			/// @brief Wait for pool cleanup, using default timeout.
-			bool wait();
+		/// @brief Wait for pool cleanup, using default timeout.
+		bool wait();
 
-			/// @brief Push a named task.
-			/// @param name	Task name (Should be a static string).
-			/// @param callback Task method.
-			size_t push(const char *name, std::function<void()> callback);
+		/// @brief Push a named task.
+		/// @param name	Task name (Should be a static string).
+		/// @param callback Task method.
+		size_t push(const char *name, std::function<void()> callback);
 
-			/// @brief Push an unnamed task.
-			/// @param callback Task method.
-			// size_t push(std::function<void()> callback);
-			inline size_t push(std::function<void()> callback) {
-				return push(__FILE__,callback);
-			}
+		/// @brief Push an unnamed task.
+		/// @param callback Task method.
+		// size_t push(std::function<void()> callback);
+		inline size_t push(std::function<void()> callback) {
+			return push(__FILE__,callback);
+		}
 
-		};
+	};
 
-	}
-
-#endif // UDJAT_THREADPOOL_H_INCLUDED
+}
