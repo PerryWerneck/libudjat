@@ -49,8 +49,8 @@
 		const char *valuename;	///< @brief name of the field for agent value.
 
 	public:
-		ActionAgent(const XML::Node &node, std::shared_ptr<Action> a) 
-		: Udjat::Agent<T>{node}, action{a}, valuename{String{node,"value-from","value"}.as_quark()} {
+		ActionAgent(const Properties &props, std::shared_ptr<Action> a) 
+		: Udjat::Agent<T>{props}, action{a}, valuename{props.get("value-from","value").as_quark()} {
 		}
 
 		bool refresh(bool) override {
@@ -58,7 +58,7 @@
 			Request request;
 			Response response;
 
-			this->getProperties(request);
+			this->get_properties(request);
 
 			T val = this->get();
 

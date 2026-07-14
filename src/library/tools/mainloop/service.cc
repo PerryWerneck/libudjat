@@ -61,7 +61,7 @@
 		state.active = false;
 	}
 
-	Value & Service::getProperties(Value &properties) const {
+	Value & Service::get_properties(Value &properties) const {
 		properties["name"] = service_name;
 		properties["active"] = state.active;
 		return properties;

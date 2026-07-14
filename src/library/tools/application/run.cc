@@ -26,6 +26,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/argumentparser.h>
+ #include <udjat/tools/object.h>
  #include <udjat/agent.h>
  #include <udjat/tools/intl.h>
  #include <udjat/module.h>
@@ -88,9 +89,9 @@
 				Logger::String{"Loading ",path}.trace();
 				state( _("Loading configuration") );
 
-				// TODO: Load XML definitions.
+				// Load XML definitions.
 				root = RootFactory();
-				time_t refresh = root->parse(path);
+				time_t refresh = root->load(path);
 
 				if(refresh) {
 

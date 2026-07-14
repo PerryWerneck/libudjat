@@ -47,14 +47,17 @@
 		expand(props);
 	}
 
-	String::String(const XML::Node &node, const char *attrname, bool required)
-		: String{node.get(attrname,required ? nullptr : "")} {
-		expand(node);
+	String::String(const Properties &props, const char *attrname, bool required) {
+		if(required && !props.contains(attrname)) {
+			throw runtime_error(Logger::String{"Required attribute '",attrname,"' is missing"});
+		}
+		assign(props[attrname].c_str());
+		expand(props);
 	}
 
-	String::String(const XML::Node &node, const char *attrname, const char *def)
-		: String{node.get(attrname,def)} {
-		expand(node);
+	String::String(const Properties &props, const char *attrname, const char *def)
+		: String{props.get(attrname,def)} {
+		expand(props);
 	}
 
  }

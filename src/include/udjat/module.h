@@ -193,7 +193,7 @@
 		/// @return true if the property is valid.
 		virtual bool getProperty(const char *key, std::string &value) const;
 
-		virtual Value & getProperties(Value &properties) const;
+		virtual Value & get_properties(Value &properties) const;
 
 		/// @brief Get module property.
 		/// @param property_name The property name.

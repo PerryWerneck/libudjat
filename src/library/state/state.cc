@@ -102,7 +102,7 @@ namespace Udjat {
 
 	bool Abstract::State::append_child(const Properties &props) {
 
-		if(super::append_child(props)) {
+		if(Object::append_child(props)) {
 			return true; // Handled by object.
 		}
 
@@ -156,14 +156,14 @@ namespace Udjat {
 	}
 
 	Value & Abstract::State::get_properties(Value &value) const {
-		super::get_properties(value);
+		Object::get_properties(value);
 		value["body"] = properties.body;
 		value["level"] = std::to_string(properties.level);
 		return value;
 	}
 
 	bool Abstract::State::output_schema(const char *path, Schema &schema) const noexcept {
-		super::output_schema(path,schema);
+		Object::output_schema(path,schema);
 		schema.append(
 			Schema::Item{ "body",	Udjat::Value::String },
 			Schema::Item{ "level",	Udjat::Value::String }
@@ -187,7 +187,7 @@ namespace Udjat {
 
 	bool Abstract::State::get_property(const char *key, std::string &value) const {
 
-		if(super::get_property(key,value)) {
+		if(Object::get_property(key,value)) {
 			return true;
 		}
 

@@ -155,14 +155,13 @@
 		/// @param node XML node with string definitions.
 		/// @param attrname XML attribute name for the string value.
 		/// @param def Default value if not found.
-		/// @param upsearch Search upper levels for attribute.
-		String(const XML::Node &node, const char *attrname, const char *def);
+		String(const Properties &props, const char *attrname, const char *def);
 
 		/// @brief Construct string from xml definition.
 		/// @param node XML node with string definitions.
 		/// @param attrname XML attribute name for the string value.
 		/// @param required if true will throw exception if the attribute is not found.
-		String(const XML::Node &node, const char *attrname = "value", bool required = false);
+		String(const Properties &props, const char *attrname = "value", bool required = false);
 
 		//
 		// Append

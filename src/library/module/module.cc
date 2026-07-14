@@ -53,7 +53,7 @@ namespace Udjat {
 		Controller::getInstance().remove(this);
 	}
 
-	Value & Module::getProperties(Value &properties) const {
+	Value & Module::get_properties(Value &properties) const {
 		properties["name"] = module_name;
 		properties["filename"] = filename();
 		return properties;

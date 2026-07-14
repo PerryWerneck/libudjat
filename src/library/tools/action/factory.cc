@@ -58,7 +58,7 @@
 		Controller::getInstance().remove(this);
 	}
 
-	bool Action::Factory::probe(const XML::Node &node) const noexcept {
+	bool Action::Factory::probe(const Properties &props) const noexcept {
 		return false;
 	}
 

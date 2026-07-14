@@ -89,7 +89,7 @@
 			/// @retval Complete without failures.
 			virtual int call(Udjat::Request &request, Udjat::Response &response) const;
 
-			virtual void push_back(const XML::Node &node);
+			virtual void push_back(const Properties &props);
 			virtual void push_back(std::shared_ptr<Action> action);
 
 		private:
@@ -125,11 +125,11 @@
 			}
 #endif
 
-			static void build(const XML::Node &node) noexcept;
+			static void build(const Properties &props) noexcept;
 
 			static bool for_each(const std::function<bool(Interface::Factory &intf)> &method);
 
-			virtual void getProperties(Udjat::Value &value) const;
+			virtual void get_properties(Udjat::Value &value) const;
 
 			virtual Interface & InterfaceFactory(const Properties &props) = 0;
 

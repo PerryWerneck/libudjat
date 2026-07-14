@@ -72,7 +72,7 @@
 			/// @brief Parse XML file(s), build children.
 			/// @param path The path for a folder or a XML file, nullptr for default.
 			/// @return timestamp for next refresh.
-			time_t parse_file(const char *path = nullptr);
+			time_t load(const char *path = nullptr);
 
 			/// @brief Append child object from properties.
 			/// @details This method is called by parse_children() for every child node.
@@ -302,8 +302,8 @@
 		constexpr Object(const char *name) : NamedObject(name) {
 		}
 
-		inline time_t parse_file(const char *path) {
-			return Abstract::Object::parse_file(path);
+		inline time_t load(const char *path) {
+			return Abstract::Object::load(path);
 		}
 
 		bool get_property(const char *key, std::string &value) const override;

@@ -91,7 +91,7 @@
 			~ThreadPool();
 
 			void stop();
-			void set(const XML::Node &node);
+			void set(const Properties &props);
 
 			inline void setMaxThreads(size_t maxthreads) {
 				limits.threads = maxthreads;

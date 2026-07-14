@@ -47,7 +47,7 @@
 			Watcher(const char *pathname);
 
 			/// @brief Build a watcher from XML definition.
-			Watcher(const XML::Node &node, const char *attrname = "path");
+			Watcher(const Properties &props, const char *attrname = "path");
 
 			virtual ~Watcher();
 

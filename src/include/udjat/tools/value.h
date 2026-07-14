@@ -61,7 +61,7 @@
 		};
 
 		template <typename T>
-		constexpr Type TypeFactory() {
+		constexpr static Type TypeFactory() {
 			return Type::Undefined;
 		}
 

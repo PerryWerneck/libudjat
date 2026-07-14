@@ -27,7 +27,7 @@
  #include <udjat/defs.h>
  #include <udjat/action.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/container.h>
  #include <udjat/tools/subprocess.h>
@@ -46,8 +46,8 @@
 
  namespace Udjat {
 
-	Action::Action(const XML::Node &node)
-		: Activatable{node}, title{String{node,"title"}.as_quark()} {
+	Action::Action(const Properties &props)
+		: Activatable{props}, title{props["title"].as_quark()} {
 	}
 	
 	Action::~Action() {
@@ -66,7 +66,7 @@
 			Udjat::Request request;
 			Udjat::Response response;
 
-			object.getProperties(request);
+			object.get_properties(request);
 			return call(request,response,except);
 
 		} catch(const std::system_error &e) {
@@ -105,7 +105,7 @@
 		try {
 
 			Udjat::Request request;
-			object.getProperties(request);
+			object.get_properties(request);
 
 			Udjat::Response response;
 			int rc = call(request,response,true);

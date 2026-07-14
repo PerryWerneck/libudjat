@@ -52,7 +52,7 @@
 
 			virtual const char * name() const = 0;
 
-			virtual Value & getProperties(Value &value) const;
+			virtual Value & get_properties(Value &value) const;
 
 			virtual bool found() const = 0;
 

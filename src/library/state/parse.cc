@@ -39,162 +39,162 @@
 
  namespace Udjat {
 
-	/// @brief Parser for range or value attributes.
-	struct AttributeParser {
+	// /// @brief Parser for range or value attributes.
+	// struct AttributeParser {
 
-		XML::Attribute from;
-		XML::Attribute to;
+	// 	XML::Attribute from;
+	// 	XML::Attribute to;
 
-		AttributeParser(const XML::Node &node) {
+	// 	AttributeParser(const Properties &props) {
 
-			XML::Attribute value = node.attribute("value");
+	// 		XML::Attribute value = node.attribute("value");
 
-			from = node.attribute("from-value");
-			if(!from) {
-				from = value;
-			}
+	// 		from = node.attribute("from-value");
+	// 		if(!from) {
+	// 			from = value;
+	// 		}
 
-			to = node.attribute("to-value");
-			if(!to) {
-				to = value;
-			}
+	// 		to = node.attribute("to-value");
+	// 		if(!to) {
+	// 			to = value;
+	// 		}
 
-		}
+	// 	}
 
-	};
+	// };
 
-	void XML::parse(const XML::Node &node, int &from, int &to) {
+	// void XML::parse(const XML::Node &node, int &from, int &to) {
 
-		AttributeParser parser{node};
+	// 	AttributeParser parser{node};
 
-		from = parser.from.as_int(INT_MIN);
-		to = parser.to.as_int(INT_MAX);
+	// 	from = parser.from.as_int(INT_MIN);
+	// 	to = parser.to.as_int(INT_MAX);
 
-	}
+	// }
 
-	void XML::parse(const XML::Node &node, unsigned int &from, unsigned int &to) {
+	// void XML::parse(const XML::Node &node, unsigned int &from, unsigned int &to) {
 
-		AttributeParser parser{node};
+	// 	AttributeParser parser{node};
 
-		from = parser.from.as_uint(0);
-		to = parser.to.as_uint(UINT_MAX);
+	// 	from = parser.from.as_uint(0);
+	// 	to = parser.to.as_uint(UINT_MAX);
 
-	}
+	// }
 
-	void XML::parse(const XML::Node &node, unsigned short &from, unsigned short &to) {
+	// void XML::parse(const XML::Node &node, unsigned short &from, unsigned short &to) {
 
-		AttributeParser parser{node};
+	// 	AttributeParser parser{node};
 
-		from = parser.from.as_uint(0);
-		to = parser.to.as_uint(USHRT_MAX);
+	// 	from = parser.from.as_uint(0);
+	// 	to = parser.to.as_uint(USHRT_MAX);
 
-	}
+	// }
 
-	void XML::parse(const XML::Node &node, float &from, float &to) {
+	// void XML::parse(const XML::Node &node, float &from, float &to) {
 
-		AttributeParser parser{node};
+	// 	AttributeParser parser{node};
 
-		from = parser.from.as_float(numeric_limits<float>::min());
-		to = parser.to.as_float(numeric_limits<float>::max());
+	// 	from = parser.from.as_float(numeric_limits<float>::min());
+	// 	to = parser.to.as_float(numeric_limits<float>::max());
 
-	}
+	// }
 
-	void XML::parse(const XML::Node &node, double &from, double &to) {
+	// void XML::parse(const XML::Node &node, double &from, double &to) {
 
-		AttributeParser parser{node};
+	// 	AttributeParser parser{node};
 
-		from = parser.from.as_double(numeric_limits<double>::min());
-		to = parser.to.as_double(numeric_limits<double>::max());
+	// 	from = parser.from.as_double(numeric_limits<double>::min());
+	// 	to = parser.to.as_double(numeric_limits<double>::max());
 
-	}
+	// }
 
-	void XML::parse(const XML::Node &node, unsigned long &from, unsigned long &to) {
+	// void XML::parse(const XML::Node &node, unsigned long &from, unsigned long &to) {
 
-		AttributeParser parser{node};
+	// 	AttributeParser parser{node};
 
-		from = (unsigned long) parser.from.as_ullong();
-		to = (unsigned long) parser.from.as_ullong(ULONG_MAX);
+	// 	from = (unsigned long) parser.from.as_ullong();
+	// 	to = (unsigned long) parser.from.as_ullong(ULONG_MAX);
 
-	}
+	// }
 
-	void XML::parse(const XML::Node &node, long &from, long &to) {
+	// void XML::parse(const XML::Node &node, long &from, long &to) {
 
-		AttributeParser parser{node};
+	// 	AttributeParser parser{node};
 
-		from = (long) parser.from.as_llong(LONG_MIN);
-		to = (long) parser.from.as_llong(LONG_MAX);
+	// 	from = (long) parser.from.as_llong(LONG_MIN);
+	// 	to = (long) parser.from.as_llong(LONG_MAX);
 
-	}
+	// }
 
-	void XML::parse(const XML::Node &node, long long &from, long long &to) {
+	// void XML::parse(const XML::Node &node, long long &from, long long &to) {
 
-		AttributeParser parser{node};
+	// 	AttributeParser parser{node};
 
-		from = (long) parser.from.as_llong(numeric_limits<long long>::min());
-		to = (long) parser.from.as_llong(numeric_limits<long long>::max());
+	// 	from = (long) parser.from.as_llong(numeric_limits<long long>::min());
+	// 	to = (long) parser.from.as_llong(numeric_limits<long long>::max());
 
-	}
+	// }
 
-	void XML::parse(const XML::Node &node, unsigned long long &from, unsigned long long &to) {
+	// void XML::parse(const XML::Node &node, unsigned long long &from, unsigned long long &to) {
 
-		AttributeParser parser{node};
+	// 	AttributeParser parser{node};
 
-		from = (long) parser.from.as_ullong(numeric_limits<unsigned long long>::min());
-		to = (long) parser.from.as_ullong(numeric_limits<unsigned long long>::max());
+	// 	from = (long) parser.from.as_ullong(numeric_limits<unsigned long long>::min());
+	// 	to = (long) parser.from.as_ullong(numeric_limits<unsigned long long>::max());
 
-	}
+	// }
 
-	void XML::parse(const XML::Node &node, int &value) {
-		value = node.attribute("value").as_int();
-	}
+	// void XML::parse(const XML::Node &node, int &value) {
+	// 	value = node.attribute("value").as_int();
+	// }
 
-	void XML::parse(const XML::Node &node, unsigned int &value) {
-		value = node.attribute("value").as_uint();
-	}
+	// void XML::parse(const XML::Node &node, unsigned int &value) {
+	// 	value = node.attribute("value").as_uint();
+	// }
 
-	void XML::parse(const XML::Node &node, unsigned short &value) {
-		value = (unsigned short) node.attribute("value").as_uint();
-	}
+	// void XML::parse(const XML::Node &node, unsigned short &value) {
+	// 	value = (unsigned short) node.attribute("value").as_uint();
+	// }
 
-	void XML::parse(const XML::Node &node, float &value) {
-		value = node.attribute("value").as_float();
-	}
+	// void XML::parse(const XML::Node &node, float &value) {
+	// 	value = node.attribute("value").as_float();
+	// }
 
-	void XML::parse(const XML::Node &node, double &value) {
-		value = node.attribute("value").as_double();
-	}
+	// void XML::parse(const XML::Node &node, double &value) {
+	// 	value = node.attribute("value").as_double();
+	// }
 
-	void XML::parse(const XML::Node &node, unsigned long &value) {
-		value = (unsigned long) node.attribute("value").as_ullong();
-	}
+	// void XML::parse(const XML::Node &node, unsigned long &value) {
+	// 	value = (unsigned long) node.attribute("value").as_ullong();
+	// }
 
-	void XML::parse(const XML::Node &node, long &value) {
-		value = (long) node.attribute("value").as_llong();
-	}
+	// void XML::parse(const XML::Node &node, long &value) {
+	// 	value = (long) node.attribute("value").as_llong();
+	// }
 
-	void parse_byte_range(const XML::Node &node, unsigned long long &from, unsigned long long &to) {
+	// void parse_byte_range(const XML::Node &node, unsigned long long &from, unsigned long long &to) {
 
-		auto value = node.attribute("value");
+	// 	auto value = node.attribute("value");
 
-		if(value) {
-			from = to = String{value.as_string()}.as_ull();
-			return;
-		}
+	// 	if(value) {
+	// 		from = to = String{value.as_string()}.as_ull();
+	// 		return;
+	// 	}
 
-		auto f = node.attribute("from-value");
-		if(f) {
-			from = String{f.as_string()}.as_ull();
-		} else {
-			from  = 0;
-		}
+	// 	auto f = node.attribute("from-value");
+	// 	if(f) {
+	// 		from = String{f.as_string()}.as_ull();
+	// 	} else {
+	// 		from  = 0;
+	// 	}
 
-		auto t = node.attribute("to-value");
-		if(t) {
-			from = String{t.as_string()}.as_ull();
-		} else {
-			to = ULLONG_MAX;
-		}
+	// 	auto t = node.attribute("to-value");
+	// 	if(t) {
+	// 		from = String{t.as_string()}.as_ull();
+	// 	} else {
+	// 		to = ULLONG_MAX;
+	// 	}
 
-	}
+	// }
 
  }

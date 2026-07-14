@@ -49,7 +49,7 @@
 
 	public:
 
-		URLAlert(const XML::Node &node);
+		URLAlert(const Properties &props);
 
 		URLAlert(const char *name, const char *u, const HTTP::Method a = HTTP::Get, const char *p = "") 
 			: Alert{name}, url{u}, action{a}, payload{p} {

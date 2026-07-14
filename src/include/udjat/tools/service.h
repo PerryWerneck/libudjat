@@ -94,7 +94,7 @@
 		/// @return Pointer to service or nullptr if not found.
 		static const Service * find(const char *name) noexcept;
 
-		virtual Value & getProperties(Value &properties) const;
+		virtual Value & get_properties(Value &properties) const;
 
 		virtual void start();
 		virtual void stop();

@@ -56,71 +56,74 @@
 		return instance;
 	}
 
-	void Interface::Factory::build(const XML::Node &node) noexcept {
+	void Interface::Factory::build(const Properties &props) noexcept {
 
-		//
-		// If interface has the 'action-name' atribute will build one
-		// single action for all related interfaces.
-		//
-		std::shared_ptr<Action> action;
-		if(!String{node,"action-name"}.empty()) {
+		throw runtime_error("need refactor");
 
-			try {
+		// //
+		// // If interface has the 'action-name' atribute will build one
+		// // single action for all related interfaces.
+		// //
+		// auto action_name = props["action-name"];
+		// std::shared_ptr<Action> action;
+		// if(!action_name.empty()) {
 
-				action = Action::Factory::build(node);
+		// 	try {
 
-			} catch(const std::exception &e) {
+		// 		action = Action::Factory::build(props);
 
-				Logger::String{e.what()}.error(String{node,"action-name"}.c_str());
-				return;
+		// 	} catch(const std::exception &e) {
 
-			} catch(...) {
+		// 		Logger::String{e.what()}.error(action_name.c_str());
+		// 		return;
 
-				Logger::String{"Unexpected error building action"}.error(String{node,"action-name"}.c_str());
-				return;
+		// 	} catch(...) {
 
-			}
-		}
+		// 		Logger::String{"Unexpected error building action"}.error(action_name.c_str());
+		// 		return;
 
-		for(String &name : String{node,"type"}.split(",")) {
+		// 	}
+		// }
 
-			for(auto &factory : Factories()) {
+		// for(String &name : props["type"].split(",")) {
 
-				if(strcmp(name.c_str(),"*") == 0 || strcasecmp(name.c_str(),"all") == 0 || *factory == name.c_str()) {
+		// 	for(auto &factory : Factories()) {
 
-					try {
+		// 		if(strcmp(name.c_str(),"*") == 0 || strcasecmp(name.c_str(),"all") == 0 || *factory == name.c_str()) {
 
-						Interface &intf = factory->InterfaceFactory(node);
+		// 			try {
 
-						if(action) {
-							intf.push_back(node,action);
-						}
+		// 				Interface &intf = factory->InterfaceFactory(props);
 
-						// Insert handlers
-						for(auto hdl = node.child("handler"); hdl; hdl = hdl.next_sibling("handler")) {
-							auto &handler = intf.push_back(hdl);
-							for(const char *nodename : { "action", "script" }) {
-								for(auto act = hdl.child(nodename); hdl; hdl = hdl.next_sibling(nodename)) {
-									handler.push_back(act);
-								}
-							}
-						}
+		// 				if(action) {
+		// 					intf.push_back(props,action);
+		// 				}
 
-					} catch(const std::exception &e) {
+		// 				// Insert handlers
+		// 				for(auto hdl = props.child("handler"); hdl; hdl = hdl.next_sibling("handler")) {
+		// 					auto &handler = intf.push_back(hdl);
+		// 					for(const char *nodename : { "action", "script" }) {
+		// 						for(auto act = hdl.child(nodename); hdl; hdl = hdl.next_sibling(nodename)) {
+		// 							handler.push_back(act);
+		// 						}
+		// 					}
+		// 				}
 
-						Logger::String{e.what()}.error(factory->name());
+		// 			} catch(const std::exception &e) {
 
-					} catch(...) {
+		// 				Logger::String{e.what()}.error(factory->name());
 
-						Logger::String{"Unexpected error building interface"}.error(factory->name());
+		// 			} catch(...) {
 
-					}
+		// 				Logger::String{"Unexpected error building interface"}.error(factory->name());
 
-				}
+		// 			}
 
-			}
+		// 		}
 
-		}
+		// 	}
+
+		// }
 
 	}
 
@@ -154,7 +157,7 @@
 		return false;
 	}
 
-	void Interface::Factory::getProperties(Udjat::Value &value) const {
+	void Interface::Factory::get_properties(Udjat::Value &value) const {
 		value["name"] = name();
 		value["description"] = description();
 	}
@@ -183,8 +186,8 @@
 		actions.push_back(action);
 	}
 
-	void Interface::Handler::push_back(const XML::Node &node) {
-		push_back(Action::Factory::build(node));
+	void Interface::Handler::push_back(const Properties &props) {
+		push_back(Action::Factory::build(props));
 	}
 	
 	int Interface::Handler::call(Udjat::Request &request, Udjat::Response &response) const {

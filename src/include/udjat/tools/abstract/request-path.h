@@ -49,7 +49,7 @@
 		bool head(const Request &request, Abstract::Response &response) const;
 
 	public:
-		RequestPath(const XML::Node &node);
+		RequestPath(const Properties &props);
 
 		inline const char *name() const noexcept {
 			return object_name;

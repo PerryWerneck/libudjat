@@ -41,6 +41,7 @@
  #include <udjat/module.h>
  #include <udjat/agent.h>
  #include <sstream>
+ #include <memory>
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>
@@ -55,6 +56,8 @@
  #endif // HAVE_SYSTEMD
 
  #include <cstring>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -182,9 +185,9 @@
 
 			}
 
-			std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node) override {
+			std::shared_ptr<Abstract::State> StateFactory(const Properties &props) override {
 
-				auto state = make_shared<Abstract::State>(node);
+				auto state = make_shared<Abstract::State>(props);
 
 				// Keep only one state for every level.
 				for(auto it = states.begin(); it != states.end(); it++) {
@@ -215,9 +218,9 @@
 				Logger::String{"Root agent ",to_hex_string(this).c_str()," was destroyed"}.trace(name());
 			}
 
-			Value & getProperties(Value &value) const override {
+			Value & get_properties(Value &value) const override {
 
-				Abstract::Agent::getProperties(value);
+				Abstract::Agent::get_properties(value);
 
 #ifdef _WIN32
 				OSVERSIONINFO osvi;

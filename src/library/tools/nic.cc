@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	Value & Network::Interface::getProperties(Value &value) const {
+	Value & Network::Interface::get_properties(Value &value) const {
 
 		value["name"] = name();
 		// value["active"] = active();

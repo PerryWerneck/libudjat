@@ -55,15 +55,15 @@
 		}
 
 		/// @brief Insert State with predefined value.
-		std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node, Percentage value) {
-			auto state = std::make_shared<State<float>>(node, value);
+		std::shared_ptr<Abstract::State> StateFactory(const Properties &props, Percentage value) {
+			auto state = std::make_shared<State<float>>(props, value);
 			states.push_back(state);
 			return state;
 		}
 
 		/// @brief Insert State with predefined range.
-		std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node, Percentage from, Percentage to) {
-			auto state = std::make_shared<State<float>>(node, from, to);
+		std::shared_ptr<Abstract::State> StateFactory(const Properties &props, Percentage from, Percentage to) {
+			auto state = std::make_shared<State<float>>(props, from, to);
 			states.push_back(state);
 			return state;
 		}
@@ -89,10 +89,10 @@
 
 	public:
 
-		Agent(const Properties &props, const Percentage v = 0) : Abstract::Agent{props}, value{props.get("value",0.0)} {
+		Agent(const Properties &props, const Percentage v = 0) : Abstract::Agent{props}, value{props.get("value",v)} {
 		}
 
-		Agent(const char *name = "") : Abstract::Agent{name}, value{0.0} {
+		Agent(const char *name = "") : Abstract::Agent{name}, value{0} {
 		}
 
 		Agent(const char *name, const Percentage v) : Abstract::Agent{name}, value{v} {

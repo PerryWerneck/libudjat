@@ -251,7 +251,7 @@
 	// 	return rc;
 	// }
 
-	time_t Abstract::Object::parse_file(const char *p) {
+	time_t Abstract::Object::load(const char *p) {
 
 		time_t next = 0;
 
@@ -272,7 +272,7 @@
 			for(const auto &file : files) {
 
 				// Recursive call to parse document.
-				time_t expires = parse_file(file.c_str());
+				time_t expires = load(file.c_str());
 				if(expires) {
 					expires += time(0);
 					if(expires < next || next == 0) {
