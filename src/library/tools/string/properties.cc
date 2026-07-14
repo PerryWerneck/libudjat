@@ -22,7 +22,6 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
- #include <udjat/tools/xml.h>
  #include <udjat/tools/properties.h>
  #include <cstdarg>
  #include <udjat/tools/quark.h>
@@ -39,19 +38,6 @@
 			throw runtime_error(String{"Required attribute '",attrname,"' is missing"});
 		}
 		assign(props[attrname]);
-		expand(props);
-	}
-
-	String::String(const Properties &props, const char *attrname, const char *def)
-		: String{props.get(attrname,def)} {
-		expand(props);
-	}
-
-	String::String(const Properties &props, const char *attrname, bool required) {
-		if(required && !props.contains(attrname)) {
-			throw runtime_error(Logger::String{"Required attribute '",attrname,"' is missing"});
-		}
-		assign(props[attrname].c_str());
 		expand(props);
 	}
 

@@ -219,7 +219,7 @@
 	}
 
 	const char * XML::QuarkFactory(const XML::Node &node, const char *attrname, const char *def) {
-		return String{node,attrname,def}.as_quark();
+		return String{(Properties &) node,attrname,def}.as_quark();
 	}
 
  }

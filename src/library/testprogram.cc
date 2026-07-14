@@ -322,31 +322,6 @@
 	return 0;
  }
 
- static int string_test() {
-
-	static const char *xml = {
-		"<root>"
-		"<template name='isolinux.cfg' url='file://${template-dir}/isolinux.cfg' escape-control-characters='no' />"
-		"</root>"
-	};
-
-	pugi::xml_document doc;
-	pugi::xml_parse_result result = doc.load_string(xml);
-	if(!result) {
-		throw runtime_error{String{"Error parsing XML string: ",result.description()}};
-	}
-	auto root = XML::Node{doc}.child("root");
-	auto template_node = root.child("template");
-
-	String str{template_node, "url", true};
-	Logger::String{"Extracted string from XML: '",str.c_str(),"'."}.info();
-	if(strcmp(str.c_str(),"file://${template-dir}/isolinux.cfg") != 0) {
-		throw logic_error{"String test failed: extracted string does not match expected value."};
-	}	
-
-	return 0;
- }
-
  static int tmpfile_test() {
 
 	{
@@ -540,13 +515,6 @@
 				"conffile","Test configuration file access",
 				[]() {
 					config_test();
-					return true;
-				}
-			},
-			UnitTests::Worker{
-				"string","Test String manipulation engine",
-				[]() {
-					string_test();
 					return true;
 				}
 			},

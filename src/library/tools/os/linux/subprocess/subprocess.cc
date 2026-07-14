@@ -26,6 +26,8 @@
   *
   */
 
+ #define LOG_DOMAIN "subproc"
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/object.h>
@@ -36,7 +38,7 @@
 
 	SubProcess::SubProcess(const char *n, const char *c, Logger::Level o, Logger::Level e)
 		: NamedObject{n}, command{c}, loglevels{o,e} {
-		info() << "Running '" << command << "'" << endl;
+		Logger::String{"Running '",command,"'"}.info();
 	}
 
 	SubProcess::~SubProcess() {

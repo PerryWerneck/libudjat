@@ -30,6 +30,7 @@
  #include <udjat/agent.h>
  #include <udjat/tools/intl.h>
  #include <private/module.h>
+ #include <udjat/tools/properties.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -107,14 +108,14 @@
 		}
 	}
 
-	Application::DataFile::DataFile(const XML::Node &node, const char *attrname, bool system) : DataFile(nullptr,node,attrname,system) {
+	Application::DataFile::DataFile(const Properties &props, const char *attrname, bool system) : DataFile(nullptr,props,attrname,system) {
 	}
 
-	Application::DataFile::DataFile(const char *type, const XML::Node &node, const char *attrname, bool system) {
+	Application::DataFile::DataFile(const char *type, const Properties &props, const char *attrname, bool system) {
 
-		const char *name = node.attribute(attrname).as_string("");
+		auto name = props[attrname];
 
-		if(!name[0]) {
+		if(name.empty()) {
 			throw runtime_error(Logger::String("Required attribute '",attrname,"' is missing"));
 		}
 
@@ -123,7 +124,7 @@
 			return;
 		}
 
-		if(node.attribute("system-data-dir").as_bool(system)) {
+		if(props.get("system-data-dir",system)) {
 			assign(SystemDataDir());
 		} else {
 			assign(DataDir());

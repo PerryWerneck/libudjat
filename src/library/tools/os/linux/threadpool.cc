@@ -1,10 +1,11 @@
-/**
- *
- * Copyright (C) <2017> <Perry Werneck>
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
+
+/*
+ * Copyright (C) 2017 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -12,18 +13,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @file
- *
- * @brief Implementa objeto para o pool de threads.
- *
- * @author Perry Werneck <perry.werneck@gmail.com>
- *
- * $URL: http://suportelinux.df.bb.com.br/svn/suporte/aplicativos/common-components/cpp/src/components/core/linux/threadpool.cc $
- * $Revision: 40262 $ $Author: c1103788 $
- *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
  #define LOG_DOMAIN "threadpool"
@@ -31,13 +22,13 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/properties.h>
  #include <unistd.h>
  #include <semaphore.h>
  #include <cstring>
  #include <chrono>
  #include <unistd.h>
  #include <iostream>
- #include <pthread.h>
  #include <pthread.h>
 
  #ifdef DEBUG
@@ -90,12 +81,10 @@
 		stop();
 	}
 
-	void ThreadPool::set(const XML::Node &node) {
-
-		limits.threads	= node.attribute("max-threads").as_uint(limits.threads);
-		limits.tasks	= node.attribute("max-tasks").as_uint(limits.tasks);
-		limits.idle		= node.attribute("max-idle").as_uint(limits.idle);
-
+	void ThreadPool::set(const Properties &props) {
+		limits.threads	= props.get("max-threads",(unsigned int) limits.threads);
+		limits.tasks	= props.get("max-tasks",(unsigned int) limits.tasks);
+		limits.idle		= props.get("max-idle",(unsigned int) limits.idle);
 	}
 
 	void ThreadPool::stop() {

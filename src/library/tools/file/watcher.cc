@@ -25,16 +25,17 @@
  #include <udjat/tools/file/watcher.h>
  #include <private/filewatcher.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/properties.h>
 
  namespace Udjat {
 
 	File::Watcher::Watcher(const char *p) : pathname{p} {
 	}
 
-	File::Watcher::Watcher(const XML::Node &node, const char *attrname)
-		: File::Watcher{String{node,attrname,""}.as_quark()} {
+	File::Watcher::Watcher(const Properties &props, const char *attrname)
+		: File::Watcher{props[attrname].as_quark()} {
 
-		if(node.attribute("watch-file-changes").as_bool(true)) {
+		if(props.get("watch-file-changes",true)) {
 			watch();
 		}
 

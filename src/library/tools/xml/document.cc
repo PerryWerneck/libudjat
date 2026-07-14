@@ -101,7 +101,7 @@
 
 		// Check for update.
 		const XML::Node &node = document_element();
-		URL url{node};
+		URL url{(Properties &) node};
 		url.expand();
 
 		if(!url.empty() && File::outdated(filename,TimeStamp{XML::Node{node},"update-timer"})) {
