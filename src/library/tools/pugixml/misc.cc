@@ -35,139 +35,139 @@
 
  namespace Udjat {
 
-	bool XML::for_each_attribute(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) {
-		return node.for_each_attribute(attrname,test);
-	}
+	// bool XML::for_each_attribute(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) {
+	// 	return node.for_each_attribute(attrname,test);
+	// }
 
-	bool XML::for_each(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) {
-		return node.for_each_attribute(attrname,test);
-	}
+	// bool XML::for_each(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) {
+	// 	return node.for_each_attribute(attrname,test);
+	// }
 
 
-	static XML::Attribute find(const XML::Node &n, const char *name, const char *upsearch) {
+	// static XML::Attribute find(const XML::Node &n, const char *name, const char *upsearch) {
 
-		auto node = n;
+	// 	auto node = n;
 
-		while(node) {
+	// 	while(node) {
 
-			xml_attribute attribute = node.attribute(name);
-			if(attribute)
-				return attribute;
+	// 		xml_attribute attribute = node.attribute(name);
+	// 		if(attribute)
+	// 			return attribute;
 
-			for(auto child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
+	// 		for(auto child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
 
-				if(strcasecmp(name,child.attribute("name").as_string()) == 0)
-					return child.attribute("value");
+	// 			if(strcasecmp(name,child.attribute("name").as_string()) == 0)
+	// 				return child.attribute("value");
 
-			}
+	// 		}
 
-			if(upsearch && node.attribute("allow-upsearch").as_bool(true)) {
-				name = upsearch;
-				node = node.parent();
-			} else {
-				break;
-			}
-		}
+	// 		if(upsearch && node.attribute("allow-upsearch").as_bool(true)) {
+	// 			name = upsearch;
+	// 			node = node.parent();
+	// 		} else {
+	// 			break;
+	// 		}
+	// 	}
 
-		return xml_attribute();
-	}
+	// 	return xml_attribute();
+	// }
 
-	Attribute::Attribute(const XML::Node &node, const char *name, const char *upsearch) : xml_attribute(find(node, name, upsearch)) {
+	// Attribute::Attribute(const XML::Node &node, const char *name, const char *upsearch) : xml_attribute(find(node, name, upsearch)) {
 
-		value = this->as_string();
+	// 	value = this->as_string();
 
-		expand(value,[node](const char *key, string &value){
+	// 	expand(value,[node](const char *key, string &value){
 
-			auto attr = find(node,key,key);
-			if(attr) {
-				value = attr.as_string();
-				return true;
-			}
+	// 		auto attr = find(node,key,key);
+	// 		if(attr) {
+	// 			value = attr.as_string();
+	// 			return true;
+	// 		}
 
-			return false;
+	// 		return false;
 
-		});
+	// 	});
 
-	}
+	// }
 
-	Attribute::Attribute(const XML::Node &node, const char *name, bool upsearch) : Attribute(node,name,(upsearch ? name : nullptr)) {
-	}
+	// Attribute::Attribute(const XML::Node &node, const char *name, bool upsearch) : Attribute(node,name,(upsearch ? name : nullptr)) {
+	// }
 
-	Attribute::Attribute(const XML::Node &node, const char *name) : Attribute(node,name,node.attribute("allow-upsearch").as_bool(true)) {
-	}
+	// Attribute::Attribute(const XML::Node &node, const char *name) : Attribute(node,name,node.attribute("allow-upsearch").as_bool(true)) {
+	// }
 
-	std::string Attribute::to_string(const string &def) const {
-		if(*this) {
-			return def;
-		}
-		return value;
-	}
+	// std::string Attribute::to_string(const string &def) const {
+	// 	if(*this) {
+	// 		return def;
+	// 	}
+	// 	return value;
+	// }
 
-	const char * Attribute::c_str(const char *def) const {
-		return Quark(to_string(def)).c_str();
-	}
+	// const char * Attribute::c_str(const char *def) const {
+	// 	return Quark(to_string(def)).c_str();
+	// }
 
-	bool is_reserved(const XML::Node &node) {
-		return node.reserved();
+	// bool is_reserved(const XML::Node &node) {
+	// 	return node.reserved();
 
-	}
+	// }
 
-	bool is_allowed(const XML::Node &node) {
-		return node.allowed();
+	// bool is_allowed(const XML::Node &node) {
+	// 	return node.allowed();
 
-	}
+	// }
 	
-	std::string expand(const XML::Node &node, const pugi::xml_attribute &attribute, const char *def) {
-		return Udjat::String(attribute.as_string(def)).expand(node);
-	}
+	// std::string expand(const XML::Node &node, const pugi::xml_attribute &attribute, const char *def) {
+	// 	return Udjat::String(attribute.as_string(def)).expand(node);
+	// }
 
-	std::string expand(const XML::Node &node, const char *str) {
+	// std::string expand(const XML::Node &node, const char *str) {
 
-		return Udjat::String(str).expand(node);
+	// 	return Udjat::String(str).expand(node);
 
-	}
+	// }
 
-	size_t Attribute::select(const char *value, ...) {
+	// size_t Attribute::select(const char *value, ...) {
 
-		const char * attr = as_string(value);
+	// 	const char * attr = as_string(value);
 
-		size_t index = 0;
+	// 	size_t index = 0;
 
-		va_list args;
-		va_start(args, value);
-		while(value) {
+	// 	va_list args;
+	// 	va_start(args, value);
+	// 	while(value) {
 
-			if(!strcasecmp(attr,value)) {
-				va_end(args);
-				return index;
-			}
+	// 		if(!strcasecmp(attr,value)) {
+	// 			va_end(args);
+	// 			return index;
+	// 		}
 
-			index++;
-			value = va_arg(args, const char *);
-		}
-		va_end(args);
+	// 		index++;
+	// 		value = va_arg(args, const char *);
+	// 	}
+	// 	va_end(args);
 
-		throw system_error(ENOENT,system_category(),Logger::Message("Unexpected value '{}'",attr));
+	// 	throw system_error(ENOENT,system_category(),Logger::Message("Unexpected value '{}'",attr));
 
-	}
+	// }
 
-	void XML::options(const XML::Node &node, const std::function<void(const char *name, const char *value)> &call) {
+	// void XML::options(const XML::Node &node, const std::function<void(const char *name, const char *value)> &call) {
 
-		for(XML::Node child = node.child("option"); child; child = child.next_sibling("option")) {
+	// 	for(XML::Node child = node.child("option"); child; child = child.next_sibling("option")) {
 
-			const char *name = child.attribute("name").as_string();
-			if(!(name && *name)) {
-				Logger::String{"Ignoring unnamed option"}.warning("xml");
-				continue;
-			}
+	// 		const char *name = child.attribute("name").as_string();
+	// 		if(!(name && *name)) {
+	// 			Logger::String{"Ignoring unnamed option"}.warning("xml");
+	// 			continue;
+	// 		}
 
-			call(
-				name,
-				String(child.attribute("value").as_string()).expand(child).c_str()
-			);
+	// 		call(
+	// 			name,
+	// 			String(child.attribute("value").as_string()).expand(child).c_str()
+	// 		);
 
-		}
+	// 	}
 
-	}
+	// }
 
  };

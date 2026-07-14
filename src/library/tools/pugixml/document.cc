@@ -167,13 +167,13 @@
 
 	bool XML::parse(const pugi::xml_node &node, bool recursive) {
 
-		// It's an attribute?
-		if(is_reserved(node) || !is_allowed(node)) {
+		XML::Node props{node};
+
+		if(!props.allowed()) {
 			return true; // Ignore reserved nodes.
 		}
 
-		XML::Node props{node};
-		if(Properties::parse(props)) {
+		if(Properties::build(props)) {
 			return true; // Handled.
 		}
 

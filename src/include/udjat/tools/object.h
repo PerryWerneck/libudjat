@@ -69,8 +69,8 @@
 
 			virtual ~Object();
 
-			/// @brief Parse XML file(s), build children.
-			/// @param path The path for a folder or a XML file, nullptr for default.
+			/// @brief Parse file(s), build children.
+			/// @param path The path for a folder or file, nullptr for default.
 			/// @return timestamp for next refresh.
 			time_t load(const char *path = nullptr);
 

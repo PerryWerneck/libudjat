@@ -423,6 +423,7 @@ lib_src += [
   'src/library/tools/object/abstract.cc',
   'src/library/tools/object/named.cc',
   'src/library/tools/object/object.cc',
+  'src/library/tools/object/load.cc',
   'src/library/agent/agent.cc',
   'src/library/agent/factory.cc',
   'src/library/agent/event.cc',

@@ -173,24 +173,6 @@
 		/// @return The attribute (empty if not found).
 		UDJAT_API XML::Attribute AttributeFactory(const XML::Node &node, const char *attrname);
 
-		/// @brief Search 'node' and up stream for 'attrname'.
-		/// @param node Start node.
-		/// @param attrname Attribute name.
-		/// @param def default value if nullptr the attribute is required.
-		/// @return The attribute value (def if not found).
-		[[deprecated("Use node.get(attrname,def) or node[\"attrname\"]")]] UDJAT_API const char * StringFactory(const XML::Node &node, const char *attrname, const char *def = "");
-
-		/// @brief Search 'node' and up stream for 'attrname'.
-		/// @param node Start node.
-		/// @param attrname Attribute name.
-		/// @param def default value if nullptr the attribute is required.
-		/// @return Quark with attribute value or 'def' if not found.
-		[[deprecated("Use node.get(attrname,def].as_quark()")]] UDJAT_API const char * QuarkFactory(const XML::Node &node, const char *attrname, const char *def = "");
-
-		[[deprecated("Use node.for_each_attribute")]] UDJAT_API bool for_each_attribute(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test);
-
-		[[deprecated("Use node.for_each_attribute")]] UDJAT_API bool for_each(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test);
-
 		/// @brief Load default XML files.
 		/// @param path Path for configuration file or directory.
 		/// @return Timestamp for the next reload.
@@ -212,14 +194,6 @@
 		UDJAT_API bool parse_children(const pugi::xml_node &node, bool recursive = false);
 		
 	}
-
-	/// @brief Test common filter options.
-	/// @return true if the node is valid.
-	[[deprecated]] UDJAT_API bool is_allowed(const XML::Node &node);
-
-	/// @brief Test reserved node names.
-	/// @return true if the node is valid.
-	[[deprecated]] UDJAT_API bool is_reserved(const XML::Node &node);
 
 	/// @brief Expand, if possible, values ${} from attribute.
 	UDJAT_API std::string expand(const XML::Node &node, const XML::Attribute &attribute, const char *def);

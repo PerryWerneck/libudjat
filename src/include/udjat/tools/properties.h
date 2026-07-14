@@ -31,35 +31,35 @@
 
 		/// @brief Properties parser, used to parse Properties.
 		/// @details This class is used to parse property definitions and build objects from them.
-		class UDJAT_API Parser {
+		class UDJAT_API ObjectBuilder {
 		private:
-			const char *parser_name = nullptr;
+			const char *builder_name = nullptr;
 
 		public:
-			Parser(const char *name);
-			virtual ~Parser();
+			ObjectBuilder(const char *name);
+			virtual ~ObjectBuilder();
 
 #if __cplusplus >= 202002L
 			inline auto operator <=>(const char *name) const noexcept {
-				return strcasecmp(name,parser_name);
+				return strcasecmp(name,builder_name);
 			}
 #else
 			inline bool operator==(const char *name) const noexcept {
-				return strcasecmp(name,parser_name) == 0;
+				return strcasecmp(name,builder_name) == 0;
 			}
 #endif
 
-			/// @brief Parse definition from properties.
+			/// @brief Build object from properties.
 			/// @param props The property definitions to parse.
 			/// @return true if the properties were parsed and should be ignored by the caller.
-			virtual bool parse(const Properties &props) = 0;
+			virtual bool build(const Properties &props) = 0;
 
 			inline const char *c_str() const noexcept {
-				return parser_name;
+				return builder_name;
 			}
 
 			inline const char *name() const noexcept {
-				return parser_name;
+				return builder_name;
 			}
 
 		};
@@ -78,7 +78,7 @@
 #endif
 
 		/// @brief Parse properties, build objects.
-		static bool parse(const Properties &props);
+		static bool build(const Properties &props);
 
 		/// @brief Check if it's a reserved tag.
 		/// @return true if this is a reserved tag and should be ignored by factories.

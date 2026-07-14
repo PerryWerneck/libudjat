@@ -25,40 +25,45 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/container.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/url.h>
+ #include <string>
+
+ #ifdef HAVE_VMDETECT
+	#include <vmdetect/virtualmachine.h>
+ #endif // HAVE_VMDETECT
+
+ using namespace std;
 
  namespace Udjat {
 
-	static Container<Properties::Parser> & Factories() {
-		static Container<Properties::Parser> instance;
+	static Container<Properties::ObjectBuilder> & Factories() {
+		static Container<Properties::ObjectBuilder> instance;
 		return instance;
 	}
 
-	bool Properties::parse(const Properties &props) {
+	bool Properties::build(const Properties &props) {
 
 		const char *name = props.node_name();
 	
 		for(const auto factory : Factories()) {
 			if(*factory == name) {
 
-				if(!factory->parse(props)) {
+				if(!factory->build(props)) {
 					continue; // Not handled.
 				}
-
 				return true; // Handled.
 			}
 		}
-
 		return false; // Not handled.
-
 	}
 
-	Properties::Parser::Parser(const char *name) {
-		Logger::String{"Registering parser for Properties::",parser_name}.trace();
+	Properties::ObjectBuilder::ObjectBuilder(const char *name) : builder_name{name} {
+		Logger::String{"Registering parser for Properties::",builder_name}.trace();
 		Factories().push_back(this);
 	}
 
-	Properties::Parser::~Parser() {
-		Logger::String{"Unregistering parser for Properties::",parser_name}.trace();
+	Properties::ObjectBuilder::~ObjectBuilder() {
+		Logger::String{"Unregistering parser for Properties::",builder_name}.trace();
 		Factories().remove(this);
 	}
 
@@ -67,8 +72,8 @@
 		String name{get("name")};
 
 		if(name.empty()) {
-			Logger::String{"<",node_name(),"> doesn't have the required attribute 'name', using default '",name,"'"}.trace("properties");
 			name.assign(node_name());
+			Logger::String{"<",node_name(),"> doesn't have the required attribute 'name', using default '",name.c_str(),"'"}.trace("properties");
 		}
 
 		return name.as_quark();
@@ -79,8 +84,68 @@
 		return false;
 	}
 
+	/// @brief Test expression.
+	/// @param expression The expression to test.
+	/// @return True if the expression was validated and the node is allowed.
+	static bool is_allowed(String &expression) {
+
+		expression.strip();
+
+		bool deny = false;
+
+		if(expression[0] == '!') {
+			deny = !deny;
+			expression.erase(0,1);
+			expression.strip();
+		}
+
+		if(expression.has_prefix("not ")) {
+			deny = !deny;
+			expression.erase(0,4);
+			expression.strip();
+		}
+
+		if(expression.find("://") != string::npos) {
+			if(URL{expression.c_str()}.test() != 200) {
+				return deny;
+			}
+		}
+
+		if(!strcasecmp(expression.c_str(),"virtual-machine")) {
+#ifdef HAVE_VMDETECT
+			if(!VirtualMachine{Logger::enabled(Logger::Debug)}) {
+				return deny;
+			}
+#else
+			Logger::String{"Library built without virtual machine support, ignoring 'allowed-if=virtual-machine' attribute"}.error();
+#endif
+		}
+
+#ifdef _WIN32
+		if(!strcasecmp(expression.c_str(),"linux")) {
+			return deny;
+		}
+#else
+		if(!strcasecmp(expression.c_str(),"windows")) {
+			return deny;
+		}
+#endif
+
+		return !deny;
+	}
+
 	bool Properties::allowed() const noexcept {
-		return !reserved();
+
+		if(reserved()) {
+			return false;
+		}
+
+		auto expression = get("allowed-if");
+		if(!expression.empty()) {
+			return is_allowed(expression);
+		}
+
+		return true;
 	}
 
 	const char *Properties::node_name() const noexcept {
@@ -97,6 +162,7 @@
 	}
 
 	bool Properties::contains(const char *, bool) const noexcept {
+		// Default properties doesnt contains anything.
 		return false;
 	}
 

@@ -17,8 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
  #include <config.h>
  #include <udjat/defs.h>
  #include <private/pugixml.h>
@@ -28,10 +26,6 @@
  #include <stdexcept>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
-
- #ifdef HAVE_VMDETECT
-	#include <vmdetect/virtualmachine.h>
- #endif // HAVE_VMDETECT
 
  using namespace std;
 
@@ -64,78 +58,10 @@
 	}
 
 	bool XML::Node::allowed() const noexcept {
-
 		if(reserved()) {
 			return false;
 		}
-
-#ifdef _WIN32
-
-		if(!attribute("allowed-in-windows").as_bool(true)) {
-			return false;
-		}
-
-#else
-
-		if(!pugi::xml_node::attribute("allowed-in-linux").as_bool(true)) {
-			return false;
-		}
-
-#endif // _WIN32
-
-#ifdef HAVE_VMDETECT
-
-		if(!(pugi::xml_node::attribute("allowed-in-virtual-machine").as_bool(true) || VirtualMachine{Logger::enabled(Logger::Debug)}) ) {
-			return false;
-		}
-
-#else
-
-		if(!pugi::xml_node::attribute("allowed-in-virtual-machine").as_bool(true)) {
-			Logger::String{"Library built without virtual machine support, ignoring 'allowed-in-virtual-machine' attribute"}.error();
-		}
-
-#endif // HAVE_VMDETECT
-
-		if(XML::test(*this, "valid-if", false) || (XML::test(*this, "allow-if", false))) {
-			return true;
-		}
-
-		/*
-		// Test if the attribute requirement is valid.
-		str = node.attribute("valid-if").as_string();
-		if(str && *str && URL{str}.test() != 200) {
-			return false;
-		}
-
-		str = node.attribute("allow-if").as_string();
-		if(str && *str && URL{str}.test() != 200) {
-			return false;
-		}
-
-		// Test if the attribute requirement is not valid.
-		str = node.attribute("not-valid-if").as_string();
-		if(str && *str && URL{str}.test() == 200) {
-			return false;
-		}
-
-		str = node.attribute("invalid-if").as_string();
-		if(str && *str && URL{str}.test() == 200) {
-			return false;
-		}
-
-		str = node.attribute("ignore-if").as_string();
-		if(str && *str && URL{str}.test() == 200) {
-			return false;
-		}
-
-		str = node.attribute("deny-if").as_string();
-		if(str && *str && URL{str}.test() == 200) {
-			return false;
-		}
-		*/
-
-		return true;
+		return Properties::allowed();
 	}
 
 	/// @brief Scan XML node and parents from node 'attribute'
@@ -305,9 +231,9 @@
 	}
 
 	bool XML::Node::for_each_attribute(const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) const {
-		for(XML::Node nd = *this; nd; nd = nd.parent()) {
-			for(XML::Node child = nd.child(attrname); child; child = child.next_sibling(attrname)) {
-				if(is_allowed(child) && test(child)) {
+		for(auto nd = *this; nd; nd = nd.parent()) {
+			for(auto child = nd.child(attrname);child;child = child.next_sibling(attrname)) {
+				if(test(XML::Node{child})) {
 					return true;
 				}
 			}
