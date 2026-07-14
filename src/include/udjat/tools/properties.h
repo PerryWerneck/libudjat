@@ -86,8 +86,9 @@
 
 		/// @brief Check if property contains a value.
 		/// @param name The value name.
+		/// @param up If true scan uper nodes.
 		/// @return true if the properties has the named value.
-		virtual bool contains(const char *name) const noexcept;
+		virtual bool contains(const char *name, bool parent = false) const noexcept;
 
 		virtual bool has_child(const char *name) const noexcept;
 

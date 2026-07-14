@@ -96,7 +96,7 @@
 		return "properties";
 	}
 
-	bool Properties::contains(const char *) const noexcept {
+	bool Properties::contains(const char *, bool) const noexcept {
 		return false;
 	}
 

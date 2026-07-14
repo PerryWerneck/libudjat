@@ -88,7 +88,7 @@
 					constexpr Properties(const char *g) : group{g} {
 					}
 
-					bool contains(const char *key) const noexcept override {
+					bool contains(const char *key, bool) const noexcept override {
 						return Controller::getInstance().contains(group,key);
 					}
 

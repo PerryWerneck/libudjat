@@ -67,7 +67,7 @@
 
 			String path() const noexcept override;
 
-			bool contains(const char *name) const noexcept override;
+			bool contains(const char *name, bool parent = false) const noexcept override;
 
 			bool has_child(const char *name) const noexcept override;
 

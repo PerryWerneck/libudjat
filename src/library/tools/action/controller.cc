@@ -97,7 +97,7 @@
 			}
 		}
 
-		throw runtime_error(Logger::String{"Required attribute 'type' is missing at '",props.path(),"'"});
+		throw runtime_error(Logger::String{"Required attribute 'type' is missing, unable to build action at '",props.path(),"'"});
 
 	}
 

@@ -93,8 +93,10 @@ namespace Udjat {
 		options.forward = props.get("forward-to-children",options.forward);
 
 		if(props.get("alert",false) || props.contains("alert-type")) {
+			Logger::String{"Build associated alert for the state"}.trace(name());
 			listeners.push_back(Alert::Factory::build(*this, props));
-		} else if(props.contains("alert-type")) {
+		} else if(props.contains("action-type")) {
+			Logger::String{"Build associated action for the state"}.trace(name());
 			listeners.push_back(Action::Factory::build(props));
 		}
 

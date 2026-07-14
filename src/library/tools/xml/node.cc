@@ -231,10 +231,14 @@
 
 	}
 
-	bool XML::Node::contains(const char *name) const noexcept {
-		if(xml_attribute(*this,name)) {
+	bool XML::Node::contains(const char *name, bool) const noexcept {
+		if(this->attribute(name)) {
+			debug("Found attribute '",name,"'");
 			return true;
 		}
+
+		// TODO: Search parents.
+		
 		return false;
 	}
 
