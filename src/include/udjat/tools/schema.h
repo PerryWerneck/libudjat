@@ -34,6 +34,8 @@
 
 		class UDJAT_API Item {
 		protected:
+			friend class Schema;
+			
 			const char *item_name;			//< @brief The item name.
 			Value::Type item_type;			///< @brief The value type.
 			const char *item_description;	///< @brief The item description.
@@ -67,9 +69,7 @@
 			append(Fargs...);
 		}
 
-		inline void append(const Item &item) {
-			itens.push_back(item);
-		}
+		void append(const Item &item);
 
 		template<typename... Targs>
 		inline void append(const Item &item, Targs... Fargs) {

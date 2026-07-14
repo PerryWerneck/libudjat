@@ -28,7 +28,10 @@
 
  namespace Udjat {
 
-	NamedObject::NamedObject(const char *name, const Properties &) : NamedObject{name} {
+	NamedObject::NamedObject(const char *name, const Properties &props) : NamedObject{props.get("name",name).as_quark()} {
+	}
+
+	NamedObject::NamedObject(const Properties &props) : NamedObject{props["name"].as_quark()} {
 	}
 
 	const char * NamedObject::name() const noexcept {

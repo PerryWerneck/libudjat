@@ -485,6 +485,7 @@ lib_src += [
   'src/library/tools/nic.cc',
   'src/library/tools/quark.cc',
   'src/library/tools/script.cc',
+  'src/library/tools/schema.cc',
   'src/library/tools/authentication.cc',
   'src/library/tools/shortcut.cc',
   'src/library/tools/string/properties.cc',

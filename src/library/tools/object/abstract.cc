@@ -24,21 +24,9 @@
  #include <udjat/tools/response.h>
  #include <udjat/tools/file/path.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/schema.h>
 
  #include <cstdarg>
-
-//  #include <udjat/tools/quark.h>
-//  #include <udjat/tools/threadpool.h>
-//  #include <udjat/tools/string.h>
-//  #include <udjat/tools/properties.h>
-//  #include <udjat/tools/configuration.h>
-//  #include <udjat/tools/expander.h>
-//  #include <udjat/tools/logger.h>
-//  #include <udjat/tools/intl.h>
-//  #include <cstdarg>
-//  #include <udjat/module.h>
-//  #include <udjat/action.h>
-//  #include <udjat/tools/interface.h>
 
  using namespace std;
 
@@ -55,6 +43,10 @@
 
 	Abstract::Object::Factory::~Factory() {
 		Factories().remove(this);
+	}
+
+	bool Abstract::Object::output_schema(const char *, Schema &) const noexcept {
+		return false;
 	}
 
 	std::shared_ptr<Abstract::Object> Abstract::Object::merge(const Object *object, ...) noexcept {
