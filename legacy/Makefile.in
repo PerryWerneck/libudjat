@@ -50,41 +50,40 @@ PRODUCT_NAME=@PRODUCT_NAME@
 SOURCES= \
 	$(wildcard $(srcdir)/src/library/*.cc) \
 	$(wildcard $(srcdir)/src/library/agent/*.cc) \
-	$(wildcard $(srcdir)/src/library/load/*.cc) \
-	$(wildcard $(srcdir)/src/library/request/*.cc) \
-	$(wildcard $(srcdir)/src/library/worker/*.cc) \
+	$(wildcard $(srcdir)/src/library/agent/setup/*.cc) \
+	$(wildcard $(srcdir)/src/library/alert/*.cc) \
 	$(wildcard $(srcdir)/src/library/module/*.cc) \
 	$(wildcard $(srcdir)/src/library/module/os/linux/*.cc) \
 	$(wildcard $(srcdir)/src/library/os/linux/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/value/*.cc) \
 	$(wildcard $(srcdir)/src/library/state/*.cc) \
-	$(wildcard $(srcdir)/src/library/alert/*.cc) \
-	$(wildcard $(srcdir)/src/library/ui/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/os/linux/subprocess/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/application/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/string/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/file/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/action/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/ssl/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/application/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/crypto/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/crypto/backend/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/file/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/http/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/logger/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/mainloop/*.cc) \
-	$(srcdir)/src/library/tools/console/animation.cc \
-	$(srcdir)/src/library/tools/console/messages.cc \
-	$(srcdir)/src/library/tools/console/progress.cc \
-	$(srcdir)/src/library/tools/console/screen.cc \
-	$(srcdir)/src/library/tools/console/screen_linux.cc \
 	$(wildcard $(srcdir)/src/library/tools/mainloop/os/linux/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/os/linux/application/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/object/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/os/linux/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/os/linux/application/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/os/linux/file/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/os/linux/subprocess/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/pugixml/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/string/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/systemservice/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/url/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/url/handlers/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/xml/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/crypto/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/logger/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/crypto/backend/*.cc)
-
+	$(wildcard $(srcdir)/src/library/tools/value/*.cc) \
+	$(wildcard $(srcdir)/src/library/ui/*.cc) \
+	src/library/ui/console/animation.cc \
+	src/library/ui/console/messages.cc \
+	src/library/ui/console/progress.cc \
+	src/library/ui/console/screen.cc \
+	src/library/ui/console/screen_linux.cc
+	
 TEST_SOURCES= \
 	src/testprogram/main.cc
 	

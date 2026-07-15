@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-13 23:46-0300\n"
+"POT-Creation-Date: 2026-07-15 16:53-0300\n"
 "PO-Revision-Date: 2026-07-10 17:20-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -20,40 +20,40 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.9\n"
 
-#: src/library/agent/agent.cc:228
+#: src/library/agent/agent.cc:236
 msgid "default"
 msgstr "padrão"
 
-#: src/library/agent/agent.cc:230
+#: src/library/agent/agent.cc:238
 msgid "Normal"
 msgstr "Normal"
 
-#: src/library/agent/agent.cc:231
+#: src/library/agent/agent.cc:239
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/library/agent/controller.cc:98
+#: src/library/agent/controller.cc:97
 msgid "Root agent is not available"
 msgstr ""
 
-#: src/library/agent/controller.cc:353
+#: src/library/agent/controller.cc:354
 msgid "Get agent properties"
 msgstr "Obtém propriedades do agente"
 
-#: src/library/agent/root.cc:98
+#: src/library/agent/root.cc:101
 #: src/library/tools/systemservice/systemservice.cc:143
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
-#: src/library/agent/root.cc:98
+#: src/library/agent/root.cc:101
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
-#: src/library/agent/state.cc:145
+#: src/library/agent/state.cc:146
 msgid "Error activating state"
 msgstr "Erro ao ativar estado"
 
-#: src/library/agent/state.cc:150
+#: src/library/agent/state.cc:151
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
 
@@ -67,13 +67,26 @@ msgstr "Modulo '{}' não foi carregado"
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
 
-#: src/library/state/state.cc:262 src/library/tools/converters.cc:42
+#: src/library/state/state.cc:268 src/library/tools/converters.cc:42
 msgid "on"
 msgstr "ligado"
 
-#: src/library/state/state.cc:262 src/library/tools/converters.cc:49
+#: src/library/state/state.cc:268 src/library/tools/converters.cc:49
 msgid "off"
 msgstr "desligado"
+
+#: src/library/tools/application/argparser.cc:36
+msgid "Enable auto exit timer in seconds"
+msgstr ""
+
+#: src/library/tools/application/argparser.cc:36
+#: src/library/tools/timestamp.cc:247
+msgid "seconds"
+msgstr "segundos"
+
+#: src/library/tools/application/argparser.cc:40
+msgid "Timer option requires a value in seconds"
+msgstr ""
 
 #: src/library/tools/application/loader.cc:98
 msgid "Run all unit tests"
@@ -89,19 +102,6 @@ msgstr ""
 
 #: src/library/tools/application/loader.cc:128
 msgid "path"
-msgstr ""
-
-#: src/library/tools/application/argparser.cc:35
-msgid "Enable auto exit timer in seconds"
-msgstr ""
-
-#: src/library/tools/application/argparser.cc:35
-#: src/library/tools/timestamp.cc:247
-msgid "seconds"
-msgstr "segundos"
-
-#: src/library/tools/application/argparser.cc:39
-msgid "Timer option requires a value in seconds"
 msgstr ""
 
 #: src/library/tools/application/run.cc:90
@@ -587,49 +587,23 @@ msgstr "numero"
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: src/library/tools/xml/attribute.cc:115
-#, c++-format
-msgid "Required attribute '{}' is missing"
-msgstr "Atributo necessário '{}' não foi encontrado"
-
-#: src/library/tools/xml/load.cc:79
-msgid "Unable to find XML definitions"
-msgstr "Definições XML não foram encontradas"
-
 #. Run interactive mode.
-#: src/library/tools/unit-tests.cc:208
+#: src/library/tools/unit-tests.cc:207
 msgid "Available tests"
 msgstr "Testes disponíveis"
 
-#: src/library/tools/script.cc:56
-msgid "The required attribute 'cmdline' is missing"
-msgstr "Atributo necessário 'cmdline' não está disponível"
+#: src/library/tools/interface.cc:84
+msgid "You dont have access to this resource"
+msgstr ""
 
-#: src/library/tools/script.cc:150
-msgid "Missing shebang attribute"
-msgstr "'shebang' não encontrado no início do script"
-
-#: src/library/tools/script.cc:152
+#: src/library/tools/object/abstract.cc:195
 #, c++-format
-msgid "Missing shebang attribute on {}"
-msgstr "'shebang' não encontrado em {}"
+msgid "Unable to get value of '{}'"
+msgstr "Incapaz de obter valor para '{}'"
 
-#: src/library/tools/script.cc:175
-msgid "Required attribute 'cmdline' missing"
-msgstr "Atributo necessário 'cmdline' não encontrado"
-
-#: src/library/tools/script.cc:177
-#, c++-format
-msgid "Required attribute 'cmdline' missing on {}"
-msgstr "Atributo necessário 'cmdline' não encontrado em {}"
-
-#: src/library/tools/script.cc:199
-msgid "Cant set subprocess user id"
-msgstr "Incapaz de definir o usuário do subprocesso"
-
-#: src/library/tools/script.cc:205
-msgid "Cant set subprocess group id"
-msgstr "Incapaz de definir o grupo do subprocesso"
+#: src/library/tools/pugixml/load.cc:79
+msgid "Unable to find XML definitions"
+msgstr "Definições XML não foram encontradas"
 
 #: src/library/tools/logger/argparser.cc:44
 msgid "Logger options"
@@ -770,17 +744,46 @@ msgstr "Bloquear acesso a 'net stop' no serviço"
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/library/tools/console.cc:88
-msgid "Previous page"
-msgstr "Página anterior"
+#: src/library/tools/script.cc:56
+msgid "The required attribute 'cmdline' is missing"
+msgstr "Atributo necessário 'cmdline' não está disponível"
 
-#: src/library/tools/console.cc:91
-msgid "Next page"
-msgstr "Página seguinte"
+#: src/library/tools/script.cc:150
+msgid "Missing shebang attribute"
+msgstr "'shebang' não encontrado no início do script"
 
-#: src/library/tools/console.cc:99
-msgid "Select option (Enter to quit): "
-msgstr "Selecione opção (Enter para sair): "
+#: src/library/tools/script.cc:152
+#, c++-format
+msgid "Missing shebang attribute on {}"
+msgstr "'shebang' não encontrado em {}"
+
+#: src/library/tools/script.cc:175
+msgid "Required attribute 'cmdline' missing"
+msgstr "Atributo necessário 'cmdline' não encontrado"
+
+#: src/library/tools/script.cc:177
+#, c++-format
+msgid "Required attribute 'cmdline' missing on {}"
+msgstr "Atributo necessário 'cmdline' não encontrado em {}"
+
+#: src/library/tools/script.cc:199
+msgid "Cant set subprocess user id"
+msgstr "Incapaz de definir o usuário do subprocesso"
+
+#: src/library/tools/script.cc:205
+msgid "Cant set subprocess group id"
+msgstr "Incapaz de definir o grupo do subprocesso"
+
+#: src/library/tools/template.cc:74
+msgid ""
+"A required file is unavailable within the selected theme. Please contact the "
+"system administrator for assistance."
+msgstr ""
+
+#: src/library/tools/template.cc:108
+#, fuzzy, c++-format
+msgid "Unable to resolve '{}' on template '{}'"
+msgstr "Incapaz de adicionar '{}' em um valor abstrato"
 
 #: src/library/tools/timestamp.cc:104
 msgid "Less than one minute"
@@ -872,34 +875,45 @@ msgstr "Uso inválido de argumento repetido"
 msgid "[options]"
 msgstr "[opções]"
 
-#: src/library/tools/object.cc:285
-#, c++-format
-msgid "Unable to get value of '{}'"
-msgstr "Incapaz de obter valor para '{}'"
+#: src/library/ui/console.cc:88
+msgid "Previous page"
+msgstr "Página anterior"
 
-#: src/library/request/request.cc:53
+#: src/library/ui/console.cc:91
+msgid "Next page"
+msgstr "Página seguinte"
+
+#: src/library/ui/console.cc:99
+msgid "Select option (Enter to quit): "
+msgstr "Selecione opção (Enter para sair): "
+
+#: src/library/request.cc:95
 msgid "Invalid or unexpected API version"
 msgstr "Versão de API inválida ou não esperada"
 
-#: src/library/request/response.cc:99
+#: src/library/response.cc:99
 msgid "Failed."
 msgstr ""
 
-#: src/library/request/response.cc:138
+#: src/library/response.cc:138
 msgid "Unable to Complete Request"
 msgstr ""
 
-#: src/library/request/response.cc:139
+#: src/library/response.cc:139
 msgid "We're sorry, but we encountered an error while processing your request."
 msgstr ""
 
-#: src/library/request/response.cc:161
+#: src/library/response.cc:161
 msgid "System error"
 msgstr "Erro de sistema"
 
-#: src/library/request/response.cc:292
+#: src/library/response.cc:292
 msgid "Operation failed"
 msgstr "Operação falhou"
+
+#, c++-format
+#~ msgid "Required attribute '{}' is missing"
+#~ msgstr "Atributo necessário '{}' não foi encontrado"
 
 #~ msgid "[OPTIONS]"
 #~ msgstr "[OPÇÕES]"
@@ -962,10 +976,6 @@ msgstr "Operação falhou"
 #, c++-format
 #~ msgid "Cant find child '{}'"
 #~ msgstr "Não encontrei elemento '{}'"
-
-#, c++-format
-#~ msgid "Unable to append '{}' on abstract value"
-#~ msgstr "Incapaz de adicionar '{}' em um valor abstrato"
 
 #, c++-format
 #~ msgid "Unable to set '{}' as '{}' on abstract value"
