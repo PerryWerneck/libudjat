@@ -7,6 +7,7 @@
 #include <udjat/tools/value.h>
 #include <udjat/tools/container.h>
 #include <udjat/tools/properties.h>
+#include <udjat/tools/interface.h>
 #include <mutex>
 #include <vector>
 
@@ -14,7 +15,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Module::Controller : private Properties::ObjectBuilder {
+	class Module::Controller : private Properties::ObjectBuilder, private Interface {
 	private:
 		friend class MainLoop;
 

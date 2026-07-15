@@ -96,6 +96,11 @@
 		/// @brief Enumerate interfaces.
 		static bool for_each(const std::function<bool(const Interface &interface)> &func);
 
+		/// @brief Find an interface matching with path, extract prefix.
+		/// @param path The path for required interface, if found the interface part will be stripped.
+		/// @return A valid interface, nullptr if not found.
+		static Interface * find(const char * &path) noexcept;
+
 	};
 
  }

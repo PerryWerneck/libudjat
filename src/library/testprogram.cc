@@ -25,22 +25,68 @@
  #include <udjat/defs.h>
  #include <udjat/tools/unit-test.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/interface.h>
+ #include <udjat/tools/request.h>
+ #include <udjat/tools/response.h>
  #include <ostream>
+ #include <stdexcept>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
  #endif // HAVE_UNISTD_H
 
  using namespace Udjat;
+ using namespace std;
 
  UDJAT_API void enum_udjat_unit_tests(Udjat::UnitTests &tests) noexcept {
 
 		tests.append(
 			UnitTests::Worker{
-				"Root agent properties",
+				"Interface test",
 				[](std::ostream &stream) {
 
-					return "Got root agent properties";
+					// Check module with extra path.
+					{
+						const char *request = "/module/test";
+						auto intf = Interface::find(request);
+						if(!intf) {
+							throw runtime_error("Cant find interface for /module");
+						}
+						if(strcmp(request,"/test")) {
+							throw runtime_error("Unexpected result after request parse");
+						}
+					}
+
+					// Check without extra path.
+					{
+						const char *request = "/module";
+						auto intf = Interface::find(request);
+						if(!intf) {
+							throw runtime_error("Cant find interface for /module");
+						}
+						if(request[0]) {
+							throw runtime_error("Unexpected result after request parse");
+						}
+					}
+
+					// Check response
+					{
+						const char *path = "/module";
+						auto intf = Interface::find(path);
+						if(!intf) {
+							throw runtime_error("Cant find interface for /module");
+						}
+
+						Request request{path};
+						Response response;
+
+						if(!intf->process(path,request,response)) {
+							throw runtime_error("Request /module was not processed");
+						}
+
+					}
+
+					return "Interface test passed";
 				}
 			}
 		);

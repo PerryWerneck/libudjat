@@ -19,6 +19,8 @@
 
 #define LOG_DOMAIN "module"
 #include <config.h>
+#include <udjat/tools/interface.h>
+#include <udjat/authentication.h>
 #include <private/module.h>
 #include <udjat/tools/container.h>
 #include <iostream>
@@ -39,7 +41,7 @@ namespace Udjat {
 		return instance;
 	}
 
-	Module::Controller::Controller() : Properties::ObjectBuilder{"module"} {
+	Module::Controller::Controller() : Properties::ObjectBuilder{"module"}, Interface{"module",Authentication::Admin} {
 		Logger::String{"Starting controller"}.trace();
 	}
 

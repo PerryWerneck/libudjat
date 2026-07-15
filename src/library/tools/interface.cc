@@ -53,6 +53,15 @@
 		return instance;
 	}
 
+	Interface * Interface::find(const char * &path) noexcept {
+		for(const auto interface : Interfaces()) {
+			if(Request::pop(interface->name(),path)) {
+				return interface;
+			}
+		}
+		return nullptr;
+	}
+
 	Interface::Interface(const char *name, const Authentication::Role r)
 		: interface_name{name}, role{r} {
 		Interfaces().push_back(this);
