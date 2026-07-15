@@ -37,10 +37,10 @@
 
 		tests.append(
 			UnitTests::Worker{
-				"Root agent status",
-				[]() {
+				"Root agent properties",
+				[](std::ostream &stream) {
 
-					return "Agent status OK";
+					return "Got root agent properties";
 				}
 			}
 		);

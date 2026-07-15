@@ -175,7 +175,7 @@
 
 				if(!(name && *name) || worker == name) {
 					Logger::String{"--- ",worker.c_str()," ---"}.notice();
-					auto status = worker.call();
+					auto status = worker.call(std::cout);
 					Console::success(worker.c_str(),status);			
 				}
 
@@ -248,7 +248,7 @@
 
 			try {
 
-				auto status = worker.call();
+				auto status = worker.call(std::cout);
 				Console::success(worker.c_str(),status);
 
 			} catch(const std::exception &e) {
