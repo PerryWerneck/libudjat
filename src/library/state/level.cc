@@ -24,18 +24,22 @@
 
  using namespace std;
 
- static const char * levelnames[] = {
-	"undefined",
-	"unimportant",
-	"ready",
-	"warning",
-	"error",
-	"critical"
- };
-
- #define LEVEL_COUNT (sizeof(levelnames)/sizeof(levelnames[0]))
-
  namespace Udjat {
+
+	static const struct {
+		const char *name;
+		const char *utfchar;
+		const char *htmlchar;
+	} levels[Udjat::Level::critical+1] {
+		{ "undefined",		" ",	"&nbsp;"	},
+		{ "unimportant",	" ",	"&nbsp;"	},
+		{ "ready",			"✓",	"&check;"	},	// https://www.compart.com/en/unicode/U+2713
+		{ "warning",		"⚠",	"&#xFFFD;"	},	// https://www.compart.com/en/unicode/U+26A0
+		{ "error",			"✘",	"&#x2716;"	},
+		{ "critical",		"✘",	"&#x2716;"	},
+	};
+
+	#define LEVEL_COUNT (sizeof(levels)/sizeof(levels[0]))
 
 	Udjat::Level LevelFactory(const Properties &props) {
 		return LevelFactory(props.get("level","unimportant").c_str());
@@ -44,7 +48,7 @@
 	Udjat::Level LevelFactory(const char *name) {
 
 		for(size_t ix=0; ix < LEVEL_COUNT; ix++) {
-			if(!strcasecmp(name,levelnames[ix]))
+			if(!strcasecmp(name,levels[ix].name))
 				return (Udjat::Level) ix;
 		}
 
@@ -83,9 +87,9 @@
  namespace std {
 
 	const char * to_string(const Udjat::Level level) {
-		if(level > LEVEL_COUNT)
+		if(level > Udjat::Level::critical)
 			return "undefined";
-		return levelnames[level];
+		return Udjat::levels[level].name;
 	}
 
  }

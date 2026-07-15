@@ -33,8 +33,9 @@
 		warning,
 		error,
 
-		critical		///< @brief Critical level (always the last one)
+		critical,		///< @brief Critical level (always the last one)
 
+		count
 	};
 
 	/// @brief Get level from string.

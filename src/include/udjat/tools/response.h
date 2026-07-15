@@ -68,6 +68,22 @@
 
 		};
 
+		class Exception : public std::exception, public Status {
+		public:
+			Exception(const char *m) : Status{Failure} {
+				message = m;
+			}
+
+			Exception(int s, const char *m) : Status{Failure} {
+				syscode = s;
+				message = m;
+			}
+
+			const char * what() const noexcept override {
+				return message.c_str();
+			}
+		};
+
 	protected:
 
 		/// @brief Response type.

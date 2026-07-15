@@ -17,271 +17,115 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- /**
-  * @brief Implements the abstract interface for API Calls.
-  */
-
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/interface.h>
  #include <udjat/tools/container.h>
- #include <udjat/tools/string.h>
- #include <udjat/tools/logger.h>
+ #include <udjat/tools/request.h>
+ #include <udjat/tools/response.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/tools/properties.h>
+ #include <udjat/tools/schema.h>
+ #include <udjat/tools/template.h>
+ #include <udjat/tools/logger.h>
  
  using namespace std;
 
  namespace Udjat {
 
-	class UDJAT_PRIVATE InterfaceFactories : public Container<Interface::Factory>, public Properties::ObjectBuilder {
-	public:
-		InterfaceFactories() : Properties::ObjectBuilder{"interface"} {
-			debug("Interface factories initialized");
-		}
+	static Container<Interface> & Interfaces() {
 
-		~InterfaceFactories() {
-			debug("Interface factories destroyed");
-		}
+		class Controller : public Container<Interface>, public Properties::ObjectBuilder {
+		public:
+			Controller() : Properties::ObjectBuilder{"interface"} {
+			}
 
-		bool build(const Properties &props) override {
-			Interface::Factory::build(props);
-			return true; // Node was parsed.
-		}
+			~Controller() {
+			}
 
-	};
+			bool build(const Properties &props) override {
+				throw runtime_error("No support for custom interfaces (yet)");
+			}
 
-	static InterfaceFactories & Factories() {
-		static InterfaceFactories instance;
+		};
+
+		static Controller instance;
 		return instance;
 	}
 
-	void Interface::Factory::build(const Properties &props) noexcept {
-
-		throw runtime_error("need refactor");
-
-		// //
-		// // If interface has the 'action-name' atribute will build one
-		// // single action for all related interfaces.
-		// //
-		// auto action_name = props["action-name"];
-		// std::shared_ptr<Action> action;
-		// if(!action_name.empty()) {
-
-		// 	try {
-
-		// 		action = Action::Factory::build(props);
-
-		// 	} catch(const std::exception &e) {
-
-		// 		Logger::String{e.what()}.error(action_name.c_str());
-		// 		return;
-
-		// 	} catch(...) {
-
-		// 		Logger::String{"Unexpected error building action"}.error(action_name.c_str());
-		// 		return;
-
-		// 	}
-		// }
-
-		// for(String &name : props["type"].split(",")) {
-
-		// 	for(auto &factory : Factories()) {
-
-		// 		if(strcmp(name.c_str(),"*") == 0 || strcasecmp(name.c_str(),"all") == 0 || *factory == name.c_str()) {
-
-		// 			try {
-
-		// 				Interface &intf = factory->InterfaceFactory(props);
-
-		// 				if(action) {
-		// 					intf.push_back(props,action);
-		// 				}
-
-		// 				// Insert handlers
-		// 				for(auto hdl = props.child("handler"); hdl; hdl = hdl.next_sibling("handler")) {
-		// 					auto &handler = intf.push_back(hdl);
-		// 					for(const char *nodename : { "action", "script" }) {
-		// 						for(auto act = hdl.child(nodename); hdl; hdl = hdl.next_sibling(nodename)) {
-		// 							handler.push_back(act);
-		// 						}
-		// 					}
-		// 				}
-
-		// 			} catch(const std::exception &e) {
-
-		// 				Logger::String{e.what()}.error(factory->name());
-
-		// 			} catch(...) {
-
-		// 				Logger::String{"Unexpected error building interface"}.error(factory->name());
-
-		// 			}
-
-		// 		}
-
-		// 	}
-
-		// }
-
+	Interface::Interface(const char *name, const Authentication::Role r)
+		: interface_name{name}, role{r} {
+		Interfaces().push_back(this);
 	}
-
-	bool Interface::push_back(const Properties &, std::shared_ptr<Action>) {
-		throw logic_error("This interface is unable to handle actions");
-	}
-
-	Interface::Handler & Interface::push_back(const Properties &) {
-		throw logic_error("This interface cant accept dynamic actions");
-	}
-
-	int Interface::call(Udjat::Request &request, Udjat::Response &response) const {
-		Logger::String{"This interface is unable to process request"}.error(name());
-		return ENOTSUP;
-	}
-
-	Interface::Factory::Factory(const char *name, const char *description) : factory_name{name}, factory_description{description} {
-		Factories().push_back(this);
-	}
-
-	Interface::Factory::~Factory() {
-		Factories().remove(this);
-	}
-
-	bool Interface::Factory::for_each(const std::function<bool(Interface::Factory &intf)> &method) {
-		for(Interface::Factory *intf : Factories()) {
-			if(method(*intf)) {
-				return true;
-			} 
-		}
-		return false;
-	}
-
-	void Interface::Factory::get_properties(Udjat::Value &value) const {
-		value["name"] = name();
-		value["description"] = description();
-	}
-
-	bool Interface::Handler::input_schema(Schema &schema) const noexcept {
-		return false;
-	}
-
-	bool Interface::Handler::output_schema(Schema &schema) const noexcept{
-		return false;
-	}
-
-	Interface::Handler::Handler(const char *name) : handler_name{name} {
-	}
-
-	Interface::Handler::Handler(const char *name, const Properties &) : handler_name{name} {
-	}
-
-	Interface::Handler::Handler(const Properties &props) : Handler{props["name"].as_quark(),props} {
-	}
-
-	Interface::Handler::~Handler() {
-	}
-
-	void Interface::Handler::push_back(std::shared_ptr<Action> action) {
-		actions.push_back(action);
-	}
-
-	void Interface::Handler::push_back(const Properties &props) {
-		push_back(Action::Factory::build(props));
-	}
-	
-	int Interface::Handler::call(Udjat::Request &request, Udjat::Response &response) const {
-
-		//
-		// Setup request/response
-		//
-		if(request != Value::Object) {
-			debug("Cleaning request");
-			request.clear(Value::Object);
-		}
-
-		if(response != Value::Object) {
-			debug("Cleaning response");
-			response.clear(Value::Object);
-		}
-
-		request.rewind();
-
-		// Check input properties
-		{
-			Schema schema;
-			if(input_schema(schema)) {
-				for(const auto &item : schema) {
-					if(!request.contains(item.name())) {
-						throw runtime_error(Logger::String{"Required argument is missing: ",item.description()});
-					}
-				}
-			}
-		}
-
-		//
-		// Call actions
-		//
-		if(Logger::enabled(Logger::Debug)) {
-			Logger::String{
-				"Handling '",request.path(),"'\n",
-				"Request:\n",request.Udjat::Value::serialize(MimeType::yaml).c_str()
-			}.trace(name());
-		}
-
-		if(actions.empty()) {
-
-			Logger::String{"Empty handler, just merging request into response"}.trace(name());
-			response.merge(request);
-
-		} else {
-
-			for(auto action : actions) {
-				request.rewind();
-				int rc = action->call(request,response);
-				if(rc) {
-					Logger::String{"Action failed with rc=",rc}.trace(name());
-					return rc;
-				}
-			}
-			
-		}
-
-		if(Logger::enabled(Logger::Debug)) {
-			Logger::String{
-				"Action suceedeed\nResponse:\n",response.Udjat::Value::serialize(MimeType::yaml).c_str()
-			}.trace(name());
-		}
-
-		return 0;
-	}
-	
-	Interface::Interface(const Properties &props) : role{Authentication::RoleFactory(props)} {
-
-		// Try type based name
-		String attr{props.get("type","default").c_str(),"-name"};
-		interface_name = props[attr.c_str()].as_quark();
-		if(interface_name && *interface_name) {
-			return;
-		}
-
-		// Check names.
-		for(const char *attrname : { "action-name", "name"}) {
-			interface_name = props[attrname].as_quark();
-			if(interface_name && *interface_name) {
-				return;
-			}
-		}
-
-		throw runtime_error(Logger::String{"Required attribute 'name' or '",props.get("type","default").c_str(),"-name","' is missing or empty"});
-
-	}
-
-	bool Interface::allow(const Authentication::Role role) const {
-		return role >= this->role;
-	}
-
+		
 	Interface::~Interface() {
-		debug("Deleting interface '",name(),"'");	
+		Interfaces().remove(this);
 	}
+
+	bool Interface::for_each(const std::function<bool(const Interface &interface)> &func) {
+		for(const auto &interface : Interfaces()) {
+			if(func(*interface)) {
+				return true;
+			}
+		}
+	}
+
+	bool Interface::input_schema(Schema &schema) const noexcept {
+		return false;
+	}
+
+	bool Interface::output_schema(Schema &schema) const noexcept {
+		return false;
+	}
+
+	bool Interface::process(const char *, const Request &request, Response &) const {
+		if(!allow(request.role())) {
+			Response::Exception error{EPERM,_("You dont have access to this resource")};
+			error.title = strerror(EPERM);
+			throw error;
+		}
+		return true;
+	}
+
+	bool Interface::process(const char *path, const Request &request, std::ostream &stream) const {
+
+		// Default process: Call API, format response on request mimetype.
+
+		MimeType mimetype = request.mimetype();
+		Response response{mimetype};
+
+		if(!process(path,request,response)) {
+			return false;
+		}
+
+		if(!request.apicall()) {
+
+			// It's not an api call, can we use a template?
+			try {
+
+				Schema schema;
+				if(output_schema(schema) && schema.template_name && *schema.template_name) {
+
+					// We have a template name, do we have a template file?
+					Template tmplt(schema.template_name,mimetype);
+					if(tmplt) {
+						tmplt.apply(stream, response);
+						return true;
+					}
+					
+				}
+
+			} catch(const std::exception &e) {
+				Logger::String{e.what()}.error(name());
+			}
+
+		}
+
+		// Format the response.
+		response.serialize(stream);
+		return true;
+
+	}
+
 
  }

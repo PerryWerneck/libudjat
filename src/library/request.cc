@@ -42,6 +42,10 @@
 	Request::~Request() {
 	}
 
+	MimeType Request::mimetype() const noexcept {
+		return MimeType::text;
+	}
+
 	bool Request::pop(const char *prefix, const char * &path) noexcept {
 
 		if(path[0] != '/' || path[1] == 0) {

@@ -46,11 +46,16 @@
 		}
 
 		/// @brief Apply template.
-		/// @param code HTTP status code.
 		/// @param stream Output stream.
 		/// @param name Template name.
 		/// @param callback callback for %{} processing, return true if key was recognized, false if not.
-		void apply(int code, std::ostream &stream, const std::function<bool(const char *key, std::ostream &stream)> &callback);
+		void apply(std::ostream &stream, const std::function<bool(const char *key, std::ostream &stream)> &callback);
+
+		/// @brief Apply value on template.
+		/// @param stream Output stream.
+		/// @param name Template name.
+		/// @param value Values for template.
+		void apply(std::ostream &stream, const Value &value);
 
 	};
 

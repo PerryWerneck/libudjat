@@ -23,6 +23,7 @@
  #include <udjat/authentication.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/http/mimetype.h>
 
  namespace Udjat {
 
@@ -69,6 +70,8 @@
 		inline bool apicall() const noexcept {
 			return apiver != 0;
 		}
+
+		virtual MimeType mimetype() const noexcept;
 
 		/// @brief Check and extract element from path.
 		/// @param prefix The prefix to check and extract.

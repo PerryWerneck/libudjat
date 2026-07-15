@@ -24,121 +24,31 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/request.h>
- #include <udjat/tools/response.h>
- #include <udjat/tools/properties.h>
- #include <udjat/tools/value.h>
- #include <udjat/tools/container.h>
- #include <udjat/tools/schema.h>
- #include <udjat/action.h>
  #include <udjat/authentication.h>
- #include <vector>
- #include <memory>
- #include <vector>
- #include <functional>
+ #include <cstring>
+ #include <ostream>
 
  namespace Udjat {
 
-	/// @brief Abstract handler.
+	/// @brief Interface for processing requests.
 	class UDJAT_API Interface {
+	private:
+		const char *interface_name;
+		const Authentication::Role role;
+
+	protected:
+		typedef Interface super;
+
 	public:
+		Interface(const char *name, const Authentication::Role = Authentication::Admin);
+		
+		virtual ~Interface();
 
-		/// @brief A request handler method.
-		class UDJAT_API Handler {
-		public:
-
-			Handler(const char *name = "unnamed");
-			Handler(const char *name, const Properties &props);
-			Handler(const Properties &props);
-
-			virtual ~Handler();
-
-			inline const char * c_str() const noexcept {
-				return handler_name;
-			}
-
-			inline const char * name() const noexcept {
-				return handler_name;
-			}
-
-			/// @brief Retrieves the schema definition for the interface inputs.
-			/// @param[out] schema Object populated with the interface input schema details.
-			/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
-			virtual bool input_schema(Schema &schema) const noexcept;
-
-			/// @brief Retrieves the schema definition for the interface outputs.
-			/// @param[out] schema Object populated with the interface output schema details.
-			/// @return True if the interface defines an output schema; false otherwise (schema remains unmodified).
-			virtual bool output_schema(Schema &schema) const noexcept;
-
-#if __cplusplus >= 202002L
-			inline auto operator <=>(const char *name) const noexcept {
-				return strcasecmp(name,this->_name);
-			}
-#else
-			inline bool operator==(const char *name) const noexcept {
-				return strcasecmp(name,handler_name) == 0;
-			}
-#endif
-
-			/// @brief Call handler actions.
-			/// @param request The request data.
-			/// @param response The response data.
-			/// @return The return code of the first action to fail.
-			/// @retval Complete without failures.
-			virtual int call(Udjat::Request &request, Udjat::Response &response) const;
-
-			virtual void push_back(const Properties &props);
-			virtual void push_back(std::shared_ptr<Action> action);
-
-		private:
-			const char *handler_name;
-			std::vector<std::shared_ptr<Action>> actions;
-
-		};
-
-		class UDJAT_API Factory {
-		private:
-			const char * factory_name;
-			const char * factory_description;
-
-		public:
-			Factory(const char *name,const char *description = "");
-			virtual ~Factory();
-
-			inline const char *name() const noexcept {
-				return factory_name;
-			}
-
-			inline const char *description() const noexcept {
-				return factory_description;
-			}
-
-#if __cplusplus >= 202002L
-			inline auto operator <=>(const char *name) const noexcept {
-				return strcasecmp(name,factory_name);
-			}
-#else
-			inline bool operator==(const char *name) const noexcept {
-				return strcasecmp(name,factory_name) == 0;
-			}
-#endif
-
-			static void build(const Properties &props) noexcept;
-
-			static bool for_each(const std::function<bool(Interface::Factory &intf)> &method);
-
-			virtual void get_properties(Udjat::Value &value) const;
-
-			virtual Interface & InterfaceFactory(const Properties &props) = 0;
-
-		};
-
-		inline const char * name() const noexcept {
+		inline const char *name() const noexcept {
 			return interface_name;
 		}
 
-		inline const char * c_str() const noexcept {
+		inline const char *c_str() const noexcept {
 			return interface_name;
 		}
 
@@ -155,43 +65,36 @@
 		/// @brief Check the required role for this interface.
 		/// @param role The current user role.
 		/// @return true if the user has access to this interface.
-		bool allow(const Authentication::Role role = Authentication::None) const;
-
-		/// @brief Call handler actions.
-		/// @param request The request data.
-		/// @param response The response data.
-		/// @return The return code of the first action to fail.
-		/// @retval 0 if complete without failures.
-		/// @retval ENOENT Request not found.
-		/// @retval EPERM Access denied.
-		/// @retval EINVAL Invalid arguments on request. 
-		/// @retval ENOTSUP if the request is not supported.
-		virtual int call(Udjat::Request &request, Udjat::Response &response) const;
-
-		/// @brief Insert interface handler.
-		/// @param node The handler description.
-		virtual Handler & push_back(const Properties &props);
-
-		virtual ~Interface();
-
-	private:
-		const char *interface_name;
-		Authentication::Role role = Authentication::None;
-
-	protected:
-
-		typedef Interface Super;
-
-		constexpr Interface(const char *name) : interface_name{name} {
+		inline bool allow(const Authentication::Role role = Authentication::None) const noexcept {
+			return role >= this->role;
 		}
 
-		/// @brief Build an interface from properties.
-		/// @param props The properties.
-		Interface(const Properties &props);
+		/// @brief Retrieves the schema definition for the interface inputs.
+		/// @param[out] schema Object populated with the interface input schema details.
+		/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
+		virtual bool input_schema(Schema &schema) const noexcept;
 
-		/// @brief Push back single action handler.
-		/// @param action The action to push back.
-		virtual bool push_back(const Properties &props, std::shared_ptr<Action> action);
+		/// @brief Retrieves the schema definition for the interface outputs.
+		/// @param[out] schema Object populated with the interface output schema details.
+		/// @return True if the interface defines an output schema; false otherwise (schema remains unmodified).
+		virtual bool output_schema(Schema &schema) const noexcept;
+
+		/// @brief Process an API request.
+		/// @param path The request path.
+		/// @param request The client request.
+		/// @param response The expected response.
+		/// @return true if the request was recognized and processed.
+		virtual bool process(const char *path, const Request &request, Response &response) const;
+
+		/// @brief Process a stream request (usually from HTTP server);
+		/// @param path The request path.
+		/// @param request The client request.
+		/// @param stream The output stream.
+		/// @return true if the request was recognized and processed.
+		virtual bool process(const char *path, const Request &request, std::ostream &stream) const;
+
+		/// @brief Enumerate interfaces.
+		static bool for_each(const std::function<bool(const Interface &interface)> &func);
 
 	};
 

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2024 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2026 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -31,6 +31,7 @@
  #include <fcntl.h>
  #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/value.h>
  #include <stdexcept>
 
  using namespace std;
@@ -65,7 +66,7 @@
 
 	}
 
-	void Template::apply(int code, std::ostream &stream, const std::function<bool(const char *key, std::ostream &stream)> &callback) {
+	void Template::apply(std::ostream &stream, const std::function<bool(const char *key, std::ostream &stream)> &callback) {
 
 		if(!filepath) {
 			Logger::Message{"The file '{}' is unavailable within the selected theme",filepath.c_str()}.error();
@@ -119,6 +120,16 @@
 
 		}
 
+	}
+
+	void Template::apply(std::ostream &stream, const Value &value) {
+		apply(stream, [&value](const char *key, std::ostream &stream){
+			if(value.contains(key)) {
+				stream << value[key].to_string();
+				return true;
+			}
+			return false;
+		});
 	}
 
  }

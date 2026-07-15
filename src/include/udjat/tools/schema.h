@@ -29,35 +29,50 @@
 	class UDJAT_API Schema {
 	public:
 
+		enum Type : uint8_t {
+			String		= Value::String,			///< @brief UTF-8 string value.
+			Timestamp	= Value::Timestamp,			///< @brief Timestamp value.
+			Signed		= Value::Signed,			///< @brief Signed integer value.
+			Unsigned	= Value::Unsigned,			///< @brief Unsigned integer value.
+			Double		= Value::Real,				///< @brief Double value.
+			Float		= Value::Real,				///< @brief Float value.
+			Boolean		= Value::Boolean,			///< @brief Boolean value.
+			Icon		= Value::Icon,				///< @brief Icon name.
+			Url			= Value::Url,				///< @brief URL.
+			State		= Value::State,				///< @brief Agent state (Ready=✓, Warning=⚠, error=✘, etc.)
+			Percent		= Value::Fraction,			///< @brief Percent value (Float from 0.0 to 1.0).
+		};
+
 		/// @brief Template name, for http outputs.
 		const char *template_name = nullptr;
 
 		class UDJAT_API Item {
-		protected:
-			friend class Schema;
-			
-			const char *item_name;			//< @brief The item name.
-			Value::Type item_type;			///< @brief The value type.
-			const char *item_description;	///< @brief The item description.
-
 		public:
-			constexpr Item(const char *name, Value::Type type)
+
+			constexpr Item(const char *name, const Type type)
 				: item_name{name}, item_type{type}, item_description{name} { }
 
-			constexpr Item(const char *name, Value::Type type, const char *description)
+			constexpr Item(const char *name, const Type type, const char *description)
 				: item_name{name}, item_type{type}, item_description{description} { }
 
 			inline const char *name() const noexcept {
 				return item_name;
 			}
 
-			inline const Value::Type type() const noexcept {
+			inline const Type type() const noexcept {
 				return item_type;
 			}
 
 			inline const char * description() const noexcept {
 				return item_description;
 			}
+
+		protected:
+			friend class Schema;
+			
+			const char *item_name;			//< @brief The item name.
+			Type item_type;					///< @brief The item type.
+			const char *item_description;	///< @brief The item description.
 
 		};
 
