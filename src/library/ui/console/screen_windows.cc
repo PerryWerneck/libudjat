@@ -115,7 +115,7 @@ namespace Udjat {
 		return true;
 	}
 
-	bool Console::check_utf8() noexcept {
+	bool Console::utf8() noexcept {
 		return decorated();
 	}
 

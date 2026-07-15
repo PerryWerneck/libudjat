@@ -102,7 +102,7 @@ namespace Udjat {
 		return true;
 	}
 
-	bool Console::check_utf8() noexcept {
+	bool Console::utf8() noexcept {
 
 		if(!decorated()) {
 			return false;
@@ -111,7 +111,7 @@ namespace Udjat {
 		const char* lang = std::getenv("LANG");
 		if (lang && (strstr(lang, "UTF-8") || strstr(lang, "utf8"))) {
 			return true;
-		}		
+		}               
 
 		const char* lctype = std::getenv("LC_CTYPE");
 		if (lctype && (strstr(lctype, "UTF-8") || strstr(lctype, "utf8"))) {
