@@ -241,10 +241,7 @@
 				return;
 			}
 
-			debug("selected options '",selected,"'");
-
 			auto &worker = workers[selected];
-			Logger::String{"--- ",worker.c_str()," ---"}.notice();
 
 			try {
 
