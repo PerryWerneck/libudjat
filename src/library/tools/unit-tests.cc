@@ -175,22 +175,19 @@
 
 				if(!(name && *name) || worker == name) {
 					Logger::String{"--- ",worker.c_str()," ---"}.notice();
-					if(worker.call()) {
-						Console::success(String{worker.c_str()," passed"}.c_str());
-					} else {
-						Console::failed(String{worker.c_str()," failed"}.c_str());
-					}
+					auto status = worker.call();
+					Console::success(worker.c_str(),status);			
 				}
 
 			} catch(const std::exception &e) {
 
 				Logger::String{worker.c_str(),": ",e.what()}.error();
-				Console::failed(String{worker.c_str()," failed"}.c_str());
+				Console::failed(worker.c_str(),e.what());
 
 			} catch(...) {
 
 				Logger::String{worker.c_str(),": Unexpected error"}.error();
-				Console::failed(String{worker.c_str()," failed"}.c_str());
+				Console::failed(worker.c_str(),"Unexpected error");
 
 			}
 		}
@@ -251,10 +248,15 @@
 
 			try {
 
-				worker.call();
+				auto status = worker.call();
+				Console::success(worker.c_str(),status);
 
 			} catch(const std::exception &e) {
 				Logger::String{e.what()}.error();
+				Console::failed(worker.c_str(),e.what());
+			} catch(...) {
+				Logger::String{"Unexpected errror"}.error();
+				Console::failed(worker.c_str(),"Unexpected error");
 			}
 
 		}

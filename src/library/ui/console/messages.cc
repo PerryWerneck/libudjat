@@ -79,7 +79,7 @@ namespace Udjat {
 		return "🪧";
 	}
 
-	UDJAT_API bool Console::success(const char *message) {
+	UDJAT_API bool Console::success(const char *message, const char *subtitle) {
 
 		if(!decorated()) {
 			return false;
@@ -97,11 +97,24 @@ namespace Udjat {
 			"\n"
 		}.c_str());
 
+		if(subtitle) {
+			Console::write(String{
+				"\r",
+				ClearEOL,
+				GreenForeground,
+				"\x1B[5G",
+				SetFaint,
+				subtitle,
+				Reset,
+				"\n"
+			}.c_str());
+		}
+
 		return true;
 
 	}
 
-	UDJAT_API bool Console::failed(const char *message) {
+	UDJAT_API bool Console::failed(const char *message, const char *subtitle) {
 
 		if(!decorated()) {
 			return false;
@@ -118,6 +131,19 @@ namespace Udjat {
 			Reset,
 			"\n"
 		}.c_str());
+
+		if(subtitle) {
+			Console::write(String{
+				"\r",
+				ClearEOL,
+				RedForeground,
+				"\x1B[5G",
+				SetFaint,
+				subtitle,
+				Reset,
+				"\n"
+			}.c_str());
+		}
 
 		return true;
 	}
@@ -160,7 +186,6 @@ namespace Udjat {
 				"\n"
 			}.c_str());
 		}
-
 
 	}
 

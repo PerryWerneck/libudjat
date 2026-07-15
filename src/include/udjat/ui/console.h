@@ -57,10 +57,10 @@
 		UDJAT_API const char * icon(Logger::Level level);
 
 		/// @brief Show a success message.
-		UDJAT_API bool success(const char *message);
+		UDJAT_API bool success(const char *message, const char *subtitle = nullptr);
 
 		/// @brief Show a failed message.
-		UDJAT_API bool failed(const char *message);
+		UDJAT_API bool failed(const char *message, const char *subtitle = nullptr);
 
 		// Reference: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
