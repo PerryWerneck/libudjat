@@ -199,10 +199,10 @@
 		}
 	}
 
-	void UnitTests::interactive() noexcept {
+	void UnitTests::interactive(const char *title) noexcept {
 
 		// Run interactive mode.
-		Console::Menu<string> menu{_("Available tests")};
+		Console::Menu<string> menu{(title && *title ? title : _("Available tests"))};
 		{
 			// Get widht
 			size_t width = 0;

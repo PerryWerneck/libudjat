@@ -108,7 +108,7 @@ namespace Udjat {
 		void load() noexcept;
 
 		/// @brief Interactive mode.
-		void interactive() noexcept;
+		void interactive(const char *title = nullptr) noexcept;
 
 		/// @brief Run test.
 		/// @param name Test name to run, nullptr to run all.
