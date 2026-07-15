@@ -109,11 +109,18 @@
 			size_t count = 0; ///< @brief The item count (for X-Total-Count http header)
 		} range;
 
+	private:
+		const Abstract::Object *object = nullptr;
+
 	public:
 		Response(const MimeType m = MimeType::json) : mimetype(m) {
 		}
 
 		virtual ~Response();
+
+		inline void set(const Abstract::Object *object) noexcept {
+			this->object = object;
+		}
 
 		Response & failed(int syscode) noexcept;
 		Response & failed(const std::exception &e) noexcept;

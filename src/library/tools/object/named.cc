@@ -23,6 +23,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/schema.h>
 
  using namespace std;
 
@@ -33,6 +34,29 @@
 
 	NamedObject::NamedObject(const Properties &props) : NamedObject{props["name"].as_quark()} {
 	}
+
+	bool NamedObject::output_schema(const char *path, Schema &schema) const noexcept {
+
+		Abstract::Object::output_schema(path,schema);
+
+		schema.append(
+			Schema::Item{ "name", Schema::String	}
+		);
+
+		return true;
+	}
+
+	bool NamedObject::get_property(const char *key, Value &value) const {
+		
+		if(!strcasecmp(key,"name")) {
+			value = name();
+			return true;
+		}
+
+		return Abstract::Object::get_property(key,value);
+		
+	}
+
 
 	const char * NamedObject::name() const noexcept {
 		return objectName;

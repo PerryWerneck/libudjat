@@ -66,26 +66,40 @@
 		return value;
 	}
 
-	bool Object::output_schema(const char *, Schema &schema) const noexcept {
+	bool Object::output_schema(const char *path, Schema &schema) const noexcept {
+
+		NamedObject::output_schema(path,schema);
+
 		schema.append(
-			Schema::Item {
-				"summary",
-				Value::String,
-			},
-			Schema::Item {
-				"label",
-				Value::String,
-			},
-			Schema::Item {
-				"url",
-				Value::String,
-			},
-			Schema::Item {
-				"icon",
-				Value::Icon,
-			}
+			Schema::Item{ "summary",	Schema::String,	},
+			Schema::Item{ "label",		Schema::String,	},
+			Schema::Item{ "url",		Schema::String,	},
+			Schema::Item{ "icon",		Schema::Icon,	}
 		);
+
 		return true;
+	}
+
+	bool Object::get_property(const char *key, Value &value) const {
+
+		if(NamedObject::get_property(key,value)) {
+			return true;
+		} 
+
+		if(!strcasecmp(key,"label")) {
+			value = properties.label;
+		} else if(!strcasecmp(key,"summary")) {
+			value = summary();
+		} else if(!strcasecmp(key,"url")) {
+			value = properties.url;
+		} else if(!strcasecmp(key,"icon")) {
+			value = icon();
+		} else {
+			return false;
+		}
+
+		return true;
+
 	}
 
 	bool Object::get_property(const char *key, std::string &value) const {

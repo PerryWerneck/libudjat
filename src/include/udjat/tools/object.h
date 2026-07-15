@@ -102,9 +102,6 @@
 			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
 			virtual bool output_schema(const char *path, Schema &schema) const noexcept;
 
-			/// @brief Get configuration file group.
-			static const char * settings_from(const Properties &props, bool upstream = true,const char *def = "");
-
 			virtual const char * name() const noexcept;
 
 #if __cplusplus >= 202002L
@@ -191,7 +188,7 @@
 			/// @brief Add object properties to the value.
 			virtual Value & get_properties(Value &value) const;
 
-			virtual int call(const Request &request, Response &response);
+			virtual int process(const char *path, const Request &request, Response &response);
 
 		};
 
@@ -218,6 +215,7 @@
 		constexpr NamedObject(const char *name = "") : objectName{name} {}
 
 		bool get_property(const char *key, std::string &value) const override;
+		bool get_property(const char *key, Value &value) const override;
 
 		/// @brief This object has a name?
 		/// @return true if the object is named.
@@ -271,6 +269,11 @@
 			Logger::Message{fmt, Fargs...}.error(objectName);
 		}
 
+		/// @brief Retrieves the schema definition for the object outputs.
+		/// @param[out] schema Object populated with the output schema details.
+		/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
+		bool output_schema(const char *path, Schema &schema) const noexcept override;
+
 	};
 
 	/// @brief An object with common properties.
@@ -307,6 +310,7 @@
 		}
 
 		bool get_property(const char *key, std::string &value) const override;
+		bool get_property(const char *key, Value &value) const override;
 
 		virtual const char * label() const noexcept;
 

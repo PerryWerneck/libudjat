@@ -147,8 +147,25 @@
 		return value;
 	}
 
-	int Abstract::Object::call(const Request &, Response &response) {
-		get_properties(response);
+	int Abstract::Object::process(const char *path, const Request &, Response &response) {
+
+		response.set(this);
+
+		Schema schema;
+		if(output_schema(path,schema)) {
+
+			// Has schema, use it
+			for(const auto &item : schema) {
+				get_property(item.name(),response[item.name()]);
+			}
+
+		} else {
+
+			// No schema, just copy properties.
+			get_properties(response);
+
+		}
+
 		return 0;
 	}
 
@@ -179,68 +196,19 @@
 
 	}
 
-	bool Abstract::Object::get_property(const char *, std::string &) const {
-		return false;
-	}
+	bool Abstract::Object::get_property(const char *key, std::string &value) const {
 
-	bool Abstract::Object::get_property(const char *key, Udjat::Value &value) const {
-		std::string str;
-		if(get_property(key,str)) {
-			value = str;
+		Value val;
+		if(get_property(key, val)) {
+			value = val.to_string().c_str();
 			return true;
 		}
 		return false;
+
 	}
 
-	const char * Abstract::Object::settings_from(const Properties &node, bool upstream, const char *def) {
-
-		throw runtime_error("Refactor incomplete");
-
-		// auto attribute = node.pugi::xml_node::attribute("settings-from");
-		// if(attribute) {
-		// 	return attribute.as_string(def);
-		// }
-
-		// string attrname{node.name()};
-		// attrname += "-defaults-from";
-		// attribute = node.pugi::xml_node::attribute(attrname.c_str());
-		// if(attribute) {
-		// 	return attribute.as_string(def);
-		// }
-
-		// if(upstream) {
-		// 	for(XML::Node parent = node.parent(); parent; parent = parent.parent()) {
-		// 		attribute = parent.pugi::xml_node::attribute(attrname.c_str());
-		// 		if(attribute) {
-		// 			return attribute.as_string(def);
-		// 		}
-		// 	}
-		// }
-
-		// if(*def) {
-		// 	return def;
-		// }
-
-		// return Quark( (string{node.name()} + "-defaults").c_str() ).c_str();
+	bool Abstract::Object::get_property(const char *key, Udjat::Value &value) const {
+		return false;
 	}
-
-	// bool Abstract::Object::for_each(const Properties &props, const char *tagname, const std::function<bool (const Properties &props)> &call) {
-
-	// 	bool rc = false;
-
-	// 	for(XML::Node n = node; n && !rc; n = n.parent()) {
-
-	// 		for(XML::Node child = n.child(tagname); child && !rc; child = child.next_sibling(tagname)) {
-
-	// 			if(is_allowed(child)) {
-	// 				rc = call(child);
-	// 			}
-
-	// 		}
-
-	// 	}
-
-	// 	return rc;
-	// }
 
  }
