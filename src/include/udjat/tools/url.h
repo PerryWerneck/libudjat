@@ -160,9 +160,9 @@
 		/// @retval -ENOTSUP No support for test in protocol handler.
 		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const;
 
-		int call(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer);
+		int process(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer);
 
-		String call(const HTTP::Method method = HTTP::Get, const char *payload = "", const bool console = false) const;
+		String process(const HTTP::Method method = HTTP::Get, const char *payload = "", const bool console = false) const;
 
 		/// @brief Do a 'get' request.
 		/// @param progress progress callback.
@@ -171,15 +171,17 @@
 
 		String post(const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
 
-		String get(const bool console = false) const;
-
 		/// @brief Do a get request using a writer callback.
 		/// @param writer The writer callback to receive the data, return true to cancel operation.
 		/// @return The get result.
 		int get(const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer);
 
+		inline String get(const bool console = false) const {
+			return process(HTTP::Get,"",console);
+		}
+
 		inline String post(const char *payload, const bool console = false) const {
-			return call(HTTP::Post,payload,console);
+			return process(HTTP::Post,payload,console);
 		}
 
 		/// @brief Download/update a file with progress.
@@ -213,10 +215,6 @@
 		/// @return The temporary filename.
 		std::string tempfile();
 
-		/// @brief Convenience method for progress feedback on console apps.
-		static bool progress_to_console(const char *url,uint64_t current, uint64_t total) noexcept;
-
-		static bool progress_to_console(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;
 	};
 
  }

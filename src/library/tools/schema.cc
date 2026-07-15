@@ -43,7 +43,7 @@
 
 			// Type mismatch, change value type to string.
 			Logger::String{"Duplicate item '",item.name(),"'"}.warning();
-			itn.item_type = Value::String;
+			itn.item_type = Schema::String;
 
 		}
 

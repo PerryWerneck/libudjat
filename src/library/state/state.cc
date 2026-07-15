@@ -167,8 +167,8 @@ namespace Udjat {
 	bool Abstract::State::output_schema(const char *path, Schema &schema) const noexcept {
 		Object::output_schema(path,schema);
 		schema.append(
-			Schema::Item{ "body",	Udjat::Value::String },
-			Schema::Item{ "level",	Udjat::Value::String }
+			Schema::Item{ "body",	Schema::String },
+			Schema::Item{ "level",	Schema::String }
 		);
 		return true;
 	}

@@ -42,6 +42,13 @@
 	Request::~Request() {
 	}
 
+	Authentication::Role Request::role() const noexcept {
+		if(auth) {
+			return auth->role();
+		}
+		return Authentication::None;
+	}
+
 	MimeType Request::mimetype() const noexcept {
 		return MimeType::text;
 	}

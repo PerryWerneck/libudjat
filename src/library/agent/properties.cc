@@ -34,10 +34,10 @@
 		Object::output_schema(path,schema);
 
 		schema.append(
-			Schema::Item{ "path",			Udjat::Value::String		},
-			Schema::Item{ "state_icon",		Udjat::Value::Icon			},
-			Schema::Item{ "state_body",		Udjat::Value::String		},
-			Schema::Item{ "state_level",	Udjat::Value::String		}
+			Schema::Item{ "path",			Schema::String		},
+			Schema::Item{ "state_icon",		Schema::Icon		},
+			Schema::Item{ "state_body",		Schema::String		},
+			Schema::Item{ "state_level",	Schema::String		}
 		);
 
 		return true;

@@ -23,7 +23,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/file/temporary.h>
- #include <udjat/ui/console.h>
+ #include <udjat/ui/console/progress.h>
  #include <uriparser/Uri.h>
  #include <stdexcept>
  #include <string>
@@ -400,27 +400,46 @@
 		return false;
 	}
 
-	int URL::call(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer) {
+	int URL::process(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer) {
 		return handler()->perform(method, payload, writer);
 	}
 
-	String URL::call(const HTTP::Method method, const char *payload, const bool console) const {
+	String URL::process(const HTTP::Method method, const char *payload, const bool console) const {
+
 		stringstream str;
 		auto hdr = handler();
-		int rc = hdr->perform(
-			method, 
-			payload, 
-			[this,&str,console](uint64_t current, uint64_t total, const void *data, size_t len) -> bool {
-				debug("Got '",len,"' bytes");
-				if(data && len) {
-					str.write((const char *) data,len);
+
+		int rc;
+		if(console) {
+			Console::Progress progress;
+			progress.url(this->c_str());
+			rc = hdr->perform(
+				method, 
+				payload, 
+				[this,&str,console,&progress](uint64_t current, uint64_t total, const void *data, size_t len) -> bool {
+					debug("Got '",len,"' bytes");
+					if(data && len) {
+						str.write((const char *) data,len);
+					}
+					progress.set(current,total,true);
+					return false;
 				}
-				if(console) {
-					URL::progress_to_console(this->c_str(),current,total);
+			);
+
+		} else {
+			rc = hdr->perform(
+				method, 
+				payload, 
+				[this,&str](uint64_t current, uint64_t total, const void *data, size_t len) -> bool {
+					debug("Got '",len,"' bytes");
+					if(data && len) {
+						str.write((const char *) data,len);
+					}
+					return false;
 				}
-				return false;
-			}
-		);
+			);
+		}
+
 		hdr->except(rc);
 		return String{str.str().c_str()};		
 	}
@@ -439,15 +458,6 @@
 
 	String URL::post(const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
 		return handler()->get(HTTP::Post,payload,progress);
-	}
-
-	String URL::get(bool console) const {
-		return get([&](uint64_t current, uint64_t total) {
-			if(console) {
-				URL::progress_to_console(this->c_str(),current,total);
-			}
-			return false;
-		});
 	}
 
 	bool URL::get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
@@ -500,14 +510,6 @@
 
 	std::string URL::tempfile() {
 		return cache([](double,double) -> bool { return false; });
-	}
-
-	bool URL::progress_to_console(const char *url, uint64_t current, uint64_t total) noexcept {
-		return progress_to_console("",url,current,total);
-	}
-
-	bool URL::progress_to_console(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {
-		return Console::Screen{}.progress(prefix,url,current,total);
 	}
 
  }

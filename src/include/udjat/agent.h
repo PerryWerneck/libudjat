@@ -539,7 +539,7 @@
 		bool output_schema(const char *path, Schema &schema) const noexcept override {
 			Abstract::Agent::output_schema(path,schema);
 			schema.append(
-				Schema::Item{ "value",	Udjat::Value::TypeFactory<T>() }
+				Schema::Item{ "value",	Udjat::Schema::TypeFactory<T>() }
 			);
 			return true;
 		}
@@ -632,7 +632,7 @@
 		bool output_schema(const char *path, Schema &schema) const noexcept override {
 			Abstract::Agent::output_schema(path,schema);
 			schema.append(
-				Schema::Item{ "value",	Udjat::Value::String }
+				Schema::Item{ "value",	Schema::String }
 			);
 			return true;
 		}
@@ -704,7 +704,7 @@
 		bool output_schema(const char *path, Schema &schema) const noexcept override {
 			Abstract::Agent::output_schema(path,schema);
 			schema.append(
-				Schema::Item{ "value",	Udjat::Value::Boolean }
+				Schema::Item{ "value",	Schema::Boolean }
 			);
 
 			return true;

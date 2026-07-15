@@ -357,14 +357,14 @@
 			bool output_schema(Schema &schema) const noexcept override {
 
 				schema.append(
-					Schema::Item{ "icon",		Udjat::Value::Icon		},
-					Schema::Item{ "label",		Udjat::Value::String	},
-					Schema::Item{ "name",		Udjat::Value::String	},
-					Schema::Item{ "state",		Udjat::Value::String	},
-					Schema::Item{ "summary",	Udjat::Value::String	},
-					Schema::Item{ "system", 	Udjat::Value::String	},
-					Schema::Item{ "url", 		Udjat::Value::Url		},
-					Schema::Item{ "value",		Udjat::Value::String	}
+					Schema::Item{ "icon",		Schema::Icon	},
+					Schema::Item{ "label",		Schema::String	},
+					Schema::Item{ "name",		Schema::String	},
+					Schema::Item{ "state",		Schema::String	},
+					Schema::Item{ "summary",	Schema::String	},
+					Schema::Item{ "system", 	Schema::String	},
+					Schema::Item{ "url", 		Schema::Url		},
+					Schema::Item{ "value",		Schema::String	}
 				);
 
 				return true;

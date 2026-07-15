@@ -175,7 +175,7 @@
 							URL url{this->url};
 							url.expand(request);
 
-							String response = url.call(method,payload.c_str());
+							String response = url.process(method,payload.c_str());
 
 							if(!response.empty()) {
 								Logger::String{response.c_str()}.write(Logger::Trace,name());

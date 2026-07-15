@@ -43,6 +43,11 @@
 			Percent		= Value::Fraction,			///< @brief Percent value (Float from 0.0 to 1.0).
 		};
 
+		template <typename T>
+		constexpr static Type TypeFactory() {
+			return Type::String;
+		}
+
 		/// @brief Template name, for http outputs.
 		const char *template_name = nullptr;
 
@@ -118,6 +123,46 @@
 		std::vector<Item> itens;
 
 	};
+
+	template <>
+	constexpr Schema::Type Schema::TypeFactory<std::string>() {
+		return Type::String;
+	}
+
+	template <>
+	constexpr Schema::Type Schema::TypeFactory<const char *>() {
+		return Type::String;
+	}
+
+	template <>
+	constexpr Schema::Type Schema::TypeFactory<TimeStamp>() {
+		return Type::Timestamp;
+	}
+
+	template <>
+	constexpr Schema::Type Schema::TypeFactory<int>() {
+		return Type::Signed;
+	}
+
+	template <>
+	constexpr Schema::Type Schema::TypeFactory<unsigned int>() {
+		return Type::Unsigned;
+	}
+
+	template <>
+	constexpr Schema::Type Schema::TypeFactory<float>() {
+		return Type::Float;
+	}
+
+	template <>
+	constexpr Schema::Type Schema::TypeFactory<double>() {
+		return Type::Double;
+	}
+
+	template <>
+	constexpr Schema::Type Schema::TypeFactory<bool>() {
+		return Type::Boolean;
+	}
 
  }
 

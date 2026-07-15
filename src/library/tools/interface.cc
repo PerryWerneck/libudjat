@@ -68,6 +68,7 @@
 				return true;
 			}
 		}
+		return false;
 	}
 
 	bool Interface::input_schema(Schema &schema) const noexcept {
