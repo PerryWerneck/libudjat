@@ -33,8 +33,11 @@
 
  namespace Udjat {
 
-	UDJAT_API void Logger::console(bool enable) {
+	UDJAT_API bool Logger::console(bool enable) {
+		auto &controller = Controller::getInstance();
+		bool rc = controller.enabled(BackEnd::Console);
 		Controller::getInstance().console(enable);
+		return rc;
 	}
 
 	UDJAT_API bool Logger::console() {
@@ -111,6 +114,7 @@
 #endif // !_WIN32
 
 		});
+
 	}
 
  }

@@ -69,7 +69,10 @@
 		UDJAT_API void enable(Logger::Level level, bool enabled = true) noexcept;
 
 		/// @brief Enable/Disable default console backend.
-		UDJAT_API void console(bool enable);
+		/// @return The console state before the change.
+		/// @retval true the console was enabled.
+		/// @retval false the console was not enabled.
+		UDJAT_API bool console(bool enable);
 
 		/// @brief Get state of console backend.
 		/// @return The current state.
