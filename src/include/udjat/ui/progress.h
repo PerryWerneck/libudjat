@@ -40,20 +40,6 @@
 		  
 		public:
 
-			class UDJAT_API Factory {
-			private:
-				static Factory *instance;
-				Factory *parent;
-			
-			public:
-				static Factory * getInstance();
-
-				Factory();
-				virtual ~Factory();
-				virtual std::shared_ptr<Progress> ProgressFactory() const = 0;
-
-			};
-
 			Progress(const Progress &other) = delete;
 			Progress(Progress *other) = delete;
 
