@@ -79,7 +79,7 @@ namespace Udjat {
 		return "🪧";
 	}
 
-	UDJAT_API bool Console::success(const char *message, const char *subtitle) {
+	UDJAT_API bool Console::success(unsigned short column, const char *primary, const char *secondary) {
 
 		if(!decorated()) {
 			return false;
@@ -89,23 +89,22 @@ namespace Udjat {
 			"\r",
 			ClearEOL,
 			BrightGreenForeground,
-			SetBold,
-			"\x1B[4G",
+			"\x1B[",column,"G",
 			"✓",
-			"\x1B[6G",
-			message,
+			"\x1B[",(column+2),"G",
+			primary,
 			Reset,
 			"\n"
 		}.c_str());
 
-		if(subtitle) {
+		if(secondary) {
 			Console::write(String{
 				"\r",
 				ClearEOL,
 				GreenForeground,
-				"\x1B[6G",
+				"\x1B[",(column+2),"G",
 				SetFaint,
-				subtitle,
+				secondary,
 				Reset,
 				"\n"
 			}.c_str());
@@ -115,7 +114,7 @@ namespace Udjat {
 
 	}
 
-	UDJAT_API bool Console::failed(const char *message, const char *subtitle) {
+	UDJAT_API bool Console::failed(unsigned short column, const char *primary, const char *secondary) {
 
 		if(!decorated()) {
 			return false;
@@ -125,23 +124,22 @@ namespace Udjat {
 			"\r",
 			ClearEOL,
 			BrightRedForeground,
-			SetBold,
-			"\x1B[4G",
+			"\x1B[",column,"G",
 			"✘",
-			"\x1B[6G",
-			message,
+			"\x1B[",(column+2),"G",
+			primary,
 			Reset,
 			"\n"
 		}.c_str());
 
-		if(subtitle) {
+		if(secondary) {
 			Console::write(String{
 				"\r",
 				ClearEOL,
 				RedForeground,
-				"\x1B[6G",
+				"\x1B[",(column+2),"G",
 				SetFaint,
-				subtitle,
+				secondary,
 				Reset,
 				"\n"
 			}.c_str());

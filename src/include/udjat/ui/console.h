@@ -57,10 +57,18 @@
 		UDJAT_API const char * icon(Logger::Level level);
 
 		/// @brief Show a success message.
-		UDJAT_API bool success(const char *message, const char *subtitle = nullptr);
+		UDJAT_API bool success(unsigned short column, const char *primary, const char *secondary = nullptr);
+
+		inline bool success(const char *primary, const char *secondary = nullptr) {
+			return success(0,primary,secondary);
+		}
 
 		/// @brief Show a failed message.
-		UDJAT_API bool failed(const char *message, const char *subtitle = nullptr);
+		UDJAT_API bool failed(unsigned short column, const char *primary, const char *secondary);
+
+		inline bool failed(const char *primary, const char *secondary = nullptr) {
+			return failed(0,primary,secondary);
+		}
 
 		// Reference: https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 

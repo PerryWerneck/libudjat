@@ -20,7 +20,7 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.8.0',
+	version: '3.0.0',
 	default_options : [
     'c_std=c11', 
     'cpp_std=c++17', 
