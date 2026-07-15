@@ -174,22 +174,24 @@
 			try {
 
 				if(!(name && *name) || worker == name) {
+					
 					Logger::String{"--- ",worker.c_str()," ---"}.notice();
-					auto status = worker.call(std::cout);
-					Console::success(worker.c_str(),status);			
+					auto result = worker.call(std::cout);
+
+					Console::status(Logger::Info,worker.c_str(),result.c_str());
+
 				}
 
 			} catch(const std::exception &e) {
 
-				Logger::String{worker.c_str(),": ",e.what()}.error();
-				Console::failed(worker.c_str(),e.what());
+				Console::status(Logger::Error,worker.c_str(),e.what());
 
 			} catch(...) {
 
-				Logger::String{worker.c_str(),": Unexpected error"}.error();
-				Console::failed(worker.c_str(),"Unexpected error");
+				Console::status(Logger::Error,worker.c_str(),"Unexpected error");
 
 			}
+
 		}
 	}
 
@@ -246,14 +248,12 @@
 			try {
 
 				auto status = worker.call(std::cout);
-				Console::success(worker.c_str(),status);
+				Console::status(Logger::Info,worker.c_str(),status.c_str());
 
 			} catch(const std::exception &e) {
-				Logger::String{e.what()}.error();
-				Console::failed(worker.c_str(),e.what());
+				Console::status(Logger::Error,worker.c_str(),e.what());
 			} catch(...) {
-				Logger::String{"Unexpected errror"}.error();
-				Console::failed(worker.c_str(),"Unexpected error");
+				Console::status(Logger::Error,worker.c_str(),"Unexpected error");
 			}
 
 		}

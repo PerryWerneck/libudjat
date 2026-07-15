@@ -64,7 +64,7 @@
 		}
 
 		/// @brief Show a failed message.
-		UDJAT_API bool failed(unsigned short column, const char *primary, const char *secondary);
+		UDJAT_API bool failed(unsigned short column, const char *primary, const char *secondary = nullptr);
 
 		inline bool failed(const char *primary, const char *secondary = nullptr) {
 			return failed(0,primary,secondary);

@@ -66,14 +66,14 @@ namespace Udjat {
 			const char *option = nullptr;		///< @brief The test option (for command line).
 			
 			/// @brief The callback to run test, return message if the test was ok, exception if failed.
-			std::function<const char *(std::ostream &)> call = nullptr;
+			std::function<const std::string (std::ostream &)> call = nullptr;
 
 		public:
-			Worker(const char *o, const char *l, const std::function<const char *(std::ostream &)> &c) :
+			Worker(const char *o, const char *l, const std::function<const std::string (std::ostream &)> &c) :
 				label{l}, option{o}, call{c} {
 			}
 
-			Worker(const char *l, const std::function<const char *(std::ostream &)> &c) :
+			Worker(const char *l, const std::function<const std::string (std::ostream &)> &c) :
 				label{l}, call{c} {
 			}
 
@@ -87,7 +87,7 @@ namespace Udjat {
 
 			bool operator==(const char *opt) const;
 			
-			inline const char * exec(std::ostream &stream) const {
+			inline const std::string exec(std::ostream &stream) const {
 				return call(stream);
 			}
 

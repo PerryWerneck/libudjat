@@ -61,13 +61,12 @@ namespace Udjat {
 			Logger::Level level;
 			const char *prefix;
 		} prefixes[] = {
-			{ Logger::Notice, 	"🪧"	},
-			{ Logger::Error, 	"❌"		},
-			{ Logger::Warning, 	"⚠️"	},
-			{ Logger::Info, 	"✅"		},
-			{ Logger::Trace, 	"⚙️"	},
-			{ Logger::Debug, 	"🪲"	},
-
+			{ Logger::Notice, 	" "	},
+			{ Logger::Error, 	"✘"	},
+			{ Logger::Warning, 	"⚠"	},
+			{ Logger::Info, 	"✓"	},
+			{ Logger::Trace, 	" "	},
+			{ Logger::Debug, 	" "	},
 		};
 
 		for(const auto &prefix : prefixes) {
@@ -164,11 +163,11 @@ namespace Udjat {
 		Console::write(String{
 			"\r",
 			ClearEOL,
-			"\x1B[",column,"G",
 			color(level),
-			icon(level),
-			"\x1B[",(column+4),"G",
 			SetBold,
+			"\x1B[",column,"G",
+			icon(level),
+			"\x1B[",(column+3),"G",
 			title,
 			Reset,
 			"\n"
@@ -178,9 +177,9 @@ namespace Udjat {
 			Console::write(String{
 				"\r",
 				ClearEOL,
-				"\x1B[",column+4,"G",
 				color(level),
 				SetFaint,
+				"\x1B[",(column+3),"G",
 				subtitle,
 				Reset,
 				"\n"
