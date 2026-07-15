@@ -115,6 +115,10 @@ namespace Udjat {
 		return true;
 	}
 
+	bool Console::check_utf8() noexcept {
+		return decorated();
+	}
+
 	bool Console::decorated() noexcept {
 		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 		if(hOut != INVALID_HANDLE_VALUE) {

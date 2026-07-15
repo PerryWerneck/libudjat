@@ -29,6 +29,7 @@
 #include <set>
 #include <udjat/module.h>
 #include <memory>
+#include <ostream>
 
 namespace Udjat {
 
@@ -64,15 +65,15 @@ namespace Udjat {
 			const char *label;					///< @brief The test label (for menu).
 			const char *option = nullptr;		///< @brief The test option (for command line).
 			
-			/// @brief The callback to run test, return true if the test was ok.
-			std::function<bool(void)> call = nullptr;
+			/// @brief The callback to run test, return message if the test was ok, exception if failed.
+			std::function<const char *(void)> call = nullptr;
 
 		public:
-			Worker(const char *o, const char *l, const std::function<bool(void)> &c) :
+			Worker(const char *o, const char *l, const std::function<const char *(void)> &c) :
 				label{l}, option{o}, call{c} {
 			}
 
-			Worker(const char *l, const std::function<bool(void)> &c) :
+			Worker(const char *l, const std::function<const char *(void)> &c) :
 				label{l}, call{c} {
 			}
 

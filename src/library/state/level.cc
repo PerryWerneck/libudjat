@@ -31,7 +31,7 @@
 		const char *utfchar;
 		const char *htmlchar;
 	} levels[Udjat::Level::critical+1] {
-		{ "undefined",		" ",	"&nbsp;"	},
+		{ "undefined",		"�",	"&#xFFFD;"	},	// https://www.compart.com/en/unicode/U+FFFD
 		{ "unimportant",	" ",	"&nbsp;"	},
 		{ "ready",			"✓",	"&check;"	},	// https://www.compart.com/en/unicode/U+2713
 		{ "warning",		"⚠",	"&#xFFFD;"	},	// https://www.compart.com/en/unicode/U+26A0
@@ -86,10 +86,22 @@
 
  namespace std {
 
-	const char * to_string(const Udjat::Level level) {
+	UDJAT_API const char * to_string(const Udjat::Level level) {
 		if(level > Udjat::Level::critical)
 			return "undefined";
 		return Udjat::levels[level].name;
+	}
+
+	UDJAT_API const char * to_utf8_string(const Udjat::Level level) {
+		if(level > Udjat::Level::critical)
+			return Udjat::levels[Udjat::Level::undefined].utfchar;
+		return Udjat::levels[level].utfchar;
+	}
+
+	UDJAT_API const char * to_html_string(const Udjat::Level level) {
+		if(level > Udjat::Level::critical)
+			return Udjat::levels[Udjat::Level::undefined].htmlchar;
+		return Udjat::levels[level].htmlchar;
 	}
 
  }

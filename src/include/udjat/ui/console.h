@@ -42,6 +42,10 @@
 		/// @return true if the current console stream allows ANSI decoration.
 		UDJAT_API bool decorated() noexcept;
 
+		/// @brief The current console stream accepts UTF-8 chars?
+		/// @return true if the current console stream allows UTF-8 chars.
+		UDJAT_API bool check_utf8() noexcept;
+
 		/// @brief Show a status message
 		UDJAT_API void status(Logger::Level level, int column, const char *title, const char *subtitle = nullptr) noexcept;
 		

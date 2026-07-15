@@ -129,9 +129,28 @@
 		/// @return Module path or empty string if not found.
 		static std::string locate(const char *name) noexcept;
 
-		bool operator==(const char *name) const noexcept {
+		/// @brief Get module by name.
+		/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
+		/// @return Pointer to module or nullptr if not found.
+		static const Module * find(const char *name) noexcept;
+
+#if __cplusplus >= 202002L
+
+		inline int operator <=>(const char *name) const noexcept {
+			return strcasecmp(this->module_name,name);
+		}
+
+#else
+
+		inline bool operator==(const char *name) const noexcept {
 			return strcasecmp(this->module_name,name) == 0;
 		}
+
+		inline bool operator!=(const char *name) const noexcept {
+			return strcasecmp(this->module_name,name) != 0;
+		}
+
+#endif
 
 		inline const char * name() const noexcept {
 			return module_name;
@@ -156,11 +175,6 @@
 		/// @note The method should return true if the scan should be stopped.
 		/// @note The method should return false if the scan should continue.
 		static bool for_each(const std::function<bool(Module &module)> &method);
-
-		/// @brief Get module by name.
-		/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
-		/// @return Pointer to module or nullptr if not found.
-		static const Module * find(const char *name) noexcept;
 
 		/// @brief Get module search paths.
 		static std::vector<std::string> search_paths() noexcept;

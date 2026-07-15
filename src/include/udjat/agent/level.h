@@ -54,5 +54,7 @@
  namespace std {
 
 	UDJAT_API const char * to_string(const Udjat::Level level);
+	UDJAT_API const char * to_utf8_string(const Udjat::Level level);
+	UDJAT_API const char * to_html_string(const Udjat::Level level);
 
  }
