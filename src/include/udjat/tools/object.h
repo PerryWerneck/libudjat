@@ -174,7 +174,7 @@
 			/// @retval false The property was not found.
 			virtual bool set_property(const char *key, const char *value);
 
-			/// @brief Get property value.
+			/// @brief Get property as string.
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property is valid.

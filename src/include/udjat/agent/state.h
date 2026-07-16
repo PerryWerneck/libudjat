@@ -172,11 +172,19 @@
 			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
 			bool output_schema(const char *path, Schema &schema) const noexcept override;
 
-			/// @brief Get property.
+			/// @brief Get agent property as string.
+			/// @param key The property name.
+			/// @param value String to update with the property value.
+			/// @return true if the property was found.
+			inline bool get_property(const char *key, std::string &value) const {
+				return Object::get_property(key,value);
+			}
+
+			/// @brief Get agent property.
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property is valid.
-			bool get_property(const char *key, std::string &value) const override;
+			bool get_property(const char *key, Udjat::Value &value) const override;
 
 			/// @brief Get the state properties.
 			/// @brief Value to receive the properties.

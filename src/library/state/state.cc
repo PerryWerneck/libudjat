@@ -187,19 +187,19 @@ namespace Udjat {
 		}
 	}
 
-	bool Abstract::State::get_property(const char *key, std::string &value) const {
+	bool Abstract::State::get_property(const char *key, Udjat::Value &value) const {
 
 		if(Object::get_property(key,value)) {
 			return true;
 		}
 
-		if(!strcasecmp(key,"level")) {
+		if(!strcasecmp(key,"levelname")) {
 			value = std::to_string(properties.level);
 			return true;
 		}
 
-		if(!strcasecmp(key,"levelnumber")) {
-			value = std::to_string((unsigned int) properties.level);
+		if(!strcasecmp(key,"level")) {
+			value = (unsigned int) properties.level;
 			return true;
 		}
 

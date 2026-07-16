@@ -166,7 +166,7 @@
 
 			// Has schema, use it
 			for(const auto &item : schema) {
-				if(!get_property(item.name(),response[item.name()])) {
+				if(!this->get_property(item.name(),response[item.name()])) {
 					throw logic_error(String{"Property '",item.name(),"' is not available"});
 				}
 			}

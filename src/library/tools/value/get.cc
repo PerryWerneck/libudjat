@@ -549,9 +549,15 @@
 		return stream.str();
 	}
 
-	std::string Value::to_string() const {
+	std::string Value::to_string() const noexcept {
 		string value;
-		get(value);
+		try {
+			get(value);
+			return value;
+		} catch(std::exception &e) {
+			Logger::String{e.what()}.error();
+		}
+		value.clear();
 		return value;
 	}
 

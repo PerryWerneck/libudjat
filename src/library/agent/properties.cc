@@ -23,6 +23,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/schema.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/value.h>
  #include <udjat/agent.h>
  #include <mutex>
 
@@ -37,15 +38,16 @@
 		schema.append(
 			Schema::Item{ "path",			Schema::String,		_("The agent path")	},
 			Schema::Item{ "body",			Schema::String		},
-			Schema::Item{ "level",			Schema::String		},
-			Schema::Item{ "state_icon",		Schema::Icon,		_("Icon name for the current agent state")		},
+			Schema::Item{ "state",			Schema::String,		},
+			Schema::Item{ "statename",		Schema::String,		},
+			Schema::Item{ "stateicon",		Schema::Icon,		_("Icon name for the current agent state")		},
 			Schema::Item{ "timestamp",		Schema::Timestamp,	_("Timestamp of the last state change")	}
 		);
 
 		return true;
 	}
 
-	bool Abstract::Agent::get_property(const char *key, std::string &value) const {
+	bool Abstract::Agent::get_property(const char *key, Value &value) const {
 
 		// Agent name
 		if( !strcasecmp(key,"agent.name") ) {
@@ -59,28 +61,33 @@
 			return true;
 		}
 
-		// Agent path.
 		if( !(strcasecmp(key,"path") && strcasecmp(key,"agent.path")) ) {
-			value = path();
+			debug("path='",value.c_str(),"'");
 			return true;
 		}
 
-		// if( !strcasecmp(key,"body") ) {
-		// 	value = state()->get_property("body",value);
-		// 	return true;
-		// }
+		if(!strcasecmp(key,"state")) {
+			return state()->get_property("level",value);
+		}
 
-		// if( !strcasecmp(key,"level") ) {
-		// 	value = state()->get_property("level",value);
-		// 	return true;
-		// }
+		if(!strcasecmp(key,"statename")) {
+			return state()->get_property("levelname",value);
+		}
 
-		// // State properties
-		// if( !strncasecmp(key,"state_",6) ) {
-		// 	if(state()->get_property(key+6,value)) {
-		// 		return true;
-		// 	}
-		// }
+		if(!strcasecmp(key,"stateicon")) {
+			return state()->get_property("icon",value);
+		}
+
+		if(!strcasecmp(key,"timestamp")) {
+			value = TimeStamp{current_state.timestamp};
+			return true;
+		}
+
+		for(const char *prop : { "body", "level", "levelname" }) {
+			if( !strcasecmp(key,prop) ) {
+				return state()->get_property(prop,value);
+			}			
+		}
 
 		if(Object::get_property(key, value))
 			return true;

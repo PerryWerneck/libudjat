@@ -409,11 +409,19 @@
 			/// @brief Create and insert State.
 			virtual std::shared_ptr<Abstract::State> StateFactory(const Properties &props);
 
-			/// @brief Get agent property.
+			/// @brief Get agent property as string.
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property was found.
-			bool get_property(const char *key, std::string &value) const override;
+			inline bool get_property(const char *key, std::string &value) const {
+				return Object::get_property(key,value);
+			}
+
+			/// @brief Get agent property.
+			/// @param key The property name.
+			/// @param value String to update with the property value.
+			/// @return true if the property is valid.
+			bool get_property(const char *key, Udjat::Value &value) const override;
 
 			/// @brief get time of the last modification on this agent.
 			/// @return Timestamp of last modification.
