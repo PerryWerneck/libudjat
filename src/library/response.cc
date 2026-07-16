@@ -156,14 +156,10 @@
 		{
 			const std::system_error *except = dynamic_cast<const std::system_error *>(&e);
 			if(except) {
-
-				syscode = except->code().value();
-				title = _("System error");
+				set_from_syscode(except->code().value());
 				body = except->code().message();
 				category = except->code().category().name();
-				
 				return *this;
-
 			}
 		}
 
@@ -194,11 +190,33 @@
 		return status.message.c_str();
 	}
 
+	void Response::Status::set_from_syscode(int sc) {
+
+		static const struct {
+			int syscode;
+			const char *text;
+		} messages[] = {
+			{ EPERM, N_("Access unauthorized. Please contact your system administrator if you believe this is an error.") }
+		};
+
+		syscode = sc;
+		title = _("System error");
+		value = Failure;
+		body = strerror(syscode);
+
+		for(const auto &message : messages) {
+			if(message.syscode == syscode) {
+				this->message = dgettext(GETTEXT_PACKAGE,message.text);
+				return;
+			}
+		}
+
+		message = _("We're sorry, but we encountered an error while processing your request.");
+	}
+
 	Response & Response::failed(int syscode) noexcept {
-		status.value = State::Failure;
 		clear(Value::Object);
-		status.message = strerror(syscode);
-		status.syscode = syscode;
+		status.set_from_syscode(syscode);
 		return *this;
 	}
 

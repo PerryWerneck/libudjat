@@ -66,6 +66,8 @@
 			void serialize(const MimeType &mimetype, std::ostream &stream) const;
 			std::string to_string(const MimeType &mimetype) const;
 
+			void set_from_syscode(int syscode);
+
 		};
 
 		class Exception : public std::exception, public Status {
@@ -82,6 +84,7 @@
 			const char * what() const noexcept override {
 				return message.c_str();
 			}
+
 		};
 
 	protected:

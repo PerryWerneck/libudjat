@@ -84,6 +84,9 @@
 							throw runtime_error("Request /module was not processed");
 						}
 
+						cout << endl << "Output:" << endl;
+						response.serialize(cout);
+						cout << endl;
 					}
 
 					return "Interface test passed";

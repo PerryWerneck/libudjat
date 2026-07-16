@@ -22,13 +22,21 @@
 #include <udjat/tools/interface.h>
 #include <udjat/authentication.h>
 #include <private/module.h>
+#include <udjat/module.h>
 #include <udjat/tools/container.h>
 #include <iostream>
 #include <udjat/tools/logger.h>
+#include <udjat/tools/response.h>
+#include <udjat/tools/report.h>
+#include <udjat/tools/intl.h>
 
 using namespace std;
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+#ifdef DEBUG
+	#define REQUIRED_ROLE Authentication::None
+#else
+	#define REQUIRED_ROLE Authentication::Admin
+#endif
 
 namespace Udjat {
 
@@ -41,7 +49,7 @@ namespace Udjat {
 		return instance;
 	}
 
-	Module::Controller::Controller() : Properties::ObjectBuilder{"module"}, Interface{"module",Authentication::Admin} {
+	Module::Controller::Controller() : Properties::ObjectBuilder{"module"}, Interface{"module",REQUIRED_ROLE} {
 		Logger::String{"Starting controller"}.trace();
 	}
 
@@ -52,6 +60,39 @@ namespace Udjat {
 
 	bool Module::Controller::for_each(const std::function<bool(Module &module)> &method) {
 		return modules.for_each(method);
+	}
+
+	bool Module::Controller::process(const char *path, const Request &request, Response &response) const {
+
+		if(*path) {
+			response.failed(ENOENT);
+			return true;
+		}
+
+		debug("Module count: ",modules.size());
+
+		response.count(modules.size());
+
+		auto &report = response.ReportFactory(
+			"name",
+			"description",
+			"build",
+			"filename",
+			NULL
+		);
+
+		report.caption(_("Available modules"));
+
+		for(const auto &module : modules) {
+
+			report 	<< module->name()
+					<< module->description()
+					<< module->build()
+					<< module->filename().c_str();
+
+		}
+
+		return true;
 	}
 
 }
