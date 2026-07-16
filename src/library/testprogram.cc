@@ -42,7 +42,7 @@
 
 		tests.append(
 			UnitTests::Worker{
-				"Interface test",
+				"interface", "Interface test",
 				[](std::ostream &stream) {
 
 					// Check module with extra path.
@@ -69,7 +69,7 @@
 						}
 					}
 
-					// Check response
+					// Check API (request/response)
 					{
 						const char *path = "/module";
 						auto intf = Interface::find(path);

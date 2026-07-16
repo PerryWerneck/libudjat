@@ -37,13 +37,13 @@ dnl Initialise automake stuff.
 AM_INIT_AUTOMAKE
 
 dnl Check for iconv
-AM_ICONV
+dnl AM_ICONV
 
 LT_INIT
 AC_CONFIG_MACRO_DIRS([m4])
 
 dnl Set gettext version
-AM_GNU_GETTEXT_VERSION([0.14])
+dnl AM_GNU_GETTEXT_VERSION([0.14])
 
 dnl Checks for programs.
 AC_PROG_CXX
