@@ -352,26 +352,16 @@ install-devel: \
 
 	# Install headers
 	@$(MKDIR) \
-		$(DESTDIR)$(includedir)/udjat \
 		$(DESTDIR)$(includedir)/udjat/agent \
 		$(DESTDIR)$(includedir)/udjat/alert \
 		$(DESTDIR)$(includedir)/udjat/linux \
 		$(DESTDIR)$(includedir)/udjat/module \
 		$(DESTDIR)$(includedir)/udjat/net/ip \
-		$(DESTDIR)$(includedir)/udjat/tools/abstract \
+		$(DESTDIR)$(includedir)/udjat/tools/actions \
 		$(DESTDIR)$(includedir)/udjat/tools/file \
 		$(DESTDIR)$(includedir)/udjat/tools/http \
-		$(DESTDIR)$(includedir)/udjat/tools/actions \
 		$(DESTDIR)$(includedir)/udjat/tools/url \
 		$(DESTDIR)$(includedir)/udjat/ui/console
-
-	@$(INSTALL_DATA) \
-		$(srcdir)/src/include/udjat/*.h \
-		$(DESTDIR)$(includedir)/udjat
-
-	@$(INSTALL_DATA) \
-		$(srcdir)/src/include/udjat/tools/*.h \
-		$(DESTDIR)$(includedir)/udjat/tools
 
 	@$(INSTALL_DATA) \
 		$(srcdir)/src/include/udjat/agent/*.h \
@@ -390,16 +380,12 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/module
 
 	@$(INSTALL_DATA) \
-		$(srcdir)/src/include/udjat/net/*.h \
-		$(DESTDIR)$(includedir)/udjat/net
-
-	@$(INSTALL_DATA) \
 		$(srcdir)/src/include/udjat/net/ip/*.h \
 		$(DESTDIR)$(includedir)/udjat/net/ip
 
 	@$(INSTALL_DATA) \
-		$(srcdir)/src/include/udjat/tools/abstract/*.h \
-		$(DESTDIR)$(includedir)/udjat/tools/abstract
+		$(srcdir)/src/include/udjat/tools/actions/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/actions
 
 	@$(INSTALL_DATA) \
 		$(srcdir)/src/include/udjat/tools/file/*.h \
@@ -410,16 +396,8 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/tools/http
 
 	@$(INSTALL_DATA) \
-		$(srcdir)/src/include/udjat/tools/actions/*.h \
-		$(DESTDIR)$(includedir)/udjat/tools/actions
-
-	@$(INSTALL_DATA) \
 		$(srcdir)/src/include/udjat/tools/url/*.h \
 		$(DESTDIR)$(includedir)/udjat/tools/url
-
-	@$(INSTALL_DATA) \
-		$(srcdir)/src/include/udjat/ui/*.h \
-		$(DESTDIR)$(includedir)/udjat/ui
 
 	@$(INSTALL_DATA) \
 		$(srcdir)/src/include/udjat/ui/console/*.h \
