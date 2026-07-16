@@ -31,8 +31,8 @@
 		const char *utfchar;
 		const char *htmlchar;
 	} levels[Udjat::Level::critical+1] {
-		{ "undefined",		"�",	"&#xFFFD;"	},	// https://www.compart.com/en/unicode/U+FFFD
-		{ "unimportant",	" ",	"&nbsp;"	},
+		{ "undefined",		"∅",	"&empty;"	},
+		{ "unimportant",	"×",	"&#x1D4CD;"	},
 		{ "ready",			"✓",	"&check;"	},	// https://www.compart.com/en/unicode/U+2713
 		{ "warning",		"⚠",	"&#xFFFD;"	},	// https://www.compart.com/en/unicode/U+26A0
 		{ "error",			"✘",	"&#x2716;"	},
