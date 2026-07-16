@@ -96,11 +96,25 @@
 			/// @retval false The object type is not supported.	
 			virtual bool push_back(const Properties &props, std::shared_ptr<Abstract::Object> child);
 
+			/// @brief Retrieves the schema definition for the interface inputs.
+			/// @param[in] path The path for required object on interface.
+			/// @param[out] schema Object populated with the interface input schema details.
+			/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
+			virtual bool input_schema(const char *path, Schema &schema) const noexcept;
+
+			inline bool input_schema(Schema &schema) const noexcept {
+				return input_schema("",schema);
+			}
+
 			/// @brief Retrieves the schema definition for the object outputs.
 			/// @param path The request path for schema.
 			/// @param[out] schema Object populated with the output schema details.
 			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
 			virtual bool output_schema(const char *path, Schema &schema) const noexcept;
+
+			inline bool output_schema(Schema &schema) const noexcept {
+				return output_schema("",schema);
+			}
 
 			virtual const char * name() const noexcept;
 

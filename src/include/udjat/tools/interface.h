@@ -70,14 +70,24 @@
 		}
 
 		/// @brief Retrieves the schema definition for the interface inputs.
+		/// @param[in] path The path for required object on interface.
 		/// @param[out] schema Object populated with the interface input schema details.
 		/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
-		virtual bool input_schema(Schema &schema) const noexcept;
+		virtual bool input_schema(const char *path, Schema &schema) const noexcept;
+
+		inline bool input_schema(Schema &schema) const noexcept {
+			return input_schema("",schema);
+		}
 
 		/// @brief Retrieves the schema definition for the interface outputs.
+		/// @param[in] path The path for required object on interface.
 		/// @param[out] schema Object populated with the interface output schema details.
 		/// @return True if the interface defines an output schema; false otherwise (schema remains unmodified).
-		virtual bool output_schema(Schema &schema) const noexcept;
+		virtual bool output_schema(const char *path, Schema &schema) const noexcept;
+
+		inline bool output_schema(Schema &schema) const noexcept {
+			return output_schema("",schema);
+		}
 
 		/// @brief Process an API request.
 		/// @param path The request path.

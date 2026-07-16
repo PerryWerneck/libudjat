@@ -50,13 +50,47 @@
  namespace Udjat {
 
 	Abstract::Agent::Controller::Controller() 
-		: Service{"agents"}, Action::Factory{"agent"}, Abstract::Object::Factory{"agent"} {
-
-		Logger::String{"Initializing controller"}.trace("agent");
+		: Service{"agents"}, Action::Factory{"agent"}, Abstract::Object::Factory{"agent"}, Interface{"agent",Authentication::None} {
+		Logger::String{"Initializing controller"}.trace();
 	}
 
 	Abstract::Agent::Controller::~Controller() {
-		Logger::String{"Deinitializing controller"}.trace("agent");
+		Logger::String{"Deinitializing controller"}.trace();
+	}
+
+	bool Abstract::Agent::Controller::output_schema(const char *path, Schema &schema) const noexcept {
+
+		if(!root) {
+			return false;
+		}
+
+		auto agent = root;
+		if(path && *path) {
+			agent = root->find(path,false,false);
+			if(!agent) {
+				return false;
+			}
+		}
+
+		return agent->output_schema("",schema);
+	}
+
+	bool Abstract::Agent::Controller::input_schema(const char *path, Schema &schema) const noexcept {
+
+		if(!root) {
+			return false;
+		}
+
+		auto agent = root;
+		if(path && *path) {
+			agent = root->find(path,false,false);
+			if(!agent) {
+				return false;
+			}
+		}
+
+		return agent->input_schema("",schema);
+
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {

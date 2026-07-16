@@ -26,11 +26,12 @@
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
 #include <udjat/action.h>
+#include <udjat/tools/interface.h>
 #include <memory>
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Service, public MainLoop::Timer, private Action::Factory, private Abstract::Object::Factory {
+	class Abstract::Agent::Controller : private Service, public MainLoop::Timer, private Action::Factory, private Abstract::Object::Factory, private Interface {
 	private:
 
 		time_t updating = 0;
@@ -44,6 +45,9 @@ namespace Udjat {
 		void on_timer() override;
 
 		void update_agents();
+
+		bool output_schema(const char *path, Schema &schema) const noexcept override;
+		bool input_schema(const char *path, Schema &schema) const noexcept override;
 
 	public:
 		~Controller();

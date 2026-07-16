@@ -45,6 +45,10 @@
 		Factories().remove(this);
 	}
 
+	bool Abstract::Object::input_schema(const char *path, Schema &schema) const noexcept {
+		return false;
+	}
+
 	bool Abstract::Object::output_schema(const char *, Schema &) const noexcept {
 		return false;
 	}
