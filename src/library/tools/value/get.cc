@@ -549,7 +549,7 @@
 		return stream.str();
 	}
 
-	std::string Value::to_string() const noexcept {
+	std::string Value::to_string() const {
 		string value;
 		get(value);
 		return value;

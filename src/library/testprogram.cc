@@ -127,11 +127,18 @@
 
 					agent.process("",request,response);
 
-					stream	<< "Got agent properties:" 
+					stream	<< "Got agent response:" 
 							<< endl
 							<< response
 							<< endl;
 
+					Value value;
+					agent.get_properties(value);
+
+					stream	<< "Got agent properties:" 
+							<< endl
+							<< value.serialize(MimeType::yaml)
+							<< endl;
 				}
 
 				return "Basic agent tests passed";

@@ -79,7 +79,7 @@
 
  namespace std {
 
-	UDJAT_API const char * to_string(Udjat::Value::Type type) noexcept {
+	UDJAT_API const char * to_string(Udjat::Value::Type type) {
 
 		for(size_t ix = 0; ix < N_ELEMENTS(typenames); ix++) {
 			if(typenames[ix].type == type) {

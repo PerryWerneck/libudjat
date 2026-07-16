@@ -148,6 +148,12 @@
 	}
 
 	Value & Abstract::Object::get_properties(Value &value) const {
+		Schema schema;
+		if(output_schema("",schema)) {
+			for(const auto &item : schema) {
+				get_property(item.name(),value);
+			}
+		}
 		return value;
 	}
 
@@ -160,7 +166,9 @@
 
 			// Has schema, use it
 			for(const auto &item : schema) {
-				get_property(item.name(),response[item.name()]);
+				if(!get_property(item.name(),response[item.name()])) {
+					throw logic_error(String{"Property '",item.name(),"' is not available"});
+				}
 			}
 
 		} else {

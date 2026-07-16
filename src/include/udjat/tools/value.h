@@ -340,7 +340,7 @@
 		return in;
 	}
 
-	UDJAT_API const char * to_string(const Udjat::Value::Type type) noexcept;
+	UDJAT_API const char * to_string(const Udjat::Value::Type type);
 
 	inline string to_string(const Udjat::Value &value) noexcept {
 		return value.to_string();

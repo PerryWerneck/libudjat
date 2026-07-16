@@ -22,6 +22,7 @@
  #include <udjat/tools/object.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/schema.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/agent.h>
  #include <mutex>
 
@@ -34,10 +35,11 @@
 		Object::output_schema(path,schema);
 
 		schema.append(
-			Schema::Item{ "path",			Schema::String		},
-			Schema::Item{ "state_icon",		Schema::Icon		},
-			Schema::Item{ "state_body",		Schema::String		},
-			Schema::Item{ "state_level",	Schema::String		}
+			Schema::Item{ "path",			Schema::String,		_("The agent path")	},
+			Schema::Item{ "body",			Schema::String		},
+			Schema::Item{ "level",			Schema::String		},
+			Schema::Item{ "state_icon",		Schema::Icon,		_("Icon name for the current agent state")		},
+			Schema::Item{ "timestamp",		Schema::Timestamp,	_("Timestamp of the last state change")	}
 		);
 
 		return true;
@@ -63,12 +65,22 @@
 			return true;
 		}
 
-		// State properties
-		if(!strncasecmp(key,"state_",6)) {
-			if(state()->get_property(key+6,value)) {
-				return true;
-			}
-		}
+		// if( !strcasecmp(key,"body") ) {
+		// 	value = state()->get_property("body",value);
+		// 	return true;
+		// }
+
+		// if( !strcasecmp(key,"level") ) {
+		// 	value = state()->get_property("level",value);
+		// 	return true;
+		// }
+
+		// // State properties
+		// if( !strncasecmp(key,"state_",6) ) {
+		// 	if(state()->get_property(key+6,value)) {
+		// 		return true;
+		// 	}
+		// }
 
 		if(Object::get_property(key, value))
 			return true;
