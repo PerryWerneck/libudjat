@@ -30,8 +30,10 @@
  #include <udjat/tools/response.h>
  #include <udjat/tools/schema.h>
  #include <udjat/agent.h>
+ #include <udjat/tools/http/mimetype.h>
  #include <ostream>
  #include <stdexcept>
+ #include <iomanip>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -98,24 +100,39 @@
 			"agent", "Basic agent tests",
 			[](std::ostream &stream) {
 
-				Agent<int> agent;
-				Schema schema;
+				{
+					// Test agent introspection.
+					Agent<int> agent{};
+					Schema schema;
 
-				if(!agent.output_schema("",schema)) {
-					throw runtime_error("Agent should have schema");
-				}
+					if(!agent.output_schema("",schema)) {
+						throw runtime_error("Agent should have schema");
+					}
 
-				stream << "Got agent schema:" << endl;
-				for(const auto &item : schema) {
-					stream 	<< "\t"
-							<< item.name()
-							<< "\t"
-							<< std::to_string(item.type())
-							<< "\t"
-							<< item.description()
+					stream << "Got agent schema:" << endl;
+					for(const auto &item : schema) {
+						stream 	<< "   "
+								<< left
+								<< setw(15) << item.name()
+								<< "   "
+								<< setw(10) << std::to_string(item.type())
+								<< "   "
+								<< item.description()
+								<< endl;
+					}
+					stream << endl;
+
+					Request request;
+					Response response{MimeType::yaml};
+
+					agent.process("",request,response);
+
+					stream	<< "Got agent properties:" 
+							<< endl
+							<< response
 							<< endl;
+
 				}
-				stream << endl;
 
 				return "Basic agent tests passed";
 			}

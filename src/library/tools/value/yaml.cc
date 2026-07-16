@@ -35,6 +35,7 @@
 
 		switch((Value::Type) *this) {
 		case Udjat::Value::Undefined:
+			ss << " null" << endl;
 			break;
 
 		case Udjat::Value::Array:
