@@ -30,6 +30,7 @@
  #include <sys/types.h>
  #include <sys/stat.h>
  #include <stdexcept>
+ #include <cstddef>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
