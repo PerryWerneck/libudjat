@@ -25,7 +25,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/unit-test.h>
+ #include <udjat/tools/testsuite.h>
  #include <udjat/tools/logger.h>
  #include <udjat/module.h>
  #include <iostream>
@@ -62,9 +62,9 @@
 
 		void *hModule = dlopen(info->dlpi_name, RTLD_NOW|RTLD_LOCAL);
 		if(hModule) {
-			UnitTests *container = (UnitTests *) data;
+			TestSuite *container = (TestSuite *) data;
 			dlerror(); // Clear any existing error
-			void (*symbol)(UnitTests &) = (void(*)(UnitTests &)) dlsym(hModule,"enum_udjat_unit_tests");
+			void (*symbol)(TestSuite &) = (void(*)(TestSuite &)) dlsym(hModule,"udjat_register_tests");
 			auto error = dlerror();
 			if(symbol && !error) {
 
@@ -80,7 +80,7 @@
 
 					// TODO: Check if already loaded
 
-					container->append_module(hModule,filename);
+					container->add(hModule,filename);
 				}
 
 			} else {
@@ -94,7 +94,7 @@
 	}
 #endif // !_WIN32
 
-	UnitTests::Module::~Module() {
+	TestSuite::Module::~Module() {
 		debug("Releasing module ",c_str());
 #ifndef _WIN32
 		dlclose(handle);
@@ -102,12 +102,12 @@
 	}
 
 #ifndef _WIN32
-	void * UnitTests::Module::dlsym(const char *name) const noexcept {
+	void * TestSuite::Module::dlsym(const char *name) const noexcept {
 		return ::dlsym(handle,name);
 	}
 #endif // !_WIN32
 
-	bool UnitTests::Worker::operator==(const char *opt) const {
+	bool TestSuite::Case::operator==(const char *opt) const {
 
 		if(option && *option && strcasecmp(option,opt) == 0) {
 			return true;
@@ -120,14 +120,14 @@
 		return false;
 	}
 
-	void UnitTests::load() noexcept {
+	void TestSuite::load() noexcept {
 
 #ifdef _WIN32
 
 		// Load tests from modules.
 		debug("--- Analizing ",modules.size()," modules");
 		Udjat::Module::for_each([this](Udjat::Module &module){
-			auto *symbol = reinterpret_cast<void(*)(UnitTests &)>(module.get_symbol("enum_udjat_unit_tests",false));
+			auto *symbol = reinterpret_cast<void(*)(UnitTests &)>(module.get_symbol("udjat_register_tests",false));
 			if(symbol) {
 				symbol(*this);
 			}
@@ -139,7 +139,7 @@
 		dl_iterate_phdr(phdr_item, this);
 		for(auto module : modules) {
 			dlerror();
-			auto *symbol = reinterpret_cast<void(*)(UnitTests &)>(module->dlsym("enum_udjat_unit_tests"));
+			auto *symbol = reinterpret_cast<void(*)(TestSuite &)>(module->dlsym("udjat_register_tests"));
 			if(!dlerror()) {
 				debug("Found tests in ",module->c_str());
 				symbol(*this);
@@ -150,14 +150,14 @@
 
 	}
 
-	UnitTests::UnitTests(const char *title) {
-		append(title && *title ? title : "Available tests");
+	TestSuite::TestSuite(const char *title) {
+		add(title && *title ? title : "Available tests");
 	}
 
-	UnitTests::~UnitTests() {
+	TestSuite::~TestSuite() {
 	}
 
-	void UnitTests::run(const char *path) noexcept {
+	void TestSuite::run(const char *path) noexcept {
 
 		// TODO: Refactor using groups.
 		throw runtime_error("Incomplete");
@@ -190,35 +190,35 @@
 
 	}
 
-	void UnitTests::for_each(const std::function<void(const char *option, const char *label)> &func) const {
+	void TestSuite::for_each(const std::function<void(const char *option, const char *label)> &func) const {
 		for(const auto &group : groups) {
-			for(const auto &worker : group.workers) {
-				func(worker.option,worker.label);
+			for(const auto &testcase : group.cases) {
+				func(testcase.option,testcase.label);
 			}
 		}
 	}
 
-	void UnitTests::Group::interactive() noexcept {
+	void TestSuite::Group::interactive() noexcept {
 
 		Console::Menu<string> menu{title};
 		{
 			// Get width
 			size_t width = 0;
-			for(const auto &worker : workers) {
-				width = max(width,worker.size());
+			for(const auto &testcase : cases) {
+				width = max(width,testcase.size());
 			}
 
 			//
-			for(const auto &worker : workers) {
-				String opt{worker.c_str()};
+			for(const auto &testcase : cases) {
+				String opt{testcase.c_str()};
 
-				if(worker.option && *worker.option) {
-					for(size_t ix = worker.size();ix < width;ix++) {
+				if(testcase.option && *testcase.option) {
+					for(size_t ix = testcase.size();ix < width;ix++) {
 						opt.append(" ");
 					}
 					opt.append(
 						"  ",Console::SetFaint,
-						"(",worker.option,")",
+						"(",testcase.option,")",
 						Console::ResetFaint
 					);
 				}
@@ -239,41 +239,41 @@
 				return;
 			}
 
-			auto &worker = workers[selected];
+			auto &testcase = cases[selected];
 
 			try {
 
-				auto status = worker.call(std::cout);
-				Console::status(Logger::Info,worker.c_str(),status.c_str());
+				auto status = testcase.call(std::cout);
+				Console::status(Logger::Info,testcase.c_str(),status.c_str());
 
 			} catch(const std::exception &e) {
-				Console::status(Logger::Error,worker.c_str(),e.what());
+				Console::status(Logger::Error,testcase.c_str(),e.what());
 			} catch(...) {
-				Console::status(Logger::Error,worker.c_str(),"Unexpected error");
+				Console::status(Logger::Error,testcase.c_str(),"Unexpected error");
 			}
 
 		}
 
 	}
 
-	void UnitTests::interactive() noexcept {
+	void TestSuite::interactive() noexcept {
 
 		// Strip empty groups.
 		groups.remove_if([](Group &group){
-			return group.workers.size() == 0;
+			return group.cases.size() == 0;
 		});
 
 		// Sort options
 		for(auto &group : groups) {
-			std::sort(group.workers.begin(), group.workers.end(), [](const Worker& a, const Worker& b) {
+			std::sort(group.cases.begin(), group.cases.end(), [](const Case& a, const Case& b) {
 				return strcasecmp(a.label,b.label) < 0;
 			});
 
 			// Remove duplicate
-			auto it = std::unique(group.workers.begin(), group.workers.end(), [](const Worker& a, const Worker& b) {
+			auto it = std::unique(group.cases.begin(), group.cases.end(), [](const Case& a, const Case& b) {
 				return strcasecmp(a.label, b.label) == 0; // Note: == 0 checks for equality
 			});
-			group.workers.erase(it, group.workers.end());		
+			group.cases.erase(it, group.cases.end());		
 		}
 
 		// Run menu.
@@ -290,7 +290,6 @@
 		}
 
 	}
-
 
  }
 

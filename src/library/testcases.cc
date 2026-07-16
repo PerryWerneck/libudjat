@@ -22,7 +22,7 @@
  #if defined(DEBUG) and ! defined(LIBUDJAT_STATIC) 
 
  #include <udjat/defs.h>
- #include <udjat/tools/unit-test.h>
+ #include <udjat/tools/testsuite.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/interface.h>
  #include <udjat/tools/request.h>
@@ -42,10 +42,10 @@
  using namespace Udjat;
  using namespace std;
 
- UDJAT_API void enum_udjat_unit_tests(Udjat::UnitTests &tests) noexcept {
+ UDJAT_API void udjat_register_tests(Udjat::TestSuite &suite) noexcept {
 
-	tests.append(
-		UnitTests::Worker{
+	suite.add(
+		TestSuite::Case{
 			"interface", "Interface test",
 			[](std::ostream &stream) {
 
@@ -88,15 +88,15 @@
 						throw runtime_error("Request /module was not processed");
 					}
 
-					cout << endl << "Output:" << endl;
-					response.serialize(cout);
-					cout << endl;
+					stream << endl << "Output:" << endl;
+					response.serialize(stream);
+					stream << endl;
 				}
 
 				return "Interface test passed";
 			}
 		},
-		UnitTests::Worker{
+		TestSuite::Case{
 			"agent", "Basic agent tests",
 			[](std::ostream &stream) {
 
@@ -158,11 +158,11 @@
 
 						Request request{path};
 
-						cout << "Processing request for '" << path << "':" << endl;
-						if(!intf->process(path,request,cout)) {
+						stream << "Processing request for '" << path << "':" << endl;
+						if(!intf->process(path,request,stream)) {
 							throw runtime_error(String{"Interface was unable to process '",p,"'"});
 						}
-						cout << endl;
+						stream << endl;
 
 					}
 

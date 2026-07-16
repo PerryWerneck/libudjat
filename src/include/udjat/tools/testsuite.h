@@ -34,7 +34,7 @@
 namespace Udjat {
 
 	/// @brief Container for unit tests.
-	class UDJAT_API UnitTests {
+	class UDJAT_API TestSuite {
 	public:
 
 		/// @brief Loaded module.
@@ -57,10 +57,10 @@ namespace Udjat {
 		};
 
 		/// @brief Unit test runner.
-		class Worker  {
+		class Case  {
 		private:
 
-			friend class UnitTests;
+			friend class TestSuite;
 
 			const char *label;					///< @brief The test label (for menu).
 			const char *option = nullptr;		///< @brief The test option (for command line).
@@ -69,19 +69,19 @@ namespace Udjat {
 			std::function<const std::string (std::ostream &)> call = nullptr;
 
 		public:
-			Worker(const char *o, const char *l, const std::function<const std::string (std::ostream &)> &c) :
+			Case(const char *o, const char *l, const std::function<const std::string (std::ostream &)> &c) :
 				label{l}, option{o}, call{c} {
 			}
 
-			Worker(const char *l, const std::function<const std::string (std::ostream &)> &c) :
+			Case(const char *l, const std::function<const std::string (std::ostream &)> &c) :
 				label{l}, call{c} {
 			}
 
-			bool operator<(const Worker& other) const {
+			bool operator<(const Case& other) const {
 				return strcasecmp(label,other.label) < 0;
 			}
 
-			bool inline operator==(const Worker& other) const {
+			bool inline operator==(const Case& other) const {
 				return strcasecmp(label,other.label) == 0;
 			}
 
@@ -102,11 +102,11 @@ namespace Udjat {
 		};
 
 #ifdef PACKAGE_DESCRIPTION
-		UnitTests(const char *title = PACKAGE_DESCRIPTION);
+		TestSuite(const char *title = PACKAGE_DESCRIPTION);
 #else
-		UnitTests(const char *title = nullptr);
+		TestSuite(const char *title = nullptr);
 #endif // PACKAGE_DESCRIPTION
-		~UnitTests();
+		~TestSuite();
 
 		/// @brief Load unit tests.
 		void load() noexcept;
@@ -119,27 +119,27 @@ namespace Udjat {
 		void run(const char *path = nullptr) noexcept;
 
 		template<typename... Targs>
-		inline void append(const char *str, Targs... Fargs) {
-			append(str);
-			append(Fargs...);
+		inline void add(const char *str, Targs... Fargs) {
+			add(str);
+			add(Fargs...);
 		}
 
 		template<typename... Targs>
-		inline void append(const Worker &worker, Targs... Fargs) {
-			append(worker);
-			append(Fargs...);
+		inline void add(const Case &obj, Targs... Fargs) {
+			add(obj);
+			add(Fargs...);
 		}
 
-		inline void append(const char *group) {
+		inline void add(const char *group) {
 			groups.emplace_back(group);
 		}
 
-		inline void append(const Worker &worker) {
-			groups.back().workers.push_back(worker);
+		inline void add(const Case &obj) {
+			groups.back().cases.push_back(obj);
 		}
 
 #ifndef _WIN32
-		inline void append_module(void *handle,const char *filename) {
+		inline void add(void *handle,const char *filename) {
 			auto module = std::make_shared<Module>(handle,filename);
 			modules.emplace(module);
 		}
@@ -164,7 +164,7 @@ namespace Udjat {
 			const char *title;
 
 		public:
-			std::vector<Worker> workers;
+			std::vector<Case> cases;
 
 			Group(const char *t) : title{t} {
 			}
@@ -193,6 +193,6 @@ namespace Udjat {
 
 extern "C" {
 
-	UDJAT_API void enum_udjat_unit_tests(Udjat::UnitTests &tests) noexcept;
+	UDJAT_API void udjat_register_tests(Udjat::TestSuite &testsuit) noexcept;
 
 }

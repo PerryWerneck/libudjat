@@ -537,7 +537,7 @@ lib_src += [
   'src/library/tools/action/controller.cc',
   'src/library/tools/action/factory.cc',
   'src/library/tools/template.cc',
-  'src/library/tools/unit-tests.cc',
+  'src/library/tools/testsuite.cc',
   'src/library/ui/console.cc',
   'src/library/ui/console/progress.cc',
   'src/library/ui/console/messages.cc',
@@ -556,7 +556,7 @@ lib_src += [
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
   'src/library/ui/menu.cc',
-  'src/library/testprogram.cc',
+  'src/library/testcases.cc',
 ]
 
 if openssl.found()
@@ -1052,7 +1052,7 @@ install_headers(
   'src/include/udjat/tools/memory.h',
   'src/include/udjat/tools/properties.h',
   'src/include/udjat/tools/loader.h',
-  'src/include/udjat/tools/unit-test.h',
+  'src/include/udjat/tools/testsuite.h',
   subdir: 'udjat/tools'  
 )
 

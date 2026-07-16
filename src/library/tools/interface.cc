@@ -105,12 +105,15 @@
 		Response response{mimetype};
 
 		if(!process(path,request,response)) {
+			debug("Request failed, returning")
 			return false;
 		}
 
 		if(!request.apicall()) {
 
 			// It's not an api call, can we use a template?
+			debug("Request isnt an API call, trying template");
+
 			try {
 
 				Schema schema;
@@ -132,6 +135,7 @@
 		}
 
 		// Format the response.
+		debug("Serializing the response using API format");
 		response.serialize(stream);
 		return true;
 

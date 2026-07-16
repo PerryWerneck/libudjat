@@ -27,7 +27,7 @@
 #include <stdexcept>
 #include <udjat/module.h>
 #include <private/module.h>
-#include <udjat/tools/unit-test.h>
+#include <udjat/tools/testsuite.h>
 #include <udjat/tools/logger.h>
 #include <udjat/tools/properties.h>
 
@@ -100,7 +100,7 @@ namespace Udjat {
 #ifdef HAVE_PUGIXML
 							load_modules(filename.c_str());
 #endif // HAVE_PUGIXML							
-							UnitTests tests;
+							TestSuite tests;
 							tests.load();
 							tests.run(arg);
 #ifdef HAVE_PUGIXML
@@ -115,7 +115,7 @@ namespace Udjat {
 #ifdef HAVE_PUGIXML
 							load_modules(filename.c_str());
 #endif // HAVE_PUGIXML							
-							UnitTests tests;
+							TestSuite tests;
 							tests.load();
 							tests.interactive();
 #ifdef HAVE_PUGIXML
