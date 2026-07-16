@@ -28,6 +28,8 @@
  #include <udjat/tools/interface.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
+ #include <udjat/tools/schema.h>
+ #include <udjat/agent.h>
  #include <ostream>
  #include <stdexcept>
 
@@ -40,59 +42,85 @@
 
  UDJAT_API void enum_udjat_unit_tests(Udjat::UnitTests &tests) noexcept {
 
-		tests.append(
-			UnitTests::Worker{
-				"interface", "Interface test",
-				[](std::ostream &stream) {
+	tests.append(
+		UnitTests::Worker{
+			"interface", "Interface test",
+			[](std::ostream &stream) {
 
-					// Check module with extra path.
-					{
-						const char *request = "/module/test";
-						auto intf = Interface::find(request);
-						if(!intf) {
-							throw runtime_error("Cant find interface for /module");
-						}
-						if(strcmp(request,"/test")) {
-							throw runtime_error("Unexpected result after request parse");
-						}
+				// Check module with extra path.
+				{
+					const char *request = "/module/test";
+					auto intf = Interface::find(request);
+					if(!intf) {
+						throw runtime_error("Cant find interface for /module");
 					}
-
-					// Check without extra path.
-					{
-						const char *request = "/module";
-						auto intf = Interface::find(request);
-						if(!intf) {
-							throw runtime_error("Cant find interface for /module");
-						}
-						if(request[0]) {
-							throw runtime_error("Unexpected result after request parse");
-						}
+					if(strcmp(request,"/test")) {
+						throw runtime_error("Unexpected result after request parse");
 					}
-
-					// Check API (request/response)
-					{
-						const char *path = "/module";
-						auto intf = Interface::find(path);
-						if(!intf) {
-							throw runtime_error("Cant find interface for /module");
-						}
-
-						Request request{path};
-						Response response;
-
-						if(!intf->process(path,request,response)) {
-							throw runtime_error("Request /module was not processed");
-						}
-
-						cout << endl << "Output:" << endl;
-						response.serialize(cout);
-						cout << endl;
-					}
-
-					return "Interface test passed";
 				}
+
+				// Check without extra path.
+				{
+					const char *request = "/module";
+					auto intf = Interface::find(request);
+					if(!intf) {
+						throw runtime_error("Cant find interface for /module");
+					}
+					if(request[0]) {
+						throw runtime_error("Unexpected result after request parse");
+					}
+				}
+
+				// Check API (request/response)
+				{
+					const char *path = "/module";
+					auto intf = Interface::find(path);
+					if(!intf) {
+						throw runtime_error("Cant find interface for /module");
+					}
+
+					Request request{path};
+					Response response;
+
+					if(!intf->process(path,request,response)) {
+						throw runtime_error("Request /module was not processed");
+					}
+
+					cout << endl << "Output:" << endl;
+					response.serialize(cout);
+					cout << endl;
+				}
+
+				return "Interface test passed";
 			}
-		);
+		},
+		UnitTests::Worker{
+			"agent", "Basic agent tests",
+			[](std::ostream &stream) {
+
+				Agent<int> agent;
+				Schema schema;
+
+				if(!agent.output_schema("",schema)) {
+					throw runtime_error("Agent should have schema");
+				}
+
+				stream << "Got agent schema:" << endl;
+				for(const auto &item : schema) {
+					stream 	<< "\t"
+							<< item.name()
+							<< "\t"
+							<< std::to_string(item.type())
+							<< "\t"
+							<< item.description()
+							<< endl;
+				}
+				stream << endl;
+
+				return "Basic agent tests passed";
+			}
+		}
+	);
 
  }
 

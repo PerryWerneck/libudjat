@@ -52,4 +52,36 @@
 
  }
 
+ namespace std {
+
+	const char * to_string(const Udjat::Schema::Type type) {
+
+		static const struct {
+			Udjat::Schema::Type type;
+			const char *name;
+		} tpnames[] = {
+			{ Udjat::Schema::Type::String, 		"String"	},
+			{ Udjat::Schema::Type::Timestamp,	"Timestamp"	},
+			{ Udjat::Schema::Type::Signed,		"Signed"	},
+			{ Udjat::Schema::Type::Unsigned,	"Unsigned"	},
+			{ Udjat::Schema::Type::Double,		"Double"	},
+			{ Udjat::Schema::Type::Float,		"Float"		},
+			{ Udjat::Schema::Type::Boolean,		"Boolean"	},
+			{ Udjat::Schema::Type::Icon,		"Icon"		},
+			{ Udjat::Schema::Type::Url,			"Url"		},
+			{ Udjat::Schema::Type::State,		"State"		},
+			{ Udjat::Schema::Type::Percent,		"Percent"	},
+		};
+
+		for(const auto &tpname : tpnames) {
+			if(tpname.type == type) {
+				return tpname.name;
+			}
+		}
+
+		return "unknown";
+	}
+
+ }
+
 

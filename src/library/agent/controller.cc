@@ -39,6 +39,7 @@
  #include <udjat/agent.h>
  #include <udjat/tools/schema.h>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/object.h>
  #include <unistd.h>
 
  #include <udjat/tools/logger.h>
@@ -61,10 +62,8 @@
 	bool Abstract::Agent::Controller::output_schema(const char *path, Schema &schema) const noexcept {
 
 		if(!(root && (path && *path))) {
-
-			// TODO: Return default output schema.
-
-			return false;
+			// Return default output schema.
+			return Abstract::Agent{}.output_schema("",schema);
 		}
 
 		auto agent = root;
