@@ -60,7 +60,10 @@
 
 	bool Abstract::Agent::Controller::output_schema(const char *path, Schema &schema) const noexcept {
 
-		if(!root) {
+		if(!(root && (path && *path))) {
+
+			// TODO: Return default output schema.
+
 			return false;
 		}
 
@@ -77,7 +80,8 @@
 
 	bool Abstract::Agent::Controller::input_schema(const char *path, Schema &schema) const noexcept {
 
-		if(!root) {
+		if(!(root && (path && *path))) {
+			// No root or no path, return the default 'No-schema'.
 			return false;
 		}
 

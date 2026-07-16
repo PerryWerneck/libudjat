@@ -101,18 +101,28 @@ namespace Udjat {
 
 		};
 
-		UnitTests();
+#ifdef PACKAGE_DESCRIPTION
+		UnitTests(const char *title = PACKAGE_DESCRIPTION);
+#else
+		UnitTests(const char *title = nullptr);
+#endif // PACKAGE_DESCRIPTION
 		~UnitTests();
 
 		/// @brief Load unit tests.
 		void load() noexcept;
 
 		/// @brief Interactive mode.
-		void interactive(const char *title = nullptr) noexcept;
+		void interactive() noexcept;
 
 		/// @brief Run test.
-		/// @param name Test name to run, nullptr to run all.
-		void run(const char *name = nullptr) noexcept;
+		/// @param path Test to run, nullptr to run all.
+		void run(const char *path = nullptr) noexcept;
+
+		template<typename... Targs>
+		inline void append(const char *str, Targs... Fargs) {
+			append(str);
+			append(Fargs...);
+		}
 
 		template<typename... Targs>
 		inline void append(const Worker &worker, Targs... Fargs) {
@@ -120,20 +130,12 @@ namespace Udjat {
 			append(Fargs...);
 		}
 
+		inline void append(const char *group) {
+			groups.emplace_back(group);
+		}
+
 		inline void append(const Worker &worker) {
-			workers.push_back(worker);
-		}
-
-		inline auto begin() {
-			return workers.begin();
-		}
-
-		inline auto end() {
-			return workers.end();
-		}
-
-		inline size_t size() const noexcept {
-			return workers.size();
+			groups.back().workers.push_back(worker);
 		}
 
 #ifndef _WIN32
@@ -157,8 +159,33 @@ namespace Udjat {
 		/// @brief The loaded modules.
 		std::set<std::shared_ptr<Module>,ModuleCompare> modules;
 
+		class Group {
+		private:
+			const char *title;
+
+		public:
+			std::vector<Worker> workers;
+
+			Group(const char *t) : title{t} {
+			}
+
+			~Group() {
+			}
+
+			inline const char *c_str() const noexcept {
+				return title;
+			}
+
+			inline operator const char *() const noexcept {
+				return title;
+			}
+
+			void interactive() noexcept;
+
+		};
+
 		/// @brief The optional argument groups.
-		std::vector<Worker> workers;
+		std::list<Group> groups;
 
 	};
 

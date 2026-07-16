@@ -148,28 +148,21 @@
 
 #endif // _WIN32
 
-		// Sort options
-		std::sort(workers.begin(), workers.end(), [](const Worker& a, const Worker& b) {
-			return strcasecmp(a.label,b.label) < 0;
-		});
-
-		// Remove duplicate
-		auto it = std::unique(workers.begin(), workers.end(), [](const Worker& a, const Worker& b) {
-			return strcasecmp(a.label, b.label) == 0; // Note: == 0 checks for equality
-		});
-		workers.erase(it, workers.end());		
-
 	}
 
-	UnitTests::UnitTests() {
-
+	UnitTests::UnitTests(const char *title) {
+		append(title && *title ? title : "Available tests");
 	}
 
 	UnitTests::~UnitTests() {
 	}
 
-	void UnitTests::run(const char *name) noexcept {
+	void UnitTests::run(const char *path) noexcept {
 
+		// TODO: Refactor using groups.
+		throw runtime_error("Incomplete");
+		
+		/*
 		for(const auto &worker : workers ) {
 			try {
 
@@ -193,20 +186,23 @@
 			}
 
 		}
+		*/
+
 	}
 
 	void UnitTests::for_each(const std::function<void(const char *option, const char *label)> &func) const {
-		for(const auto &worker : workers) {
-			func(worker.option,worker.label);
+		for(const auto &group : groups) {
+			for(const auto &worker : group.workers) {
+				func(worker.option,worker.label);
+			}
 		}
 	}
 
-	void UnitTests::interactive(const char *title) noexcept {
+	void UnitTests::Group::interactive() noexcept {
 
-		// Run interactive mode.
-		Console::Menu<string> menu{(title && *title ? title : _("Available tests"))};
+		Console::Menu<string> menu{title};
 		{
-			// Get widht
+			// Get width
 			size_t width = 0;
 			for(const auto &worker : workers) {
 				width = max(width,worker.size());
@@ -255,6 +251,41 @@
 			} catch(...) {
 				Console::status(Logger::Error,worker.c_str(),"Unexpected error");
 			}
+
+		}
+
+	}
+
+	void UnitTests::interactive() noexcept {
+
+		// Strip empty groups.
+		groups.remove_if([](Group &group){
+			return group.workers.size() == 0;
+		});
+
+		// Sort options
+		for(auto &group : groups) {
+			std::sort(group.workers.begin(), group.workers.end(), [](const Worker& a, const Worker& b) {
+				return strcasecmp(a.label,b.label) < 0;
+			});
+
+			// Remove duplicate
+			auto it = std::unique(group.workers.begin(), group.workers.end(), [](const Worker& a, const Worker& b) {
+				return strcasecmp(a.label, b.label) == 0; // Note: == 0 checks for equality
+			});
+			group.workers.erase(it, group.workers.end());		
+		}
+
+		// Run menu.
+		if(groups.size() == 1) {
+
+			// Just one group, run single mode.
+			groups.begin()->interactive();
+
+		} else {
+
+			// TODO: Multiple groups, select one
+			throw runtime_error("Incomplete");
 
 		}
 
