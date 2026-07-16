@@ -156,6 +156,11 @@
 							throw runtime_error(String{"Cant find interface for '",p,"'"});
 						}
 
+						Schema schema;
+						if(!intf->output_schema(path,schema)) {
+							throw runtime_error("Interface doesnt provides an output-schema");
+						}
+
 						Request request{path};
 
 						stream << "Processing request for '" << path << "':" << endl;
@@ -163,6 +168,8 @@
 							throw runtime_error(String{"Interface was unable to process '",p,"'"});
 						}
 						stream << endl;
+
+						
 
 					}
 

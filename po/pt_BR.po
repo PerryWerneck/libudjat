@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-15 16:53-0300\n"
-"PO-Revision-Date: 2026-07-10 17:20-0300\n"
+"POT-Creation-Date: 2026-07-16 16:20-0300\n"
+"PO-Revision-Date: 2026-07-16 16:21-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -19,6 +19,14 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.9\n"
+
+#: src/library/agent/state.cc:146
+msgid "Error activating state"
+msgstr "Erro ao ativar estado"
+
+#: src/library/agent/state.cc:151
+msgid "Unexpected error activating state"
+msgstr "Erro inesperado ao ativar estado"
 
 #: src/library/agent/agent.cc:236
 msgid "default"
@@ -32,13 +40,26 @@ msgstr "Normal"
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/library/agent/controller.cc:97
+#: src/library/agent/controller.cc:134
 msgid "Root agent is not available"
-msgstr ""
+msgstr "Agente raiz não está disponível"
 
-#: src/library/agent/controller.cc:354
+#: src/library/agent/controller.cc:391
 msgid "Get agent properties"
 msgstr "Obtém propriedades do agente"
+
+#: src/library/agent/properties.cc:39
+msgid "The agent path"
+msgstr ""
+
+#: src/library/agent/properties.cc:43
+#, fuzzy
+msgid "Icon name for the current agent state"
+msgstr "Não foi possível obter o estado da TPM"
+
+#: src/library/agent/properties.cc:44
+msgid "Timestamp of the last state change"
+msgstr "Data/hora da última mudança de estado"
 
 #: src/library/agent/root.cc:101
 #: src/library/tools/systemservice/systemservice.cc:143
@@ -49,13 +70,10 @@ msgstr "Sistema em funcionamento"
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
-#: src/library/agent/state.cc:146
-msgid "Error activating state"
-msgstr "Erro ao ativar estado"
-
-#: src/library/agent/state.cc:151
-msgid "Unexpected error activating state"
-msgstr "Erro inesperado ao ativar estado"
+#: src/library/module/controller.cc:84
+#, fuzzy
+msgid "Available modules"
+msgstr "Testes disponíveis"
 
 #: src/library/module/module.cc:103
 #, c++-format
@@ -98,7 +116,7 @@ msgstr "Modo interativo"
 
 #: src/library/tools/application/loader.cc:128
 msgid "Load module file"
-msgstr ""
+msgstr "Carrega arquivo de módulo"
 
 #: src/library/tools/application/loader.cc:128
 msgid "path"
@@ -587,23 +605,39 @@ msgstr "numero"
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#. Run interactive mode.
-#: src/library/tools/unit-tests.cc:207
-msgid "Available tests"
-msgstr "Testes disponíveis"
-
-#: src/library/tools/interface.cc:84
-msgid "You dont have access to this resource"
-msgstr ""
-
-#: src/library/tools/object/abstract.cc:195
-#, c++-format
-msgid "Unable to get value of '{}'"
-msgstr "Incapaz de obter valor para '{}'"
-
 #: src/library/tools/pugixml/load.cc:79
 msgid "Unable to find XML definitions"
 msgstr "Definições XML não foram encontradas"
+
+#: src/library/tools/script.cc:56
+msgid "The required attribute 'cmdline' is missing"
+msgstr "Atributo necessário 'cmdline' não está disponível"
+
+#: src/library/tools/script.cc:150
+msgid "Missing shebang attribute"
+msgstr "'shebang' não encontrado no início do script"
+
+#: src/library/tools/script.cc:152
+#, c++-format
+msgid "Missing shebang attribute on {}"
+msgstr "'shebang' não encontrado em {}"
+
+#: src/library/tools/script.cc:175
+msgid "Required attribute 'cmdline' missing"
+msgstr "Atributo necessário 'cmdline' não encontrado"
+
+#: src/library/tools/script.cc:177
+#, c++-format
+msgid "Required attribute 'cmdline' missing on {}"
+msgstr "Atributo necessário 'cmdline' não encontrado em {}"
+
+#: src/library/tools/script.cc:199
+msgid "Cant set subprocess user id"
+msgstr "Incapaz de definir o usuário do subprocesso"
+
+#: src/library/tools/script.cc:205
+msgid "Cant set subprocess group id"
+msgstr "Incapaz de definir o grupo do subprocesso"
 
 #: src/library/tools/logger/argparser.cc:44
 msgid "Logger options"
@@ -744,46 +778,14 @@ msgstr "Bloquear acesso a 'net stop' no serviço"
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/library/tools/script.cc:56
-msgid "The required attribute 'cmdline' is missing"
-msgstr "Atributo necessário 'cmdline' não está disponível"
-
-#: src/library/tools/script.cc:150
-msgid "Missing shebang attribute"
-msgstr "'shebang' não encontrado no início do script"
-
-#: src/library/tools/script.cc:152
-#, c++-format
-msgid "Missing shebang attribute on {}"
-msgstr "'shebang' não encontrado em {}"
-
-#: src/library/tools/script.cc:175
-msgid "Required attribute 'cmdline' missing"
-msgstr "Atributo necessário 'cmdline' não encontrado"
-
-#: src/library/tools/script.cc:177
-#, c++-format
-msgid "Required attribute 'cmdline' missing on {}"
-msgstr "Atributo necessário 'cmdline' não encontrado em {}"
-
-#: src/library/tools/script.cc:199
-msgid "Cant set subprocess user id"
-msgstr "Incapaz de definir o usuário do subprocesso"
-
-#: src/library/tools/script.cc:205
-msgid "Cant set subprocess group id"
-msgstr "Incapaz de definir o grupo do subprocesso"
-
-#: src/library/tools/template.cc:74
-msgid ""
-"A required file is unavailable within the selected theme. Please contact the "
-"system administrator for assistance."
+#: src/library/tools/interface.cc:93
+msgid "You dont have access to this resource"
 msgstr ""
 
-#: src/library/tools/template.cc:108
-#, fuzzy, c++-format
-msgid "Unable to resolve '{}' on template '{}'"
-msgstr "Incapaz de adicionar '{}' em um valor abstrato"
+#: src/library/tools/object/abstract.cc:207
+#, c++-format
+msgid "Unable to get value of '{}'"
+msgstr "Incapaz de obter valor para '{}'"
 
 #: src/library/tools/timestamp.cc:104
 msgid "Less than one minute"
@@ -875,6 +877,17 @@ msgstr "Uso inválido de argumento repetido"
 msgid "[options]"
 msgstr "[opções]"
 
+#: src/library/tools/template.cc:74
+msgid ""
+"A required file is unavailable within the selected theme. Please contact the "
+"system administrator for assistance."
+msgstr ""
+
+#: src/library/tools/template.cc:108
+#, fuzzy, c++-format
+msgid "Unable to resolve '{}' on template '{}'"
+msgstr "Incapaz de adicionar '{}' em um valor abstrato"
+
 #: src/library/ui/console.cc:88
 msgid "Previous page"
 msgstr "Página anterior"
@@ -887,7 +900,7 @@ msgstr "Página seguinte"
 msgid "Select option (Enter to quit): "
 msgstr "Selecione opção (Enter para sair): "
 
-#: src/library/request.cc:95
+#: src/library/request.cc:96
 msgid "Invalid or unexpected API version"
 msgstr "Versão de API inválida ou não esperada"
 
@@ -899,15 +912,21 @@ msgstr ""
 msgid "Unable to Complete Request"
 msgstr ""
 
-#: src/library/response.cc:139
+#: src/library/response.cc:139 src/library/response.cc:214
 msgid "We're sorry, but we encountered an error while processing your request."
 msgstr ""
 
-#: src/library/response.cc:161
+#: src/library/response.cc:199
+msgid ""
+"Access unauthorized. Please contact your system administrator if you believe "
+"this is an error."
+msgstr ""
+
+#: src/library/response.cc:203
 msgid "System error"
 msgstr "Erro de sistema"
 
-#: src/library/response.cc:292
+#: src/library/response.cc:310
 msgid "Operation failed"
 msgstr "Operação falhou"
 
