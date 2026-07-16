@@ -22,7 +22,6 @@
  #if defined(DEBUG) and ! defined(LIBUDJAT_STATIC) 
 
  #include <udjat/defs.h>
- #include <udjat/defs.h>
  #include <udjat/tools/unit-test.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/interface.h>
@@ -32,6 +31,7 @@
  #include <udjat/agent.h>
  #include <udjat/tools/http/mimetype.h>
  #include <ostream>
+ #include <sstream>
  #include <stdexcept>
  #include <iomanip>
 
@@ -82,7 +82,7 @@
 					}
 
 					Request request{path};
-					Response response;
+					Response response{MimeType::yaml};
 
 					if(!intf->process(path,request,response)) {
 						throw runtime_error("Request /module was not processed");
@@ -101,7 +101,7 @@
 			[](std::ostream &stream) {
 
 				{
-					// Test agent introspection.
+					// Test agent properties.
 					Agent<int> agent{};
 					Schema schema;
 
@@ -139,6 +139,33 @@
 							<< endl
 							<< value.serialize(MimeType::yaml)
 							<< endl;
+				}
+
+				// Test agent interface
+				{
+					// Build root agent to initialize agent interface.
+					auto root = Abstract::Agent::RootFactory();
+					root->push_back(make_shared<Agent<int>>("intvalue"));
+
+					// Get root agent properties
+					for(const char *p : { "/agent", "/agent/intvalue" }) {
+
+						const char *path = p;
+						auto intf = Interface::find(path);
+						if(!intf) {
+							throw runtime_error(String{"Cant find interface for '",p,"'"});
+						}
+
+						Request request{path};
+
+						cout << "Processing request for '" << path << "':" << endl;
+						if(!intf->process(path,request,cout)) {
+							throw runtime_error(String{"Interface was unable to process '",p,"'"});
+						}
+						cout << endl;
+
+					}
+
 				}
 
 				return "Basic agent tests passed";
