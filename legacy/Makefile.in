@@ -364,6 +364,22 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/ui/console
 
 	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/*.h \
+		$(DESTDIR)$(includedir)/udjat
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/net/*.h \
+		$(DESTDIR)$(includedir)/udjat/net
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/tools/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/ui/*.h \
+		$(DESTDIR)$(includedir)/udjat/ui
+
+	@$(INSTALL_DATA) \
 		$(srcdir)/src/include/udjat/agent/*.h \
 		$(DESTDIR)$(includedir)/udjat/agent
 
