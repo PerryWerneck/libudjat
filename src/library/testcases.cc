@@ -143,33 +143,43 @@
 
 				// Test agent interface
 				{
+					class YamlRequest : public Request {
+					public:
+						YamlRequest(const char *path) : Request{path} { 
+						}
+
+						MimeType mimetype() const noexcept override {
+							return MimeType::yaml;
+						}
+
+					};
+
 					// Build root agent to initialize agent interface.
 					auto root = Abstract::Agent::RootFactory();
 					root->push_back(make_shared<Agent<int>>("intvalue"));
 
 					// Get root agent properties
-					for(const char *p : { "/agent", "/agent/intvalue" }) {
+					for(const char *path : { "/agent", "/agent/intvalue", "/api/agent", "/api/agent/intvalue" }) {
 
-						const char *path = p;
-						auto intf = Interface::find(path);
+						YamlRequest request{path};
+
+						auto intf = Interface::find(request);
 						if(!intf) {
-							throw runtime_error(String{"Cant find interface for '",p,"'"});
+							throw runtime_error(String{"Cant find interface for '",request.path(),"'"});
 						}
 
 						Schema schema;
-						if(!intf->output_schema(path,schema)) {
+						if(!intf->output_schema(request.path(),schema)) {
 							throw runtime_error("Interface doesnt provides an output-schema");
 						}
 
-						Request request{path};
-
-						stream << "Processing request for '" << path << "':" << endl;
-						if(!intf->process(path,request,stream)) {
-							throw runtime_error(String{"Interface was unable to process '",p,"'"});
+						stream << "Processing" << (request.apicall() ? " API " : " ") 
+							<< "request for '" << request.path() << "' using interface '" 
+							<< intf->name() << "':" << endl;
+						if(!intf->process(request,stream)) {
+							throw runtime_error(String{"Interface was unable to process '",request.path(),"'"});
 						}
 						stream << endl;
-
-						
 
 					}
 

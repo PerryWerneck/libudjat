@@ -96,12 +96,16 @@
 		/// @return true if the request was recognized and processed.
 		virtual bool process(const char *path, const Request &request, Response &response) const;
 
+		bool process(const Request &request, Response &response) const;
+
 		/// @brief Process a stream request (usually from HTTP server);
 		/// @param path The request path.
 		/// @param request The client request.
 		/// @param stream The output stream.
 		/// @return true if the request was recognized and processed.
 		virtual bool process(const char *path, const Request &request, std::ostream &stream) const;
+
+		bool process(const Request &request, std::ostream &stream) const;
 
 		/// @brief Enumerate interfaces.
 		static bool for_each(const std::function<bool(const Interface &interface)> &func);
@@ -110,6 +114,11 @@
 		/// @param path The path for required interface, if found the interface part will be stripped.
 		/// @return A valid interface, nullptr if not found.
 		static Interface * find(const char * &path) noexcept;
+
+		/// @brief Find an interface matching with request, extract prefix.
+		/// @param request The request, if found the interface part will be 'popped' out from request.
+		/// @return A valid interface, nullptr if not found.
+		static Interface * find(Request &request) noexcept;
 
 	};
 

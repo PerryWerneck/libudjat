@@ -224,24 +224,34 @@
 		return failed("",message,details);
 	}
 
-	Response & Response::failed(const char *title,  const char *message, const char *details) noexcept {
+	Response & Response::failed(const char *title,  const char *message, const char *body) noexcept {
 
-		status.value = State::Failure;
 		clear(Value::Object);
 
-		status.message = message;
-		status.syscode = 0;
+		status.value = State::Failure;
+		status.syscode = -1;
 
 		if(title && *title) {
 			status.title = title;
 		} else {
-			status.title.clear();
+			status.title = _("Unable to Complete Request");
 		}
 
-		if(details && *details) {
-			status.body = details;
+		bool has_message = (message && *message);
+		bool has_body = (body && *body);
+
+		if(has_message && has_body) {
+			status.message = message;
+			status.body = body;
+		} else if(has_message) {
+			status.message = _("We're sorry, but we encountered an error while processing your request.");
+			status.body = message;
+		} else if(has_body) {
+			status.message = _("We're sorry, but we encountered an error while processing your request.");
+			status.body = body;
 		} else {
-			status.body.clear();
+			status.message = _("We're sorry, but we encountered an error while processing your request.");
+			status.body = _("Unexpected error processing request");
 		}
 
 		return *this;

@@ -62,6 +62,15 @@
 		return nullptr;
 	}
 
+	Interface * Interface::find(Request &request) noexcept {
+		for(const auto interface : Interfaces()) {
+			if(request.pop(interface->name())) {
+				return interface;
+			}
+		}
+		return nullptr;
+	}
+
 	Interface::Interface(const char *name, const Authentication::Role r)
 		: interface_name{name}, role{r} {
 		Interfaces().push_back(this);
@@ -88,6 +97,14 @@
 		return false;
 	}
 
+	bool Interface::process(const Request &request, Response &response) const {
+		return process(request.path(),request,response);
+	}
+
+	bool Interface::process(const Request &request, std::ostream &stream) const {
+		return process(request.path(),request,stream);
+	}
+
 	bool Interface::process(const char *, const Request &request, Response &) const {
 		if(!allow(request.role())) {
 			Response::Exception error{EPERM,_("You dont have access to this resource")};
@@ -107,6 +124,10 @@
 		if(!process(path,request,response)) {
 			debug("Request failed, returning")
 			return false;
+		}
+
+		if(response.empty()) {
+			response.failed(_("Empty response from backend"));
 		}
 
 		if(!request.apicall()) {
