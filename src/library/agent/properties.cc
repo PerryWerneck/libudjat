@@ -57,7 +57,7 @@
 
 		// Agent value
 		if( !(strcasecmp(key,"value") && strcasecmp(key,"agent.value")) ) {
-			value = to_string();
+			get(value);
 			return true;
 		}
 
