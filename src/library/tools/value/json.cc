@@ -22,11 +22,9 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/report.h>
  #include <iostream>
+ #include <cstring>
 
-  /**
-  * @brief Brief Convert value to JSON string.
-  */
-
+ using namespace std;
 
  namespace Udjat {
 
@@ -84,6 +82,34 @@
 			} else {
 				output << "[]";
 			}
+			break;
+
+		case Udjat::Value::Timestamp:
+			// Option 1: UTC Time with 'Z' Suffix (Recommended)This is the cleanest and most common JSON format. 
+			// Force your time structure to UTC using std::gmtime, then hardcode the literal 'Z' at 
+			// the end of the format string.
+			{
+				time_t now = content.timestamp;
+				std::tm* gmt_time = std::gmtime(&now); // Convert to UTC
+				char buffer[32];
+				// Formats directly to: "2026-07-16T15:42:00Z"
+				std::strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", gmt_time);
+				output << '"' << buffer << '"';
+			}
+
+			// Option 2: Local Time with Manual Colon Insertion
+			// If you must use local time, you have to use %z and manually insert the colon into 
+			// the resulting string to make it compliant with standard JSON parsers.
+			// {
+			// 	string json_time = TimeStamp{content.timestamp}.to_string("%Y-%m-%dT%H:%M:%S%z");
+
+			// 	// Manually fix the timezone format: -0400 -> -04:00
+			// 	if (json_time.length() >= 5) {
+			// 		json_time.insert(json_time.length() - 2, ":");
+			// 	}
+
+			// 	output << '"' << json_time << '"';	
+			// }
 			break;
 
 		default:

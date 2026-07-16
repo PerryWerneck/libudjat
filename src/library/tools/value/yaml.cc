@@ -78,6 +78,10 @@
 			}
 			break;
 
+		case Udjat::Value::Timestamp:
+			ss << " " << TimeStamp{content.timestamp}.to_string("%Y-%m-%dT%H:%M:%S%z") << endl;
+			break;
+
 		default:
 			ss << " \"" << to_string() << "\"" << endl;
 
