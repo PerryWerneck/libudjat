@@ -66,7 +66,14 @@
 			void serialize(const MimeType &mimetype, std::ostream &stream) const;
 			std::string to_string(const MimeType &mimetype) const;
 
-			void set_from_syscode(int syscode);
+			/// @brief Set status from syscode.
+			/// @param syscode System code to set (From errno).
+			void set(int syscode);
+			
+			Status & failed(int syscode) noexcept;
+			Status & failed(const std::exception &e) noexcept;
+			Status & failed(const char *message, const char *details = nullptr) noexcept;
+			Status & failed(const char *title,  const char *message, const char *details) noexcept;
 
 		};
 
@@ -125,12 +132,12 @@
 			this->object = object;
 		}
 
-		Response & failed(int syscode) noexcept;
-		Response & failed(const std::exception &e) noexcept;
-		Response & failed(const char *message, const char *details = nullptr) noexcept;
-		Response & failed(const char *title,  const char *message, const char *details) noexcept;
+		Status & failed(int syscode) noexcept;
+		Status & failed(const std::exception &e) noexcept;
+		Status & failed(const char *message, const char *details = nullptr) noexcept;
+		Status & failed(const char *title,  const char *message, const char *details) noexcept;
 
-		inline Response & failed(const std::string &string) noexcept {
+		inline Status & failed(const std::string &string) noexcept {
 			return failed(string.c_str());
 		}
 

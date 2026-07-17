@@ -76,6 +76,7 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/tools/url/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/url/handlers/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/value/*.cc) \
+	$(wildcard $(srcdir)/src/library/response/*.cc) \
 	$(wildcard $(srcdir)/src/library/ui/*.cc) \
 	$(srcdir)/src/library/tools/systemservice/args_linux.cc \
 	$(srcdir)/src/library/tools/systemservice/systemservice.cc \
