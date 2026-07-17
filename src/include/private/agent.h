@@ -31,7 +31,7 @@
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Service, public MainLoop::Timer, private Action::Factory, private Abstract::Object::Factory, private Interface {
+	class Abstract::Agent::Controller : private Service, public MainLoop::Timer, private Abstract::Object::Factory, private Interface {
 	private:
 
 		time_t updating = 0;
@@ -65,11 +65,11 @@ namespace Udjat {
 		void start() noexcept override;
 		void stop() noexcept override;
 
-		// ActionFactory.
-		std::shared_ptr<Action> ActionFactory(const Udjat::Properties &props) const override;
-
 		// Object Factory.
 		std::shared_ptr<Abstract::Object> ObjectFactory(const Udjat::Properties &props) const override;
+
+		// Interface
+		bool process(const char *path, const Request &request, Response &response) const override;
 
 	};
 

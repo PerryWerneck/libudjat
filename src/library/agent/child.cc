@@ -21,6 +21,7 @@
  #include <private/agent.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/quark.h>
+ #include <udjat/tools/request.h>
  #include <mutex>
 
  using namespace std;
@@ -45,52 +46,60 @@
 			throw runtime_error("Invalid request");
 		}
 
-		if(*path == '/')
-			path++;
+		debug("Searching for '",path,"' on agent '",name(),"'");
 
-		// Get name length.
-		size_t length;
-		const char *ptr = strchr(path,'/');
-		if(!ptr) {
-			length = strlen(path);
-		} else {
-			length = (ptr - path);
-		}
 
-		{
-			for(auto child : children.agents) {
 
-				if(strncasecmp(child->name(),path,length))
-					continue;
-
-				if(ptr && ptr[1]) {
-					return child->find(ptr+1,required,autoins);
-				}
-
-				return child;
-			}
-
-		}
-
-		if(autoins) {
-			
-			string name{path,length};
-			auto child = make_shared<Abstract::Agent>(Quark{name.c_str()}.c_str());
-			
-			push_back((std::shared_ptr<Abstract::Object>)child);
-
-			if(ptr && ptr[1]) {
-				return child->find(ptr+1,required,autoins);
-			}
-
-			return child;
-		}
-
-		if(required) {
-			throw system_error(ENOENT,system_category(),string{"Can't find agent '"} + path);
-		}
-
+		
+		debug("Cant find '",path,"' on agent '",name(),"'");
 		return shared_ptr<Abstract::Agent>();
+
+		// if(*path == '/')
+		// 	path++;
+
+		// // Get name length.
+		// size_t length;
+		// const char *ptr = strchr(path,'/');
+		// if(!ptr) {
+		// 	length = strlen(path);
+		// } else {
+		// 	length = (ptr - path);
+		// }
+
+		// {
+		// 	for(auto child : children.agents) {
+
+		// 		if(strncasecmp(child->name(),path,length))
+		// 			continue;
+
+		// 		if(ptr && ptr[1]) {
+		// 			return child->find(ptr+1,required,autoins);
+		// 		}
+
+		// 		return child;
+		// 	}
+
+		// }
+
+		// if(autoins) {
+			
+		// 	string name{path,length};
+		// 	auto child = make_shared<Abstract::Agent>(Quark{name.c_str()}.c_str());
+			
+		// 	push_back((std::shared_ptr<Abstract::Object>)child);
+
+		// 	if(ptr && ptr[1]) {
+		// 		return child->find(ptr+1,required,autoins);
+		// 	}
+
+		// 	return child;
+		// }
+
+		// if(required) {
+		// 	throw system_error(ENOENT,system_category(),string{"Can't find agent '"} + path);
+		// }
+
+		// return shared_ptr<Abstract::Agent>();
 
 	}
 

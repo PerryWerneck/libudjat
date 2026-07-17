@@ -24,6 +24,7 @@
  #include <udjat/tools/object.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/http/method.h>
 
  namespace Udjat {
 
@@ -72,6 +73,8 @@
 		}
 
 		virtual MimeType mimetype() const noexcept;
+
+		virtual HTTP::Method method() const noexcept;
 
 		/// @brief Check and extract element from path.
 		/// @param prefix The prefix to check and extract.

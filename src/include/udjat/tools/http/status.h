@@ -85,6 +85,7 @@
 
 			std::string to_string(const MimeType &mimetype) const;
 			
+			Status & failed(const StatusCode code) noexcept;
 			Status & failed(int syscode) noexcept;
 			Status & failed(const std::exception &e) noexcept;
 			Status & failed(const char *message, const char *details = nullptr) noexcept;

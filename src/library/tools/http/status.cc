@@ -208,6 +208,7 @@
 
 		if(code >= (HTTP::StatusCode) 500 && code <= (HTTP::StatusCode) 599) {
 			message = _("We're sorry, but we encountered an error while processing your request.");
+			body = std::to_string(code);
 			return *this;
 		}
 
@@ -239,10 +240,12 @@
 		return *this;
 	}
 
+	HTTP::Status & HTTP::Status::failed(HTTP::StatusCode code) noexcept {
+		return assign(code);
+	}
+
 	HTTP::Status & HTTP::Status::failed(int syscode) noexcept {
-		clear();
-		assign(syscode);
-		return *this;
+		return assign(syscode);
 	}
 
 	HTTP::Status & HTTP::Status::failed(const char *message, const char *details) noexcept {
@@ -292,23 +295,27 @@
 		} messages[] = {
 			{
 				HTTP::NotFound,
-				N_("Not available")
+				N_("The requested resource could not be found.")
 			},
 			{
 				HTTP::Forbidden,
-				N_("You dont have access to this resource")
+				N_("You dont have access to this resource.")
 			},
 			{	
 				HTTP::RequestTimeout,
-				N_("Request timeout")
+				N_("Request timeout.")
 			},
 			{ 
 				HTTP::SystemError,
-				N_("Internal Server Error")
+				N_("Internal Server Error.")
 			},
 			{
 				HTTP::NotImplemented,
 				N_("The request method is not supported by the server and cannot be handled.")
+			},
+			{
+				HTTP::Unavailable,
+				N_("Our system is temporarily unavailable. Please wait a moment and try again.")
 			}
 		};
 

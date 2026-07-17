@@ -99,38 +99,41 @@
 	}
 
 	bool Interface::process(const Request &request, Response &response) const {
+		debug(__FUNCTION__);
 		return process(request.path(),request,response);
 	}
 
 	bool Interface::process(const Request &request, std::ostream &stream) const {
+		debug(__FUNCTION__);
 		return process(request.path(),request,stream);
 	}
 
-	bool Interface::process(const char *, const Request &request, Response &) const {
-		if(!allow(request.role())) {
-			throw HTTP::Exception(HTTP::Forbidden);
-		}
-		return true;
+	bool Interface::process(const char *, const Request &, Response &response) const {
+		Logger::String{"Unable to process requests, the method 'process' was not overrided by interface code"}.error(name());
+		return false;
 	}
 
 	HTTP::StatusCode Interface::process(const char *path, const Request &request, std::ostream &stream) const noexcept {
 
-		// Default process: Call API, format response on request mimetype.
+		// Default process: Call API, format response on requested mimetype.
 
+		debug("Processing path '",path,"' at interface '",name(),"'");
+		
 		MimeType mimetype = request.mimetype();
 		Response response{mimetype};
 
 		try {
 
-			if(!process(path,request,response)) {
+			if(!allow(request.role())) {
+
+				debug("Invalid authentitcation");
+				response.failed(HTTP::Forbidden);
+
+			} else if(!process(path,request,response)) {
 
 				debug("Request failed, returning")
 				response.failed(HTTP::NotFound);
 
-			} else if(response.empty()) {
-
-				response.failed(_("Empty response from backend"));
-				
 			}
 
 		} catch(const std::exception &e) {

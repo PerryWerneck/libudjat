@@ -97,7 +97,8 @@
 			return status.code;
 		}
 
-		HTTP::Status & failed(int syscode) noexcept;
+		HTTP::Status & failed(const HTTP::StatusCode code) noexcept;
+		HTTP::Status & failed(const int syscode) noexcept;
 		HTTP::Status & failed(const std::exception &e) noexcept;
 		HTTP::Status & failed(const char *message, const char *details = nullptr) noexcept;
 		HTTP::Status & failed(const char *title,  const char *message, const char *details) noexcept;

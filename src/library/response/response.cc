@@ -55,7 +55,14 @@
 		return status.message.c_str();
 	}
 
+	HTTP::Status & Response::failed(const HTTP::StatusCode code) noexcept {
+		debug("Request failed with http error ",code);
+		clear(Value::Object);
+		return status.failed(code);
+	}
+
 	HTTP::Status & Response::failed(int syscode) noexcept {
+		debug("Request failed with syscode ",syscode);
 		clear(Value::Object);
 		return status.failed(syscode);
 	}

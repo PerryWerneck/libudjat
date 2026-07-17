@@ -40,6 +40,7 @@
  #include <udjat/tools/schema.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/request.h>
  #include <unistd.h>
 
  #include <udjat/tools/logger.h>
@@ -51,7 +52,7 @@
  namespace Udjat {
 
 	Abstract::Agent::Controller::Controller() 
-		: Service{"agents"}, Action::Factory{"agent"}, Abstract::Object::Factory{"agent"}, Interface{"agent",Authentication::None} {
+		: Service{"agents"}, Abstract::Object::Factory{"agent"}, Interface{"agent",Authentication::None} {
 		Logger::String{"Initializing controller"}.trace();
 	}
 
@@ -381,73 +382,123 @@
 		return child;
 	}
 
-	std::shared_ptr<Action> Abstract::Agent::Controller::ActionFactory(const Properties &) const {
+	bool Abstract::Agent::Controller::process(const char *path, const Request &request, Response &response) const {
 
-		debug("Build agent action");
-
-		/// @brief Action to get agent properties.
-		class AgentProperties : public Udjat::Action {
-		public:
-			AgentProperties() : Udjat::Action{"agent",_("Get agent properties")} {
-			} 
-
-			bool output_schema(Schema &schema) const noexcept override {
-
-				schema.append(
-					Schema::Item{ "icon",		Schema::Icon	},
-					Schema::Item{ "label",		Schema::String	},
-					Schema::Item{ "name",		Schema::String	},
-					Schema::Item{ "state",		Schema::String	},
-					Schema::Item{ "summary",	Schema::String	},
-					Schema::Item{ "system", 	Schema::String	},
-					Schema::Item{ "url", 		Schema::Url		},
-					Schema::Item{ "value",		Schema::String	}
-				);
-
-				return true;
-			}
-
-			int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
-
-				return exec(response, except, [&]() {
-
-					auto agent = Abstract::Agent::Controller::getInstance().find(request.path(),true);
-
-					time_t timestamp = agent->last_modified();
-					if(timestamp) {
-						debug("last-modified: ",TimeStamp{timestamp}.to_string().c_str());
-						response.last_modified(timestamp);
-						if(request.cached(timestamp)) {
-							response.failed(HTTP::NotModified);
-							return 0;
-						}
-					}
-
-					agent->get_properties(response);
-
-					if(agent->update.next) {
-						response.expires(agent->update.next);
-					}
-
-					response.message(agent->state()->to_string().c_str());
-
-					return 0;
-				});
-
-
-			}
-
-		};
-
-		static std::shared_ptr<Action> instance;
-		if(!instance) {
-			Logger::String{"Building singleton for agent actions"}.trace();
-			instance = make_shared<AgentProperties>();
+		if(!allow(request.role())) {
+			response.failed(HTTP::Forbidden);
+			return true;
 		}
 
-		return instance;
+		if(!this->root) {
+			response.failed(HTTP::Unavailable);
+			return true;
+		}
 
+		debug("Searching for agent '",path,"'");
+		auto agent = Abstract::Agent::Controller::getInstance().find(path,false);
+		if(!agent) {
+			response.failed(HTTP::NotFound);
+			return true;
+		}
+
+		time_t timestamp = agent->last_modified();
+		if(timestamp) {
+			debug("last-modified: ",TimeStamp{timestamp}.to_string().c_str());
+			response.last_modified(timestamp);
+			if(request.cached(timestamp)) {
+				response.failed(HTTP::NotModified);
+				return true;
+			}
+		}
+
+		if(agent->update.next) {
+			response.expires(agent->update.next);
+		}
+
+		auto method = request.method();
+		if(method == HTTP::Head) {
+			// Header was already set, just return.
+			return true;
+		}
+
+		// Agent only support 'get'
+		if(method != HTTP::Get) {
+			response.failed(HTTP::MethodNotAllowed);
+			return true;
+		}
+
+		throw runtime_error("Incomplete");
+
+		return true;
 	}
+
+	// std::shared_ptr<Action> Abstract::Agent::Controller::ActionFactory(const Properties &) const {
+
+	// 	debug("Build agent action");
+
+	// 	/// @brief Action to get agent properties.
+	// 	class AgentProperties : public Udjat::Action {
+	// 	public:
+	// 		AgentProperties() : Udjat::Action{"agent",_("Get agent properties")} {
+	// 		} 
+
+	// 		bool output_schema(Schema &schema) const noexcept override {
+
+	// 			schema.append(
+	// 				Schema::Item{ "icon",		Schema::Icon	},
+	// 				Schema::Item{ "label",		Schema::String	},
+	// 				Schema::Item{ "name",		Schema::String	},
+	// 				Schema::Item{ "state",		Schema::String	},
+	// 				Schema::Item{ "summary",	Schema::String	},
+	// 				Schema::Item{ "system", 	Schema::String	},
+	// 				Schema::Item{ "url", 		Schema::Url		},
+	// 				Schema::Item{ "value",		Schema::String	}
+	// 			);
+
+	// 			return true;
+	// 		}
+
+	// 		int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
+
+	// 			return exec(response, except, [&]() {
+
+	// 				auto agent = Abstract::Agent::Controller::getInstance().find(request.path(),true);
+
+	// 				time_t timestamp = agent->last_modified();
+	// 				if(timestamp) {
+	// 					debug("last-modified: ",TimeStamp{timestamp}.to_string().c_str());
+	// 					response.last_modified(timestamp);
+	// 					if(request.cached(timestamp)) {
+	// 						response.failed(HTTP::NotModified);
+	// 						return 0;
+	// 					}
+	// 				}
+
+	// 				agent->get_properties(response);
+
+	// 				if(agent->update.next) {
+	// 					response.expires(agent->update.next);
+	// 				}
+
+	// 				response.message(agent->state()->to_string().c_str());
+
+	// 				return 0;
+	// 			});
+
+
+	// 		}
+
+	// 	};
+
+	// 	static std::shared_ptr<Action> instance;
+	// 	if(!instance) {
+	// 		Logger::String{"Building singleton for agent actions"}.trace();
+	// 		instance = make_shared<AgentProperties>();
+	// 	}
+
+	// 	return instance;
+
+	// }
 
 }
 

@@ -53,6 +53,10 @@
 		return MimeType::text;
 	}
 
+	HTTP::Method Request::method() const noexcept {
+		return HTTP::Get;
+	}
+
 	bool Request::pop(const char *prefix, const char * &path) noexcept {
 
 		if(path[0] != '/' || path[1] == 0) {
