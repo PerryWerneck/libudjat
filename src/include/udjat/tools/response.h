@@ -208,6 +208,9 @@
 		/// @return Current expiration time.
 		time_t expires(const time_t timestamp) noexcept;
 
+		/// @brief Set custom header.
+		virtual void header(const char *name, const char *value) noexcept;
+
 		inline time_t last_modified() const noexcept {
 			return (time_t) timestamp.last_modified;
 		}

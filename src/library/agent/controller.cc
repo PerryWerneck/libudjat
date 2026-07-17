@@ -41,6 +41,8 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/request.h>
+ #include <udjat/tools/response.h>
+ #include <udjat/agent/state.h>
  #include <unistd.h>
 
  #include <udjat/tools/logger.h>
@@ -414,6 +416,21 @@
 
 		if(agent->update.next) {
 			response.expires(agent->update.next);
+		}
+
+		// Set state info on header X-udjat-agent-state: 
+		{
+			auto state = agent->state();
+			if(state) {
+				response.header(
+					"X-" PACKAGE_NAME "-agent-state",
+					String{
+						std::to_string(state->level()),
+						";",
+						state->summary()
+					}.c_str()
+				);
+			}
 		}
 
 		auto method = request.method();

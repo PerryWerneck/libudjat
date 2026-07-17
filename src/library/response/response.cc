@@ -55,6 +55,9 @@
 		return status.message.c_str();
 	}
 
+	void Response::header(const char *, const char *) noexcept {
+	}
+
 	HTTP::Status & Response::failed(const HTTP::StatusCode code) noexcept {
 		debug("Request failed with http error ",code);
 		clear(Value::Object);
