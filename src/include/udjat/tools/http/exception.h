@@ -23,53 +23,33 @@
  #include <system_error>
  #include <string>
  #include <udjat/tools/exception.h>
+ #include <udjat/tools/http/status.h>
 
  namespace Udjat {
 
 	namespace HTTP {
 
 		/// @brief HTTP exception.
-		class UDJAT_API Exception : public Udjat::Exception {
+		class UDJAT_API Exception : public std::runtime_error, public HTTP::Status {
 		public:
-
-			/// @brief Error codes.
-			struct Codes {
-				int http;
-				std::error_code system;
-
-				Codes() : http(-1) {
-				}
-
-			};
-
-		protected:
-			/// @brief HTTP error code.
-			unsigned int http_code;
-
-		public:
-			Exception(unsigned int http_code);
-			Exception(unsigned int http_code, const char *message);
+			Exception(StatusCode code);
+			Exception(StatusCode code, const char *message);
 			Exception(const char *message);
 
 			/// @brief Get http error code.
 			inline unsigned int code() const noexcept {
-				return http_code;
+				return Status::code;
 			}
 
-			/// @brief Translate http error to system error.
-			/// @param http_code http error code.
-			/// @return The corresponding system error code (or -1 if there's no one).
-			static int syscode(unsigned int http_code) noexcept;
+			// /// @brief Translate system error to http.
+			// /// @param syscode system error code.
+			// /// @return The corresponding http error code (or 500 if there's no one).
+			// static int code(int syscode) noexcept;
 
-			/// @brief Translate system error to http.
-			/// @param syscode system error code.
-			/// @return The corresponding http error code (or 500 if there's no one).
-			static int code(int syscode) noexcept;
-
-			/// @brief Translate system error to http.
-			/// @param except system error.
-			/// @return The corresponding http error code (or 500 if there's no one).
-			static int code(const std::system_error &except) noexcept;
+			// /// @brief Translate system error to http.
+			// /// @param except system error.
+			// /// @return The corresponding http error code (or 500 if there's no one).
+			// static int code(const std::system_error &except) noexcept;
 
 		};
 	}

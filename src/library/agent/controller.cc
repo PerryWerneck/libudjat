@@ -418,7 +418,7 @@
 						debug("last-modified: ",TimeStamp{timestamp}.to_string().c_str());
 						response.last_modified(timestamp);
 						if(request.cached(timestamp)) {
-							response.not_modified(true);
+							response.failed(HTTP::NotModified);
 							return 0;
 						}
 					}

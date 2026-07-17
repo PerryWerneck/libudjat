@@ -19,24 +19,48 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/response.h>
+ #include <udjat/tools/http/status.h>
  #include <udjat/tools/exception.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/http/statuscodes.h>
+ #include <udjat/tools/value.h>
+ #include <udjat/tools/logger.h>
  #include <stdexcept>
  #include <sstream>
+ #include <libintl.h>
 
+ using namespace Udjat;
  using namespace std;
 
  namespace Udjat {
 
-	Response::Status::Status(const std::exception &e) {
+	// https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+	static const struct {
+		HTTP::StatusCode	http;
+		int 				system;
+	} syscodes[] = {
+		{ HTTP::Ok,					0			},
+		{ HTTP::UnAuthenticated,	EPERM 		},
+		{ HTTP::Forbidden,			EPERM 		},
+		{ HTTP::NotFound,			ENOENT		},
+		{ HTTP::MethodNotAllowed,	EINVAL		},
+		{ HTTP::ProxyAuthRequired,	EPERM	 	},
+#ifdef ETIMEDOUT
+		{ HTTP::RequestTimeout,		ETIMEDOUT 	},
+#endif // ETIMEDOUT
+		{ HTTP::NotImplemented,		ENOTSUP		},
+		{ HTTP::Unavailable,		EBUSY	 	},
+		{ HTTP::NotFound,			ENODATA		},
+		{ HTTP::Unprocessable,		ENOENT		},
+	};
+
+	HTTP::Status::Status(const std::exception &e) {
 		assign(e);
 	}
 
-	Response::Status & Response::Status::clear(const State st) noexcept {
-		value = st;
-		syscode = st == Success ? 0 : -1;
-		not_modified = false;
+	HTTP::Status & HTTP::Status::clear() noexcept {
+		code = HTTP::Ok;
+
 		title.clear();
 		message.clear();
 		body.clear();
@@ -44,28 +68,42 @@
 		url.clear();
 		category.clear();
 		return *this;
+
 	}
 
-	std::string Response::Status::to_string(const MimeType &mimetype) const {
+	int HTTP::Status::syscode(const StatusCode code) noexcept {
+
+		for(const auto &syscode : syscodes) {
+			if(syscode.http == code) {
+				return syscode.system;
+			}
+		}
+
+		return -1;
+	}
+
+	std::string HTTP::Status::to_string(const MimeType &mimetype) const {
 		stringstream out;
 		serialize(mimetype,out);
 		return out.str();
 	}
 
-	void Response::Status::serialize(const MimeType &mimetype, std::ostream &out) const {
+	void HTTP::Status::serialize(const MimeType &mimetype, std::ostream &out) const noexcept {
 
 		Value response{Value::Object};
-		response["syscode"] = syscode;
+		response["code"] = (int) code;
 		response["title"] = title;
 		response["message"] = message;
 		response["body"] = body;
 		response["domain"] = domain;
 		response["url"] = url;
-		response["category"] = category;		
+		response["category"] = category;	
+		
+		string value{code == HTTP::Ok ? "success" : "failed"};
 
 		switch(mimetype) {
 		case Udjat::Value::Undefined:
-			throw runtime_error("Unable to serialize undefined value");
+			Logger::String{"Unable to serialize undefined value"}.error("http");
 			break;
 
 		case Udjat::MimeType::xml:
@@ -90,16 +128,15 @@
 			break;
 
 		case Udjat::MimeType::html:
-			if(value == Success) {
+			if(code == HTTP::Ok) {
 				// Show values
 				response.to_html(out);
 			} else {
 				out << "<section id='error-box'><h1 id='error-title'>" << (title.empty() ? _("Failed.") : title.c_str()) << "</h1>";
 				if(!message.empty()) {
 					out << "<p id='error-message'>" << message << "</p>";
-				} else if(syscode) {
-					out << "<p id='error-code'>" << "Error " << syscode << "</p>";
 				}
+				out << "<p id='error-code'>" << "Error " << ((int) code) << "</p>";
 				if(!body.empty()) {
 					out << "<small id='error-body'>" << body << "</small>";
 				}
@@ -127,12 +164,11 @@
 
 	}
 
-	Response::Status & Response::Status::assign(const std::exception &e) noexcept {
+	HTTP::Status & HTTP::Status::assign(const std::exception &e) noexcept {
 
 		clear();
 
-		value = Failure;
-		syscode = -1;
+		code = HTTP::SystemError;
 		title = _("Unable to Complete Request");
 		message = _("We're sorry, but we encountered an error while processing your request.");
 		body = e.what();
@@ -140,22 +176,23 @@
 		{
 			const Udjat::Exception *except = dynamic_cast<const Udjat::Exception *>(&e);
 			if(except) {
-
-				syscode = except->syscode();
+				assign(except->syscode());
 				title = except->title();
 				body = except->body();
 				domain = except->domain();
 				url = except->url();
 				return *this;
-
 			}
 		}
 
 		{
 			const std::system_error *except = dynamic_cast<const std::system_error *>(&e);
 			if(except) {
-				set(except->code().value());
-				body = except->code().message();
+				assign(except->code().value());
+				body = Logger::Message{
+					_("The system error was '{}'"),
+					except->code().message()
+				};
 				category = except->code().category().name();
 				return *this;
 			}
@@ -164,43 +201,57 @@
 		return *this;
 	}
 
-	void Response::Status::set(int sc) {
+	HTTP::Status & HTTP::Status::assign(HTTP::StatusCode code) noexcept {
 
-		static const struct {
-			int syscode;
-			const char *text;
-		} messages[] = {
-			{ EPERM, N_("Access unauthorized. Please contact your system administrator if you believe this is an error.") }
-		};
+		clear();
+		this->code = code;
 
-		syscode = sc;
-		title = _("System error");
-		value = Failure;
-		body = strerror(syscode);
-
-		for(const auto &message : messages) {
-			if(message.syscode == syscode) {
-				this->message = dgettext(GETTEXT_PACKAGE,message.text);
-				return;
-			}
+		if(code >= (HTTP::StatusCode) 500 && code <= (HTTP::StatusCode) 599) {
+			message = _("We're sorry, but we encountered an error while processing your request.");
+			return *this;
 		}
 
-		message = _("We're sorry, but we encountered an error while processing your request.");
-	}
-
-	Response::Status & Response::Status::failed(int syscode) noexcept {
-		set(syscode);
+		message = std::to_string(code);
 		return *this;
 	}
 
-	Response::Status & Response::Status::failed(const char *message, const char *details) noexcept {
+	HTTP::Status & HTTP::Status::assign(int syscode) {
+
+		clear();
+
+		title = _("System error");
+		message = _("We're sorry, but we encountered an error while processing your request.");
+
+		code = HTTP::SystemError;
+
+		body = Logger::Message{
+			_("The system error was '{}'"),
+			strerror(syscode)
+		};
+
+		for(const auto &item : syscodes) {
+			if(item.system == syscode) {
+				code = item.http;
+				break;
+			}
+		}
+
+		return *this;
+	}
+
+	HTTP::Status & HTTP::Status::failed(int syscode) noexcept {
+		clear();
+		assign(syscode);
+		return *this;
+	}
+
+	HTTP::Status & HTTP::Status::failed(const char *message, const char *details) noexcept {
 		return failed("",message,details);
 	}
 
-	Response::Status & Response::Status::failed(const char *title,  const char *message, const char *body) noexcept {
+	HTTP::Status & HTTP::Status::failed(const char *title,  const char *message, const char *body) noexcept {
 
-		value = State::Failure;
-		syscode = -1;
+		code = HTTP::SystemError;
 
 		if(title && *title) {
 			title = title;
@@ -231,3 +282,43 @@
 
 }
 
+ namespace std {
+
+	UDJAT_API const string to_string(const Udjat::HTTP::StatusCode code) {
+
+		static const struct {
+			HTTP::StatusCode code;
+			const char *text;
+		} messages[] = {
+			{
+				HTTP::NotFound,
+				N_("Not available")
+			},
+			{
+				HTTP::Forbidden,
+				N_("You dont have access to this resource")
+			},
+			{	
+				HTTP::RequestTimeout,
+				N_("Request timeout")
+			},
+			{ 
+				HTTP::SystemError,
+				N_("Internal Server Error")
+			},
+			{
+				HTTP::NotImplemented,
+				N_("The request method is not supported by the server and cannot be handled.")
+			}
+		};
+
+		for(const auto &msg : messages) {
+			if(msg.code == code) {
+				return dgettext(GETTEXT_PACKAGE,msg.text);
+			}
+		}
+
+		return Udjat::Logger::Message{_("HTTP Status {}"),(int) code};
+	}
+
+ }

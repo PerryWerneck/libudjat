@@ -448,7 +448,7 @@ lib_src += [
   'src/library/module/unload.cc',
   'src/library/module/load.cc',
   'src/library/response/response.cc',
-  'src/library/response/status.cc',
+  'src/library/tools/http/status.cc',
   'src/library/request.cc',
   'src/library/state/level.cc',
   'src/library/state/parse.cc',
@@ -1069,6 +1069,8 @@ install_headers(
 
 install_headers(
   'src/include/udjat/tools/http/error.h',
+  'src/include/udjat/tools/http/status.h',
+  'src/include/udjat/tools/http/statuscodes.h',
   'src/include/udjat/tools/http/exception.h',
   'src/include/udjat/tools/http/method.h',
   'src/include/udjat/tools/http/timestamp.h',

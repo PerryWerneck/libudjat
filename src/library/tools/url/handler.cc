@@ -206,16 +206,16 @@
 			return code;
 		}
 
-		if(code == 304) {        // Not modified.
-			return 304;
-		}
+		// if(code == 304) {        // Not modified.
+		// 	return 304;
+		// }
 
 		if(code > 300 && code <= 399) { // Redirected.
 			return code;
 		}
 
 		debug("code=",code," message='",message,"'");
-		throw HTTP::Exception((unsigned int) code, message);
+		throw HTTP::Exception((HTTP::StatusCode) code, message);
 
 	}
 

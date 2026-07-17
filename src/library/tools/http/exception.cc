@@ -27,76 +27,32 @@
  #include <cstring>
  #include <string>
  #include <iostream>
+ #include <errno.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	// https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
-	static const struct {
-		int http;
-		int syscode;
-	} syscodes[] = {
-		{ 200, 0			},
-		{ 401, EPERM 		},
-		{ 403, EPERM 		},
-		{ 404, ENOENT		},
-		{ 405, EINVAL		},
-		{ 407, EPERM	 	},
-#ifdef ETIMEDOUT
-		{ 408, ETIMEDOUT 	},
-#endif // ETIMEDOUT
-		{ 501, ENOTSUP		},
-		{ 503, EBUSY	 	},
-		{ 404, ENODATA		},
-	};
-
-	int HTTP::Exception::code(int syscode) noexcept {
-		for(const auto &code : syscodes) {
-			if(code.syscode == syscode) {
-				return code.http;
-			}
-		}
-		return 500;
-	}
-
-	int HTTP::Exception::syscode(unsigned int httpcode) noexcept {
-		for(const auto &code : syscodes) {
-			if((unsigned int) code.http == httpcode) {
-				return code.syscode;
-			}
-		}
-		return -1;
-	}
-
-	int HTTP::Exception::code(const system_error &except) noexcept {
-		return code(except.code().value());
-	}
-
-
-	HTTP::Exception::Exception(unsigned int hc)
-		: Udjat::Exception{syscode(hc)}, http_code{hc} {
-
-	}
-
-	static string check_message(unsigned int hc, const char *message) {
+	static string check_message(HTTP::StatusCode code, const char *message = nullptr) {
 		if(message && *message) {
 			return message;
 		}
-		if(hc == ECANCELED) {
-			return strerror(hc);
+		if((int) code == ECANCELED) {
+			return strerror((int) code);
 		}
-		return Logger::Message{"HTTP error {}",hc};
+		return std::to_string(code);
 	}
 
-	HTTP::Exception::Exception(unsigned int hc, const char *message)
-		: Udjat::Exception{syscode(hc),check_message(hc,message).c_str()}, http_code{hc} {
+	HTTP::Exception::Exception(StatusCode code) 
+		: runtime_error{check_message(code)} {
+	}
+
+	HTTP::Exception::Exception(StatusCode code, const char *message)
+		: runtime_error{check_message(code,message)} {
 
 	}
 	HTTP::Exception::Exception(const char *message)
-		: Udjat::Exception{check_message(500,message).c_str()}, http_code{500} {
-
+		: runtime_error{check_message(HTTP::SystemError,message)} {
 	}
-
 
  }

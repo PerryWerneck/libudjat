@@ -55,38 +55,40 @@
 		return status.message.c_str();
 	}
 
-	Response::Status & Response::failed(int syscode) noexcept {
+	HTTP::Status & Response::failed(int syscode) noexcept {
 		clear(Value::Object);
 		return status.failed(syscode);
 	}
 
-	Response::Status & Response::failed(const char *message, const char *details) noexcept {
+	HTTP::Status & Response::failed(const char *message, const char *details) noexcept {
 		return status.failed(message,details);
 	}
 
-	Response::Status & Response::failed(const char *title,  const char *message, const char *body) noexcept {
+	HTTP::Status & Response::failed(const char *title,  const char *message, const char *body) noexcept {
 		clear(Value::Object);
 		return status.failed(title,message,body);
 	}
 
-	Response::Status & Response::failed(const std::exception &e) noexcept {
+	HTTP::Status & Response::failed(const std::exception &e) noexcept {
 		status.assign(e);
 		return status;
 	}
 
-	void Response::serialize(std::ostream &stream) const {
+	void Response::serialize(std::ostream &stream) const noexcept {
 
 		debug("Serializing response");
 
-		if(status.value != Success) {
+		if(status.code != HTTP::Ok) {
 			status.serialize(mimetype,stream);
 			return;
 		}
 
+		string value{status.code == HTTP::Ok ? "success" : "failed"};
+
 		switch(mimetype) {
 		case Udjat::Value::Undefined:
 			{
-				Status st{Failure};
+				HTTP::Status st{HTTP::SystemError};
 				st.failed(_("Unable to serialize undefined value"));
 				st.serialize(mimetype,stream);
 			}
@@ -94,14 +96,11 @@
 
 		case Udjat::MimeType::xml:
 			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><response><status type='String'>";
-			stream << status.value << "</status>";
-			if(status.syscode) {
-				stream << "<code>" << status.syscode << "</code>";
-			}
+			stream << value << "</status>";
+			stream << "<code>" << status.code << "</code>";
 			if(!status.message.empty()) {
 				stream << "<message>" << status.message << "</message>";
 			}
-
 			stream << "<data>";
 			to_xml(stream);
 			stream << "</data></response>";
@@ -110,27 +109,26 @@
 		case Udjat::MimeType::json:
 
 			// Reference: https://github.com/omniti-labs/jsend
-			stream << "{\"status\":\"" << status.value << "\",\"data\":";
+			stream << "{\"status\":\"" << value << "\",\"data\":";
 			to_json(stream);
 			stream << "}";
 			break;
 
 		case Udjat::MimeType::yaml:
-			stream << "status: \"" << status.value << "\"" << endl << "data:";
+			stream << "status: \"" << value << "\"" << endl << "data:";
 			to_yaml(stream,4);
 			break;
 
 		case Udjat::MimeType::html:
-			if(status.value == Success) {
+			if(status.code == HTTP::Ok) {
 				// Show values
 				to_html(stream);
 			} else {
 				stream << "<section id='error-box'><h1 id='error-title'>" << (status.title.empty() ? _("Operation failed") : status.title.c_str()) << "</h1>";
 				if(!status.message.empty()) {
 					stream << "<p id='error-message'>" << status.message << "</p>";
-				} else if(status.syscode) {
-					stream << "<p id='error-code'>" << "Error " << status.syscode << "</p>";
-				}
+				} 
+				stream << "<p id='error-code'>" << "Error " << status.code << "</p>";
 				if(!status.body.empty()) {
 					stream << "<small id='error-details'>" << status.body << "</small>";
 				}
@@ -144,33 +142,13 @@
 			break;
 
 		case MimeType::sh:
-			stream << "status=\"" << status.value << "\"" << endl;
+			stream << "status=\"" << value << "\"" << endl;
 			to_sh(stream);
 			break;
 
 		default:
 			Value::serialize(stream,mimetype);
 		}
-
-	}
-
- }
-
-namespace std {
-
-	UDJAT_API const char * to_string(const Udjat::Response::State state) {
-
-		static const char * names[] = {
-			"success",
-			"error",
-			"failure"
-		};
-
-		if( ((size_t) state) >= N_ELEMENTS(names)) {
-			return "failure";
-		}
-
-		return names[state];
 
 	}
 

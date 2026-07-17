@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/http/status.h>
  #include <string>
  #include <map>
 
@@ -30,69 +31,29 @@
 	/// Response for api call in format jsend (https://github.com/omniti-labs/jsend)
 	class UDJAT_API Response : public Value {
 	public:
-		enum State : uint8_t {
-			Success = 0,
-			Error = 1,
-			Failure = 2
-		};
+		// enum State : uint8_t {
+		// 	Success = 0,
+		// 	Error = 1,
+		// 	Failure = 2
+		// };
 
-		struct Status {
+		// class Exception : public std::exception, public HTTP::Status {
+		// public:
+		// 	Exception(const char *m) : Status{Failure} {
+		// 		assign(-1);
+		// 		body = m;
+		// 	}
 
-			State value = Success;
-			int syscode = 0;			///< @brief System code (from errno).
-			bool not_modified = false;	///< @brief Not modified flag (to http responses)
-			std::string title;			///< @brief The response title.
-			std::string message;		///< @brief The status message.
-			std::string body;			///< @brief The status details.
-			std::string domain;
-			std::string url;
-			std::string category;
+		// 	Exception(const int syscode, const char *m) : Status{Failure} {
+		// 		Status::assign(syscode);
+		// 		body = m;
+		// 	}
 
-			/// @brief Build empty status.
-			Status(const State st = Success) : value{st} {
-			}
+		// 	const char * what() const noexcept override {
+		// 		return body.c_str();
+		// 	}
 
-			/// @brief Build status from exception.
-			/// @param e The exception for status.
-			Status(const std::exception &e);
-
-			Status & clear(const State st = Success) noexcept;
-			Status & assign(const std::exception &e) noexcept;
-
-			inline Status & operator=(const std::exception &e) noexcept {
-				return assign(e);
-			} 
-
-			void serialize(const MimeType &mimetype, std::ostream &stream) const;
-			std::string to_string(const MimeType &mimetype) const;
-
-			/// @brief Set status from syscode.
-			/// @param syscode System code to set (From errno).
-			void set(int syscode);
-			
-			Status & failed(int syscode) noexcept;
-			Status & failed(const std::exception &e) noexcept;
-			Status & failed(const char *message, const char *details = nullptr) noexcept;
-			Status & failed(const char *title,  const char *message, const char *details) noexcept;
-
-		};
-
-		class Exception : public std::exception, public Status {
-		public:
-			Exception(const char *m) : Status{Failure} {
-				message = m;
-			}
-
-			Exception(int s, const char *m) : Status{Failure} {
-				syscode = s;
-				message = m;
-			}
-
-			const char * what() const noexcept override {
-				return message.c_str();
-			}
-
-		};
+		// };
 
 	protected:
 
@@ -100,7 +61,7 @@
 		MimeType mimetype = MimeType::none;
 
 		/// @brief The response status.
-		Status status;
+		HTTP::Status status;
 
 		/// @brief Caching information.
 		struct {
@@ -132,12 +93,16 @@
 			this->object = object;
 		}
 
-		Status & failed(int syscode) noexcept;
-		Status & failed(const std::exception &e) noexcept;
-		Status & failed(const char *message, const char *details = nullptr) noexcept;
-		Status & failed(const char *title,  const char *message, const char *details) noexcept;
+		inline HTTP::StatusCode status_code() const noexcept {
+			return status.code;
+		}
 
-		inline Status & failed(const std::string &string) noexcept {
+		HTTP::Status & failed(int syscode) noexcept;
+		HTTP::Status & failed(const std::exception &e) noexcept;
+		HTTP::Status & failed(const char *message, const char *details = nullptr) noexcept;
+		HTTP::Status & failed(const char *title,  const char *message, const char *details) noexcept;
+
+		inline HTTP::Status & failed(const std::string &string) noexcept {
 			return failed(string.c_str());
 		}
 
@@ -154,11 +119,7 @@
 		}
 
 		inline operator bool() const noexcept {
-			return status.syscode == 0;
-		}
-
-		inline int syscode() const noexcept {
-			return status.syscode;
+			return status.code != HTTP::Ok;
 		}
 
 		/// @brief Set item count for this response.
@@ -225,16 +186,16 @@
 
 		/// @brief Serialize according to the mimetype.
 		/// Uses jsend format (https://github.com/omniti-labs/jsend) for xml, yaml & json.
-		void serialize(std::ostream &stream) const;
+		void serialize(std::ostream &stream) const noexcept;
 
 		/// @brief Set 'not-modified' status.
-		inline void not_modified(bool state = true) noexcept {
-			status.not_modified = state;
+		inline void not_modified() noexcept {
+			status = HTTP::NotModified;
 		}
 
 		/// @brief Get 'not-modified' status.
 		inline bool not_modified() const noexcept {
-			return status.not_modified;
+			return status.code == HTTP::NotModified;
 		}
 
 		/// @brief Set timestamp for data, ignore zeros.
@@ -260,14 +221,8 @@
 
  namespace std {
 
-	UDJAT_API const char * to_string(const Udjat::Response::State state);
-
 	inline std::string to_string(const Udjat::Response &response) {
 		return response.to_string();
-	}
-
-	inline ostream& operator<< (ostream& os, Udjat::Response::State state) {
-			return os << to_string(state);
 	}
 
 	inline ostream& operator<< (ostream& os, const Udjat::Response &response) {

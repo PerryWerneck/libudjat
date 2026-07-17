@@ -25,6 +25,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/authentication.h>
+ #include <udjat/tools/http/statuscodes.h>
  #include <cstring>
  #include <ostream>
 
@@ -102,8 +103,8 @@
 		/// @param path The request path.
 		/// @param request The client request.
 		/// @param stream The output stream.
-		/// @return true if the request was recognized and processed.
-		virtual bool process(const char *path, const Request &request, std::ostream &stream) const;
+		/// @return The status code.
+		virtual HTTP::StatusCode process(const char *path, const Request &request, std::ostream &stream) const noexcept;
 
 		bool process(const Request &request, std::ostream &stream) const;
 

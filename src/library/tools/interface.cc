@@ -25,6 +25,7 @@
  #include <udjat/tools/response.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/properties.h>
+ #include <udjat/tools/http/exception.h>
  #include <udjat/tools/schema.h>
  #include <udjat/tools/template.h>
  #include <udjat/tools/logger.h>
@@ -107,59 +108,53 @@
 
 	bool Interface::process(const char *, const Request &request, Response &) const {
 		if(!allow(request.role())) {
-			Response::Exception error{EPERM,_("You dont have access to this resource")};
-			error.title = strerror(EPERM);
-			throw error;
+			throw HTTP::Exception(HTTP::Forbidden);
 		}
 		return true;
 	}
 
-	bool Interface::process(const char *path, const Request &request, std::ostream &stream) const {
+	HTTP::StatusCode Interface::process(const char *path, const Request &request, std::ostream &stream) const noexcept {
 
 		// Default process: Call API, format response on request mimetype.
 
 		MimeType mimetype = request.mimetype();
 		Response response{mimetype};
 
-		if(!process(path,request,response)) {
-			debug("Request failed, returning")
-			return false;
-		}
+		try {
 
-		if(response.empty()) {
-			response.failed(_("Empty response from backend"));
+			if(!process(path,request,response)) {
+
+				debug("Request failed, returning")
+				response.failed(HTTP::NotFound);
+
+			} else if(response.empty()) {
+
+				response.failed(_("Empty response from backend"));
+				
+			}
+
+		} catch(const std::exception &e) {
+
+			response.failed(e);
+
+		} catch(...) {
+
+			response.failed(_("Unexpected error processing request"));
+
 		}
 
 		if(!request.apicall()) {
 
-			// It's not an api call, can we use a template?
-			debug("Request isnt an API call, trying template");
+			// It's not an apicall, try to use templates.
+			debug("Incomplete");
 
-			try {
+		} else {
 
-				Schema schema;
-				if(output_schema(schema) && schema.template_name && *schema.template_name) {
-
-					// We have a template name, do we have a template file?
-					Template tmplt(schema.template_name,mimetype);
-					if(tmplt) {
-						tmplt.apply(stream, response);
-						return true;
-					}
-					
-				}
-
-			} catch(const std::exception &e) {
-				Logger::String{e.what()}.error(name());
-			}
+			response.serialize(stream);
 
 		}
 
-		// Format the response.
-		debug("Serializing the response using API format");
-		response.serialize(stream);
-		return true;
-
+		return response.status_code();
 	}
 
 
