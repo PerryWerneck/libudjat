@@ -70,10 +70,10 @@
 
 		size_t length = strlen(prefix);
 
-		debug("path= '",(path+1),"'");
-		debug("prefix= '",prefix,"'");
-		debug(strncasecmp(path+1,prefix,length));
-		debug(path+(length+1));
+		// debug("path= '",(path+1),"'");
+		// debug("prefix= '",prefix,"'");
+		// debug(strncasecmp(path+1,prefix,length));
+		// debug(path+(length+1));
 
 		if(strncasecmp(path+1,prefix,length) || (path[length+1] && path[length+1] != '/')) {
 			debug("Path '",path,"' doesnt match '",prefix,"'");

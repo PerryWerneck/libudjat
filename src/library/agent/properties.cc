@@ -37,10 +37,10 @@
 
 		schema.append(
 			Schema::Item{ "path",			Schema::String,		_("The agent path")	},
-			Schema::Item{ "body",			Schema::String		},
-			Schema::Item{ "state",			Schema::String,		},
-			Schema::Item{ "statename",		Schema::String,		},
-			Schema::Item{ "stateicon",		Schema::Icon,		_("Icon name for the current agent state")		},
+			Schema::Item{ "message",		Schema::String,		_("The Current state text") },
+			Schema::Item{ "state",			Schema::String,		_("The current state value") },
+			Schema::Item{ "statename",		Schema::String,		_("The current state name") },
+			Schema::Item{ "stateicon",		Schema::Icon,		_("The current state icon") },
 			Schema::Item{ "timestamp",		Schema::Timestamp,	_("Timestamp of the last state change")	}
 		);
 
@@ -83,7 +83,11 @@
 			return true;
 		}
 
-		for(const char *prop : { "body", "level", "levelname" }) {
+		if(!strcasecmp(key,"message")) {
+			return state()->get_property("body",value);
+		}
+
+		for(const char *prop : { "level", "levelname" }) {
 			if( !strcasecmp(key,prop) ) {
 				return state()->get_property(prop,value);
 			}			
