@@ -217,13 +217,37 @@
 		/// Write text message to system log adding request info.
 		virtual void logger(Logger::Level level, const char *domain, const char *text) const noexcept;
 
+		inline void info(const char *domain, const char *text) const noexcept {
+			logger(Logger::Info,domain,text);
+		}
+
+		inline void warning(const char *domain, const char *text) const noexcept {
+			logger(Logger::Warning,domain,text);
+		}
+
 		inline void error(const char *domain, const char *text) const noexcept {
 			logger(Logger::Error,domain,text);
 		}
 
+		inline void notice(const char *domain, const char *text) const noexcept {
+			logger(Logger::Notice,domain,text);
+		}
+
 #ifdef LOG_DOMAIN
+		inline void info(const char *text) const noexcept {
+			logger(Logger::Info,LOG_DOMAIN,text);
+		}
+
+		inline void warning(const char *text) const noexcept {
+			logger(Logger::Warning,LOG_DOMAIN,text);
+		}
+
 		inline void error(const char *text) const noexcept {
 			logger(Logger::Error,LOG_DOMAIN,text);
+		}
+
+		inline void notice(const char *text) const noexcept {
+			logger(Logger::Notice,LOG_DOMAIN,text);
 		}
 #endif
 

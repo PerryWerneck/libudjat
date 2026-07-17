@@ -40,6 +40,13 @@
 	protected:
 		typedef Interface super;
 
+		/// @brief Check if the request can be processed.
+		/// @param[in] path The path for required object on interface.
+		/// @param request The request to be validated.
+		/// @param response The response to receive the status code and error message.
+		/// @return true if the request can bem processed.
+		bool allow(const char *path, const Request &request, Response &response) const noexcept;
+
 	public:
 		Interface(const char *name, const Authentication::Role = Authentication::Admin);
 		
@@ -74,11 +81,13 @@
 		/// @param[in] path The path for required object on interface.
 		/// @param[out] s Object populated with the interface input schema details.
 		/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
-		virtual bool schema(const char *path, InputSchema &schema) const noexcept;
+		virtual bool schema(const char *path, HTTPSchema &schema) const noexcept;
 
-		inline bool schema(InputSchema &s) const noexcept {
-			return schema("",s);
-		}
+		/// @brief Retrieves the schema definition for the interface inputs.
+		/// @param[in] path The path for required object on interface.
+		/// @param[out] s Object populated with the interface input schema details.
+		/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
+		virtual bool schema(const char *path, InputSchema &schema) const noexcept;
 
 		/// @brief Retrieves the schema definition for the interface outputs.
 		/// @param[in] path The path for required object on interface.

@@ -64,8 +64,11 @@
 
 	bool Abstract::Agent::Controller::schema(const char *path, OutputSchema &schema) const noexcept {
 
+		debug("Getting output schema for '",Interface::name(),"' at '",path,"'");
+
 		if(!(root && (path && *path))) {
 			// Return default output schema.
+			debug("Returning default output schema for '",Interface::name(),"'");
 			return Abstract::Agent{}.schema("",schema);
 		}
 
@@ -73,10 +76,12 @@
 		if(path && *path) {
 			agent = root->find(path,false,false);
 			if(!agent) {
+				debug("Cant find agent '",path,"' searching for output schema for '",Interface::name(),"'");
 				return false;
 			}
 		}
 
+		debug("Returning agent output schema for '",Interface::name(),"'");
 		return agent->schema("",schema);
 	}
 

@@ -26,6 +26,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/properties.h>
  #include <udjat/tools/http/exception.h>
+ #include <udjat/tools/http/schema.h>
  #include <udjat/tools/schema.h>
  #include <udjat/tools/template.h>
  #include <udjat/tools/logger.h>
@@ -90,6 +91,11 @@
 		return false;
 	}
 
+	bool Interface::schema(const char *, HTTPSchema &schema) const noexcept {
+		schema.add({ HTTP::Get, Authentication::None });
+		return true;
+	}
+
 	bool Interface::schema(const char *, InputSchema &) const noexcept {
 		return false;
 	}
@@ -110,7 +116,44 @@
 
 	bool Interface::process(const char *, const Request &, Response &response) const {
 		Logger::String{"Unable to process requests, the method 'process' was not overrided by interface code"}.error(name());
-		return false;
+		response.failed(HTTP::NotFound);
+		return true;
+	}
+
+	bool Interface::allow(const char *path, const Request &request, Response &response) const noexcept {
+
+		auto role = request.role();
+
+		// Check the interface default role.
+		if(!allow(role)) {
+			request.info(name(),strerror(EPERM));
+			response.failed(HTTP::Forbidden);
+			return false;
+		}
+
+		// Check the HTTP actions & roles.
+		HTTPSchema scm;
+		if(schema(path,scm)) {
+			bool rc = false;
+			HTTP::Method method = request.method();
+			for(const auto &item : scm) {
+				if(item.method() == method && item.role() <= role) {
+					rc = true;
+					break;
+				}
+			}
+			if(!rc) {
+				request.info(name(),"Rejected by method rules");
+				response.failed(HTTP::MethodNotAllowed);
+				return false;
+			}
+		}
+
+		// Allowed.
+		if(Logger::enabled(Logger::Debug)) {
+			request.info(name(),"Accepted");
+		}
+		return true;
 	}
 
 	HTTP::StatusCode Interface::process(const char *path, const Request &request, std::ostream &stream) const noexcept {
@@ -124,15 +167,13 @@
 
 		try {
 
-			if(!allow(request.role())) {
+			if(allow(path,request,response)) {
 
-				debug("Invalid authentitcation");
-				response.failed(HTTP::Forbidden);
-
-			} else if(!process(path,request,response)) {
-
-				debug("Request failed, returning")
-				response.failed(HTTP::NotFound);
+				// Request was allowed.
+				if(!process(path,request,response)) {
+					// Request was not processed.
+					response.failed(HTTP::NotFound);
+				}
 
 			}
 
