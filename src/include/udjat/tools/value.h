@@ -185,10 +185,6 @@
 		/// @return First child with required name. Exception if not found.
 		const Value & operator[](const char *name) const;
 
-		/// @brief Get child by type.
-		/// @return First child with required type. Exception if not found.
-		// const Value & operator[](Type type) const;
-
 		/// @brief Navigate from all values until 'call' returns true.
 		/// @return true if 'call' has returned true, false if not.
 		bool for_each(const std::function<bool(const char *name, const Value &value)> &call) const;
@@ -215,10 +211,6 @@
 		inline Value & set(const std::string &value, const Type type = String) {
 			return set(value.c_str(),type);
 		}
-
-		/// @brief Emit event, allowing modules to change value contents.
-		/// @param event_name The event name that will be passed to listeners.
-		// void emit_event(const char *event_name, const char *event_data = nullptr);
 
 		Value & set(const Value &value);
 
@@ -263,11 +255,11 @@
 		std::string to_string(const char *def) const;
 		std::string to_string(const MimeType mimetype) const;
 
-		/// @brief Get child value.
-		/// @param key The child name.
-		/// @param value String to update with the property value.
-		/// @return true if the property is valid.
-		bool get_property(const char *key, std::string &value) const override;
+		/// @brief Get property value.
+		/// @param key The property name.
+		/// @param value Object to receive the value.
+		/// @return true if the property is valid and value was updated.
+		bool get_property(const char *key, Udjat::Value &value) const override;
 
 		virtual void serialize(std::ostream &out, const MimeType mimetype) const;
 

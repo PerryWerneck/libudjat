@@ -90,11 +90,11 @@
 		return false;
 	}
 
-	bool Interface::input_schema(const char *, Schema &) const noexcept {
+	bool Interface::schema(const char *, InputSchema &) const noexcept {
 		return false;
 	}
 
-	bool Interface::output_schema(const char *, Schema &) const noexcept {
+	bool Interface::schema(const char *, OutputSchema &) const noexcept {
 		return false;
 	}
 

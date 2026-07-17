@@ -31,11 +31,19 @@
 
  namespace Udjat {
 
-	bool Abstract::Agent::output_schema(const char *path, Schema &schema) const noexcept {
+	bool Abstract::Agent::schema(const char *path, HTTPSchema &schema) const noexcept {
+		return Object::schema(path,schema);
+	}
 
-		Object::output_schema(path,schema);
+	bool Abstract::Agent::schema(const char *path, InputSchema &schema) const noexcept {
+		return Object::schema(path,schema);
+	}
 
-		schema.append(
+	bool Abstract::Agent::schema(const char *path, OutputSchema &schema) const noexcept {
+
+		Object::schema(path,schema);
+
+		schema.add(
 			Schema::Item{ "path",			Schema::String,		_("The agent path")	},
 			Schema::Item{ "message",		Schema::String,		_("The Current state text") },
 			Schema::Item{ "state",			Schema::String,		_("The current state value") },

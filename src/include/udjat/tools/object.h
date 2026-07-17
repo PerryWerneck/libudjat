@@ -96,25 +96,23 @@
 			/// @retval false The object type is not supported.	
 			virtual bool push_back(const Properties &props, std::shared_ptr<Abstract::Object> child);
 
+			/// @brief Retrieves the schema definition for interface HTTP request.
+			/// @param[in] path The path for required object on interface.
+			/// @param[out] s Object populated with the interface http schema details.
+			/// @return True if the interface defines an http schema; false otherwise (schema remains unmodified).
+			virtual bool schema(const char *path, HTTPSchema &s) const noexcept;
+
 			/// @brief Retrieves the schema definition for the interface inputs.
 			/// @param[in] path The path for required object on interface.
-			/// @param[out] schema Object populated with the interface input schema details.
+			/// @param[out] s Object populated with the interface input schema details.
 			/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
-			virtual bool input_schema(const char *path, Schema &schema) const noexcept;
-
-			inline bool input_schema(Schema &schema) const noexcept {
-				return input_schema("",schema);
-			}
+			virtual bool schema(const char *path, InputSchema &s) const noexcept;
 
 			/// @brief Retrieves the schema definition for the object outputs.
 			/// @param path The request path for schema.
 			/// @param[out] schema Object populated with the output schema details.
 			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
-			virtual bool output_schema(const char *path, Schema &schema) const noexcept;
-
-			inline bool output_schema(Schema &schema) const noexcept {
-				return output_schema("",schema);
-			}
+			virtual bool schema(const char *path, OutputSchema &s) const noexcept;
 
 			virtual const char * name() const noexcept;
 
@@ -283,10 +281,23 @@
 			Logger::Message{fmt, Fargs...}.error(objectName);
 		}
 
+		/// @brief Retrieves the schema definition for interface HTTP request.
+		/// @param[in] path The path for required object on interface.
+		/// @param[out] s Object populated with the interface http schema details.
+		/// @return True if the interface defines an http schema; false otherwise (schema remains unmodified).
+		virtual bool schema(const char *path, HTTPSchema &s) const noexcept override;
+
+		/// @brief Retrieves the schema definition for the interface inputs.
+		/// @param[in] path The path for required object on interface.
+		/// @param[out] s Object populated with the interface input schema details.
+		/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
+		virtual bool schema(const char *path, InputSchema &s) const noexcept override;
+
 		/// @brief Retrieves the schema definition for the object outputs.
+		/// @param path The request path for schema.
 		/// @param[out] schema Object populated with the output schema details.
 		/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
-		bool output_schema(const char *path, Schema &schema) const noexcept override;
+		virtual bool schema(const char *path, OutputSchema &s) const noexcept override;
 
 	};
 
@@ -344,10 +355,23 @@
 		/// @return Pointer to value (for reference).
 		Value & get_properties(Value &value) const override;
 
+		/// @brief Retrieves the schema definition for interface HTTP request.
+		/// @param[in] path The path for required object on interface.
+		/// @param[out] s Object populated with the interface http schema details.
+		/// @return True if the interface defines an http schema; false otherwise (schema remains unmodified).
+		virtual bool schema(const char *path, HTTPSchema &s) const noexcept override;
+
+		/// @brief Retrieves the schema definition for the interface inputs.
+		/// @param[in] path The path for required object on interface.
+		/// @param[out] s Object populated with the interface input schema details.
+		/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
+		virtual bool schema(const char *path, InputSchema &s) const noexcept override;
+
 		/// @brief Retrieves the schema definition for the object outputs.
+		/// @param path The request path for schema.
 		/// @param[out] schema Object populated with the output schema details.
 		/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
-		bool output_schema(const char *path, Schema &schema) const noexcept override;
+		virtual bool schema(const char *path, OutputSchema &s) const noexcept override;
 
 	};
 

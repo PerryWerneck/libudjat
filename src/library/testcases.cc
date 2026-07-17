@@ -105,10 +105,10 @@
 				{
 					// Test agent properties.
 					Agent<int> agent{};
-					Schema schema;
+					OutputSchema schema;
 
-					if(!agent.output_schema("",schema)) {
-						throw runtime_error("Agent should have schema");
+					if(!agent.schema("",schema)) {
+						throw runtime_error("Agent should have output schema");
 					}
 
 					stream << "Got agent schema:" << endl;
@@ -171,8 +171,8 @@
 							throw runtime_error(String{"Cant find interface for '",request.path(),"'"});
 						}
 
-						Schema schema;
-						if(!intf->output_schema(request.path(),schema)) {
+						OutputSchema schema;
+						if(!intf->schema(request.path(),schema)) {
 							throw runtime_error("Interface doesnt provides an output-schema");
 						}
 

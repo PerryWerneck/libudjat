@@ -62,11 +62,11 @@
 		Logger::String{"Deinitializing controller"}.trace();
 	}
 
-	bool Abstract::Agent::Controller::output_schema(const char *path, Schema &schema) const noexcept {
+	bool Abstract::Agent::Controller::schema(const char *path, OutputSchema &schema) const noexcept {
 
 		if(!(root && (path && *path))) {
 			// Return default output schema.
-			return Abstract::Agent{}.output_schema("",schema);
+			return Abstract::Agent{}.schema("",schema);
 		}
 
 		auto agent = root;
@@ -77,10 +77,10 @@
 			}
 		}
 
-		return agent->output_schema("",schema);
+		return agent->schema("",schema);
 	}
 
-	bool Abstract::Agent::Controller::input_schema(const char *path, Schema &schema) const noexcept {
+	bool Abstract::Agent::Controller::schema(const char *path, InputSchema &schema) const noexcept {
 
 		if(!(root && (path && *path))) {
 			// No root or no path, return the default 'No-schema'.
@@ -95,7 +95,7 @@
 			}
 		}
 
-		return agent->input_schema("",schema);
+		return agent->schema("",schema);
 
 	}
 
@@ -460,7 +460,7 @@
 	// 		AgentProperties() : Udjat::Action{"agent",_("Get agent properties")} {
 	// 		} 
 
-	// 		bool output_schema(Schema &schema) const noexcept override {
+	// 		bool schema(OutputSchema &schema) const noexcept override {
 
 	// 			schema.append(
 	// 				Schema::Item{ "icon",		Schema::Icon	},

@@ -136,7 +136,7 @@
 		});
 	}
 
-	bool Request::get_property(const char *key, std::string &value) const {
+	bool Request::get_property(const char *key, Udjat::Value &value) const {
 
 		if(!strcasecmp(key,"path")) {
 			value = path();
@@ -144,7 +144,7 @@
 		}
 
 		if(!strcasecmp(key,"apiver")) {
-			value = std::to_string(apiver);
+			value = apiver;
 			return true;
 		}
 

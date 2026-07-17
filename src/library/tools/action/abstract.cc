@@ -154,14 +154,14 @@
 	/// @brief Retrieves the schema definition for the action inputs.
 	/// @param[out] schema Object populated with the acion input schema details.
 	/// @return True if the action defines an input schema; false otherwise (schema remains unmodified).
-	bool Action::input_schema(Schema &schema) const noexcept {
+	bool Action::schema(InputSchema &schema) const noexcept {
 		return false;
 	}
 
 	/// @brief Retrieves the schema definition for the action outputs.
 	/// @param[out] schema Object populated with the action output schema details.
 	/// @return True if the action defines an output schema; false otherwise (schema remains unmodified).
-	bool Action::output_schema(Schema &schema) const noexcept {
+	bool Action::schema(OutputSchema &schema) const noexcept {
 		return false;
 	}
 

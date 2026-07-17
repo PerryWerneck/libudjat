@@ -411,14 +411,14 @@
 		throw logic_error(Logger::String{"Unable to get children from a value type '",std::to_string(type),"'"});
 	}
 
-	bool Value::get_property(const char *key, std::string &value) const {
+	bool Value::get_property(const char *key, Udjat::Value &value) const {
 		if(type == Object && content.ptr) {
 			const map<std::string,Value> &children = *((map<std::string,Value> *) content.ptr);
 			auto it = children.find(key);
 			if(it == children.end()) {
 				return false;
 			}
-			value = it->second.to_string();
+			value = it->second;
 			return true;
 		}
 		return Object::get_property(key,value);

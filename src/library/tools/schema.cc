@@ -27,7 +27,7 @@
 
  namespace Udjat {
 
-	void Schema::append(const Item &item) {
+	void Schema::add(const Item &item) {
 
 		for(auto &itn : itens) {
 

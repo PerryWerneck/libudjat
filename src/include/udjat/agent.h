@@ -328,11 +328,23 @@
 			/// @retval false if the child was not found.
 			bool get_properties(const char *path, Value &value) const;
 
+			/// @brief Retrieves the schema definition for interface HTTP request.
+			/// @param[in] path The path for required object on interface.
+			/// @param[out] s Object populated with the interface http schema details.
+			/// @return True if the interface defines an http schema; false otherwise (schema remains unmodified).
+			bool schema(const char *path, HTTPSchema &s) const noexcept override;
+
 			/// @brief Retrieves the schema definition for the agent outputs.
 			/// @param path The request path for schema.
 			/// @param[out] schema Object populated with the output schema details.
 			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
-			bool output_schema(const char *path, Schema &schema) const noexcept override;
+			bool schema(const char *path, InputSchema &schema) const noexcept override;
+
+			/// @brief Retrieves the schema definition for the object outputs.
+			/// @param path The request path for schema.
+			/// @param[out] schema Object populated with the output schema details.
+			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
+			bool schema(const char *path, OutputSchema &s) const noexcept override;
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
@@ -544,9 +556,9 @@
 			return state;
 		}
 
-		bool output_schema(const char *path, Schema &schema) const noexcept override {
-			Abstract::Agent::output_schema(path,schema);
-			schema.append(
+		bool schema(const char *path, OutputSchema &schema) const noexcept override {
+			Abstract::Agent::schema(path,schema);
+			schema.add(
 				Schema::Item{ "value",	Udjat::Schema::TypeFactory<T>() }
 			);
 			return true;
@@ -637,9 +649,9 @@
 			return state;
 		}
 
-		bool output_schema(const char *path, Schema &schema) const noexcept override {
-			Abstract::Agent::output_schema(path,schema);
-			schema.append(
+		bool schema(const char *path, OutputSchema &schema) const noexcept override {
+			Abstract::Agent::schema(path,schema);
+			schema.add(
 				Schema::Item{ "value",	Schema::String }
 			);
 			return true;
@@ -709,9 +721,9 @@
 			return state;
 		}
 
-		bool output_schema(const char *path, Schema &schema) const noexcept override {
-			Abstract::Agent::output_schema(path,schema);
-			schema.append(
+		bool schema(const char *path, OutputSchema &schema) const noexcept override {
+			Abstract::Agent::schema(path,schema);
+			schema.add(
 				Schema::Item{ "value",	Schema::Boolean }
 			);
 

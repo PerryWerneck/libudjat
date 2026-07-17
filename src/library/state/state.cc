@@ -164,9 +164,9 @@ namespace Udjat {
 		return value;
 	}
 
-	bool Abstract::State::output_schema(const char *path, Schema &schema) const noexcept {
-		Object::output_schema(path,schema);
-		schema.append(
+	bool Abstract::State::schema(const char *path, OutputSchema &schema) const noexcept {
+		Object::schema(path,schema);
+		schema.add(
 			Schema::Item{ "body",	Schema::String },
 			Schema::Item{ "level",	Schema::String }
 		);

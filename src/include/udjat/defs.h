@@ -142,7 +142,9 @@ namespace Udjat {
 	class TimeStamp;
 	class Request;
 	class Response;
-	class Schema;
+	class InputSchema;
+	class OutputSchema;
+	class HTTPSchema;
 
 }
 #endif // __cplusplus

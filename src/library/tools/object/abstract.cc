@@ -25,6 +25,7 @@
  #include <udjat/tools/file/path.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/schema.h>
+ #include <udjat/tools/http/schema.h>
 
  #include <cstdarg>
 
@@ -45,11 +46,18 @@
 		Factories().remove(this);
 	}
 
-	bool Abstract::Object::input_schema(const char *path, Schema &schema) const noexcept {
+	bool Abstract::Object::schema(const char *, HTTPSchema &schema) const noexcept {
+		schema.add(
+			HTTPSchema::Item{HTTP::Get, Authentication::None}
+		);
+		return true;
+	}
+
+	bool Abstract::Object::schema(const char *, InputSchema &) const noexcept {
 		return false;
 	}
 
-	bool Abstract::Object::output_schema(const char *, Schema &) const noexcept {
+	bool Abstract::Object::schema(const char *, OutputSchema &) const noexcept {
 		return false;
 	}
 
@@ -148,8 +156,8 @@
 	}
 
 	Value & Abstract::Object::get_properties(Value &value) const {
-		Schema schema;
-		if(output_schema("",schema)) {
+		OutputSchema schema;
+		if(this->schema("",schema)) {
 			for(const auto &item : schema) {
 				get_property(item.name(),value);
 			}
@@ -161,8 +169,8 @@
 
 		response.set(this);
 
-		Schema schema;
-		if(output_schema(path,schema)) {
+		OutputSchema schema;
+		if(this->schema(path,schema)) {
 
 			// Has schema, use it
 			for(const auto &item : schema) {

@@ -66,11 +66,19 @@
 		return value;
 	}
 
-	bool Object::output_schema(const char *path, Schema &schema) const noexcept {
+	bool Object::schema(const char *path, HTTPSchema &schema) const noexcept {
+		return NamedObject::schema(path,schema);
+	}
 
-		NamedObject::output_schema(path,schema);
+	bool Object::schema(const char *path, InputSchema &schema) const noexcept {
+		return NamedObject::schema(path,schema);
+	}
 
-		schema.append(
+	bool Object::schema(const char *path, OutputSchema &schema) const noexcept {
+
+		NamedObject::schema(path,schema);
+
+		schema.add(
 			Schema::Item{ "summary",	Schema::String,	},
 			Schema::Item{ "label",		Schema::String,	},
 			Schema::Item{ "url",		Schema::String,	},

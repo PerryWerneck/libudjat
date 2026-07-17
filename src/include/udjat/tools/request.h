@@ -161,7 +161,8 @@
 		/// @return The username if authenticated, empty string if not.
 		const char *username() const;
 
-		bool get_property(const char *key, std::string &value) const override;
+		// bool get_property(const char *key, std::string &value) const override;
+		bool get_property(const char *key, Udjat::Value &value) const override;
 
 		/// @brief Check the cache state.
 		/// @param timestamp Current response timestamp.

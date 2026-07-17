@@ -48,9 +48,6 @@
 			return Type::String;
 		}
 
-		/// @brief Template name, for http outputs.
-		const char *template_name = nullptr;
-
 		class UDJAT_API Item {
 		public:
 
@@ -81,20 +78,14 @@
 
 		};
 
-		Schema() {
-		}
+		Schema() = default;
+
+		void add(const Item &item);
 
 		template<typename... Targs>
-		Schema(Targs... Fargs) {
-			append(Fargs...);
-		}
-
-		void append(const Item &item);
-
-		template<typename... Targs>
-		inline void append(const Item &item, Targs... Fargs) {
-			append(item);
-			append(Fargs...);
+		inline void add(const Item &item, Targs... Fargs) {
+			add(item);
+			add(Fargs...);
 		}
 
 #if __cplusplus >= 201703L
@@ -123,6 +114,35 @@
 		std::vector<Item> itens;
 
 	};
+
+	class UDJAT_API InputSchema : public Schema {
+	public:
+		InputSchema() = default;
+
+		template<typename... Targs>
+		InputSchema(Targs... Fargs) {
+			add(Fargs...);
+		}
+
+
+	};
+
+	class UDJAT_API OutputSchema : public Schema {
+	public:
+
+		/// @brief Template name, for http outputs.
+		const char *template_name = nullptr;
+
+		OutputSchema() = default;
+	
+		template<typename... Targs>
+		OutputSchema(Targs... Fargs) {
+			add(Fargs...);
+		}
+		
+	};
+
+	class HTTPSchema;
 
 	template <>
 	constexpr Schema::Type Schema::TypeFactory<std::string>() {

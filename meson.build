@@ -449,6 +449,7 @@ lib_src += [
   'src/library/module/load.cc',
   'src/library/response/response.cc',
   'src/library/tools/http/status.cc',
+  'src/library/tools/http/schema.cc',
   'src/library/request.cc',
   'src/library/state/level.cc',
   'src/library/state/parse.cc',
