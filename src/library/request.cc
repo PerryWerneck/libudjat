@@ -57,6 +57,10 @@
 		return HTTP::Get;
 	}
 
+	void Request::logger(Logger::Level level, const char *domain, const char *text) const noexcept {
+		Logger::String{text}.write(level,domain);
+	}
+
 	bool Request::pop(const char *prefix, const char * &path) noexcept {
 
 		if(path[0] != '/' || path[1] == 0) {

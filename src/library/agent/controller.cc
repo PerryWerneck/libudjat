@@ -390,6 +390,7 @@
 		}
 
 		if(!this->root) {
+			request.error(Interface::name(),"Root agent is not available");
 			response.failed(HTTP::Unavailable);
 			return true;
 		}

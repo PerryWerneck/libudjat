@@ -212,6 +212,20 @@
 		Request & pop(int &value);
 		Request & pop(unsigned int &value);
 
+		/// @brief Write message to log.
+		/// Write text message to system log adding request info.
+		virtual void logger(Logger::Level level, const char *domain, const char *text) const noexcept;
+
+		inline void error(const char *domain, const char *text) const noexcept {
+			logger(Logger::Error,domain,text);
+		}
+
+#ifdef LOG_DOMAIN
+		inline void error(const char *text) const noexcept {
+			logger(Logger::Error,LOG_DOMAIN,text);
+		}
+#endif
+
 	};
 
  }
