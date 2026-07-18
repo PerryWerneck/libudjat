@@ -75,6 +75,7 @@
 		}
 
 		if( !(strcasecmp(key,"path") && strcasecmp(key,"agent.path")) ) {
+			value = path();
 			debug("path='",value.c_str(),"'");
 			return true;
 		}
