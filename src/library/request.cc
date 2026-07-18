@@ -61,6 +61,29 @@
 		Logger::String{text}.write(level,domain);
 	}
 
+	bool Request::pop(std::string &out, const char * &path) noexcept {
+
+		if(path[0] != '/' || path[1] == 0) {
+			debug("Rejecting invalid or empty path");
+			return false;
+		}
+
+		const char *ptr = strchr(path+1,'/');
+		if(ptr) {
+
+			size_t len = (path+1) - ptr;
+			out = string{(ptr+1),len};
+
+		} else {
+			out = string{(ptr+1)};
+		}
+
+		path += out.size();
+
+		return true;
+
+	}
+
 	bool Request::pop(const char *prefix, const char * &path) noexcept {
 
 		if(path[0] != '/' || path[1] == 0) {

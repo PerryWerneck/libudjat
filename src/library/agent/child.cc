@@ -48,10 +48,49 @@
 
 		debug("Searching for '",path,"' on agent '",name(),"'");
 
+		for(auto child : children.agents) {
 
+			if(Request::pop(child->name(),path)) {
 
-		
+				debug("Found child '",child->name(),"' remaining path is '",path,"'");
+
+				if(*path) {
+					return child->find(path,required,autoins);
+				}
+
+				debug("Found agent '",child->name(),"' at path '",child->path().c_str(),"'");
+				return child;
+
+			}
+
+		}
+
 		debug("Cant find '",path,"' on agent '",name(),"'");
+
+		if(autoins) {
+			// Insert new child.
+			String name;
+			Request::pop(name,path);
+
+			debug("Creating child '",name.c_str(),"' remaining path is '",path,"'");
+
+			auto child = make_shared<Abstract::Agent>(name.as_quark());
+			push_back((std::shared_ptr<Abstract::Object>)child);
+
+			Logger::String{"Build agent '",child->name(),"' at path '",child->path().c_str()}.trace();
+
+			if(*path) {
+				return child->find(path,required,autoins);
+			}
+
+			debug("Returning new agent '",child->name(),"'");
+			return child;
+		}
+
+		if(required) {
+			throw system_error(ENOENT,system_category(),String{"Can't find agent '",path,"'"});
+		}
+
 		return shared_ptr<Abstract::Agent>();
 
 		// if(*path == '/')
@@ -93,10 +132,6 @@
 		// 	}
 
 		// 	return child;
-		// }
-
-		// if(required) {
-		// 	throw system_error(ENOENT,system_category(),string{"Can't find agent '"} + path);
 		// }
 
 		// return shared_ptr<Abstract::Agent>();

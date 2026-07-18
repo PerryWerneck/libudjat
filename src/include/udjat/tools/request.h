@@ -82,6 +82,12 @@
 		/// @return true if the prefix was found and extracted.
 		static bool pop(const char *prefix, const char * &path) noexcept;
 
+		/// @brief Extract first element from path.
+		/// @param out String to receive the extracted element.
+		/// @param path The current path.
+		/// @return true if first element was found and extracted.
+		static bool pop(std::string &out, const char * &path) noexcept;
+
 		/// @brief Test and extract request path.
 		/// @param key The key to check.
 		/// @return true if the request path was equal and it was removed, request is now at next element.
