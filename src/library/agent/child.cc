@@ -93,49 +93,6 @@
 
 		return shared_ptr<Abstract::Agent>();
 
-		// if(*path == '/')
-		// 	path++;
-
-		// // Get name length.
-		// size_t length;
-		// const char *ptr = strchr(path,'/');
-		// if(!ptr) {
-		// 	length = strlen(path);
-		// } else {
-		// 	length = (ptr - path);
-		// }
-
-		// {
-		// 	for(auto child : children.agents) {
-
-		// 		if(strncasecmp(child->name(),path,length))
-		// 			continue;
-
-		// 		if(ptr && ptr[1]) {
-		// 			return child->find(ptr+1,required,autoins);
-		// 		}
-
-		// 		return child;
-		// 	}
-
-		// }
-
-		// if(autoins) {
-			
-		// 	string name{path,length};
-		// 	auto child = make_shared<Abstract::Agent>(Quark{name.c_str()}.c_str());
-			
-		// 	push_back((std::shared_ptr<Abstract::Object>)child);
-
-		// 	if(ptr && ptr[1]) {
-		// 		return child->find(ptr+1,required,autoins);
-		// 	}
-
-		// 	return child;
-		// }
-
-		// return shared_ptr<Abstract::Agent>();
-
 	}
 
 	void Abstract::Agent::for_each(std::function<void(Abstract::Agent &agent)> method) {

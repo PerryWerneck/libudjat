@@ -24,6 +24,7 @@
  #include <udjat/tools/schema.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/http/schema.h>
  #include <udjat/agent.h>
  #include <mutex>
 
@@ -32,7 +33,11 @@
  namespace Udjat {
 
 	bool Abstract::Agent::schema(const char *path, HTTPSchema &schema) const noexcept {
-		return Object::schema(path,schema);
+		Object::schema(path,schema);
+		schema.add(
+			HTTPSchema::Item{HTTP::Head, Authentication::None}	// Allow 'head' requests for agents.
+		);
+		return true;
 	}
 
 	bool Abstract::Agent::schema(const char *path, InputSchema &schema) const noexcept {

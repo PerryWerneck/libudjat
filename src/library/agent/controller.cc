@@ -391,11 +391,6 @@
 
 	bool Abstract::Agent::Controller::process(const char *path, const Request &request, Response &response) const {
 
-		if(!allow(request.role())) {
-			response.failed(HTTP::Forbidden);
-			return true;
-		}
-
 		if(!this->root) {
 			request.error(Interface::name(),"Root agent is not available");
 			response.failed(HTTP::Unavailable);
@@ -444,13 +439,16 @@
 			return true;
 		}
 
-		// Agent only support 'get'
-		if(method != HTTP::Get) {
-			response.failed(HTTP::MethodNotAllowed);
+		OutputSchema out;
+		if(schema(path,out)) {
+			for(const auto &item : out) {
+				agent->get_property(item.name(),response[item.name()]);
+			}
 			return true;
 		}
 
-		throw runtime_error("Incomplete");
+		// No schema, get all properties.
+		agent->get_properties(response);
 
 		return true;
 	}
