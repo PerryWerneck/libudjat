@@ -400,7 +400,7 @@
 		debug("Searching for agent '",path,"'");
 		auto agent = Abstract::Agent::Controller::getInstance().find(path,false);
 		if(!agent) {
-			response.failed(HTTP::NotFound);
+			response =  HTTP::NotFound;
 			return true;
 		}
 
@@ -409,7 +409,7 @@
 			debug("last-modified: ",TimeStamp{timestamp}.to_string().c_str());
 			response.last_modified(timestamp);
 			if(request.cached(timestamp)) {
-				response.failed(HTTP::NotModified);
+				response = HTTP::NotModified;
 				return true;
 			}
 		}
@@ -434,6 +434,11 @@
 		if(method == HTTP::Head) {
 			// Header was already set, just return.
 			response = HTTP::NoContent;
+			return true;
+		}
+
+		if(method != HTTP::Get) {
+			response = HTTP::MethodNotAllowed;
 			return true;
 		}
 

@@ -91,8 +91,8 @@
 
 		debug("Serializing response");
 
-		if(status.code == HTTP::NoContent) {
-			// No Content status, the response should be empty.
+		if(status.code == HTTP::NoContent || status.code == HTTP::NotModified) {
+			// No Content or not-modified status, the response should be empty.
 			return;
 		}
 
