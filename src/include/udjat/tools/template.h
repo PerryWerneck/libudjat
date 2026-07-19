@@ -25,6 +25,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/http/status.h>
  #include <udjat/tools/file/path.h>
  #include <ostream>
  #include <functional>
@@ -35,6 +36,9 @@
 	class UDJAT_API Template {
 	private:
 		File::Path filepath;
+
+	protected:
+		const char *marker = "%{";
 
 	public:
 
@@ -47,15 +51,18 @@
 
 		/// @brief Apply template.
 		/// @param stream Output stream.
-		/// @param name Template name.
 		/// @param callback callback for %{} processing, return true if key was recognized, false if not.
 		void apply(std::ostream &stream, const std::function<bool(const char *key, std::ostream &stream)> &callback);
 
 		/// @brief Apply value on template.
 		/// @param stream Output stream.
-		/// @param name Template name.
 		/// @param value Values for template.
 		void apply(std::ostream &stream, const Value &value);
+
+		/// @brief Apply value on template.
+		/// @param stream Output stream.
+		/// @param statu HTTP status to apply.
+		void apply(std::ostream &stream, const HTTP::Status &status);
 
 	};
 

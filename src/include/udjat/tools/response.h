@@ -97,7 +97,12 @@
 			return status.code;
 		}
 
-		HTTP::Status & failed(const HTTP::StatusCode code) noexcept;
+		HTTP::Status & assign(const HTTP::StatusCode code) noexcept;
+
+		inline HTTP::Status & operator=(const HTTP::StatusCode status) noexcept {
+			return assign(status);
+		} 
+
 		HTTP::Status & failed(const int syscode) noexcept;
 		HTTP::Status & failed(const std::exception &e) noexcept;
 		HTTP::Status & failed(const char *message, const char *details = nullptr) noexcept;
@@ -109,6 +114,10 @@
 
 		inline operator MimeType() const noexcept {
 			return this->mimetype;
+		}
+
+		inline operator HTTP::Status() const noexcept {
+			return this->status;
 		}
 
 		inline bool operator ==(const MimeType mimetype) const noexcept {
@@ -128,6 +137,10 @@
 		inline void count(size_t value) noexcept {
 			range.count = value;
 		}
+
+		/// @brief Set response state.
+		/// On HTTP responses set the header X-${object_name}-state=${value};${message}
+		virtual void state(const char *object_name,const char *value, const char *message);
 
 		inline size_t count() const noexcept {
 			return range.count;

@@ -418,17 +418,14 @@
 			response.expires(agent->update.next);
 		}
 
-		// Set state info on header X-udjat-agent-state: 
+		// Set state info on header X-agent-state: 
 		{
 			auto state = agent->state();
 			if(state) {
-				response.header(
-					"X-" PACKAGE_NAME "-agent-state",
-					String{
-						std::to_string(state->level()),
-						";",
-						state->summary()
-					}.c_str()
+				response.state(
+					"agent",
+					std::to_string(state->level()),
+					state->summary()
 				);
 			}
 		}
@@ -436,6 +433,7 @@
 		auto method = request.method();
 		if(method == HTTP::Head) {
 			// Header was already set, just return.
+			response = HTTP::NoContent;
 			return true;
 		}
 

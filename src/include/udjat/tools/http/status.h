@@ -60,21 +60,21 @@
 			/// @return *this
 			Status & assign(HTTP::StatusCode code) noexcept;
 
+			inline Status & operator=(const HTTP::StatusCode code) noexcept {
+				return assign(code);
+			} 
+
 			/// @brief Set contents from syscode.
 			/// @param syscode System code to set (From errno).
 			/// @return *this;
 			Status & assign(int syscode);
 
-			inline Status & operator=(const std::exception &e) noexcept {
-				return assign(e);
-			} 
-
-			inline Status & operator=(const HTTP::Status status) noexcept {
-				return assign(status);
-			} 
-
 			inline Status & operator=(const int syscode) noexcept {
 				return assign(syscode);
+			} 
+
+			inline Status & operator=(const std::exception &e) noexcept {
+				return assign(e);
 			} 
 
 			/// @brief Serialize according to the mimetype.
@@ -85,7 +85,6 @@
 
 			std::string to_string(const MimeType &mimetype) const;
 			
-			Status & failed(const StatusCode code) noexcept;
 			Status & failed(int syscode) noexcept;
 			Status & failed(const std::exception &e) noexcept;
 			Status & failed(const char *message, const char *details = nullptr) noexcept;

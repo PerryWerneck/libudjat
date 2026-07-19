@@ -240,10 +240,6 @@
 		return *this;
 	}
 
-	HTTP::Status & HTTP::Status::failed(HTTP::StatusCode code) noexcept {
-		return assign(code);
-	}
-
 	HTTP::Status & HTTP::Status::failed(int syscode) noexcept {
 		return assign(syscode);
 	}

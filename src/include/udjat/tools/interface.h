@@ -47,6 +47,13 @@
 		/// @return true if the request can bem processed.
 		bool allow(const char *path, const Request &request, Response &response) const noexcept;
 
+		/// @brief Apply main page template.
+		/// @param request The current request.
+		/// @param response The current response.
+		/// @param stream The stream output.
+		/// @return HTTP Status code from response.
+		HTTP::StatusCode main_page(const OutputSchema &schema, Response &response, std::ostream &stream) const noexcept;
+
 	public:
 		Interface(const char *name, const Authentication::Role = Authentication::Admin);
 		

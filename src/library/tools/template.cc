@@ -25,6 +25,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/http/status.h>
  #include <udjat/tools/template.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
@@ -82,40 +83,37 @@
 
 		while(*ptr) {
 
-			const char *mark = strstr(ptr,"%{");
-			if(mark) {
+			const char *mark = strstr(ptr,marker);
+			if(!mark) {
+				stream << ptr;
+				break;
+			}
 
-				size_t len = mark - ptr;
-				stream.write(ptr,len);
-				ptr += len;
+			size_t len = mark - ptr;
+			stream.write(ptr,len);
+			ptr += len;
 
-				mark += 2;
-				ptr = strstr(mark,"}");
-				if(!ptr) {
-					throw runtime_error("Malformed variable definition due to a missing '}' bracket");
+			mark += 2;
+			ptr = strstr(mark,"}");
+			if(!ptr) {
+				throw runtime_error("Malformed variable definition due to a missing '}' bracket");
+			}
+			std::string key{mark,(size_t) (ptr-mark)};
+			ptr++;
+
+			if(!callback(key.c_str(),stream)) {
+
+				// Callback failed, fallback to configuration file.
+				Config::Value<string> value{"theme",key.c_str()};
+				if(!value.empty()) {
+					stream << value.c_str();
+				} else {
+					throw runtime_error(Logger::Message(
+						_("Unable to resolve '{}' on template '{}'"),
+						key.c_str(),filepath.c_str()
+					));
 				}
-				std::string key{mark,(size_t) (ptr-mark)};
-				ptr++;
 
-				if(!callback(key.c_str(),stream)) {
-
-					// Callback failed, fallback to configuration file.
-					Config::Value<string> value{"theme",key.c_str()};
-					if(!value.empty()) {
-						stream << value.c_str();
-					} else {
-						throw runtime_error(Logger::Message(
-							_("Unable to resolve '{}' on template '{}'"),
-							key.c_str(),filepath.c_str()
-						));
-					}
-
-				}
-
-			} else {
-				size_t len = strlen(ptr);
-				stream.write(ptr,len);
-				ptr += len;
 			}
 
 		}
@@ -123,13 +121,60 @@
 	}
 
 	void Template::apply(std::ostream &stream, const Value &value) {
+
 		apply(stream, [&value](const char *key, std::ostream &stream){
 			if(value.contains(key)) {
-				stream << value[key].to_string();
+				stream << value[key];
 				return true;
 			}
 			return false;
 		});
+
 	}
+
+	void Template::apply(std::ostream &stream, const HTTP::Status &status) {
+
+		apply(stream, [&status](const char *key, std::ostream &stream){
+
+			if(!strcasecmp(key,"status-code")) {
+				stream << ((int) status.code);
+				return true;
+			}
+
+			if(!strcasecmp(key,"status-title")) {
+				stream << status.title;
+				return true;
+			}
+
+			if(!strcasecmp(key,"status-message")) {
+				stream << status.message;
+				return true;
+			}
+
+			if(!strcasecmp(key,"status-body")) {
+				stream << status.body;
+				return true;
+			}
+
+			if(!strcasecmp(key,"status-domain")) {
+				stream << status.domain;
+				return true;
+			}
+
+			if(!strcasecmp(key,"status-url")) {
+				stream << status.url;
+				return true;
+			}
+
+			if(!strcasecmp(key,"status-category")) {
+				stream << status.category;
+				return true;
+			}
+		
+			return false;
+		});
+
+	}
+
 
  }

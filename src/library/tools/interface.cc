@@ -30,6 +30,7 @@
  #include <udjat/tools/schema.h>
  #include <udjat/tools/template.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/template.h>
  
  using namespace std;
 
@@ -190,7 +191,10 @@
 		if(!request.apicall()) {
 
 			// It's not an apicall, try to use templates.
-			debug("Incomplete");
+			OutputSchema schema;
+			this->schema(schema);
+
+			return main_page(schema, response, stream);
 
 		} else {
 
@@ -201,5 +205,81 @@
 		return response.status_code();
 	}
 
+	HTTP::StatusCode Interface::main_page(const OutputSchema &schema, Response &response, std::ostream &stream) const noexcept {
+	
+		Template main_page{"main",(MimeType) response};
+
+		if(!main_page) {
+			Logger::String{"Main page template is not available."}.error();
+			response.failed(
+				_("A required file is unavailable within the selected theme. Please contact the system administrator for assistance.")
+			);
+			response.serialize(stream);
+			return response.status_code();
+		}
+
+		try {
+
+			main_page.apply(stream,[&schema,&response](const char *key, std::ostream &stream){
+
+				if(!strcasecmp(key,"page-summary")) {
+
+					// Page-summary is unsupported (for now).
+					return true;
+
+				}
+
+				MimeType mimetype = (MimeType) response;
+
+				if(!strcasecmp(key,"page-contents")) {
+
+					// Parse page contents.
+					if(response.status_code() != HTTP::Ok) {
+
+						// Use error template.
+						Template inner_page{"dialog-error",mimetype};
+						if(!inner_page) {
+							Logger::String{"dialog-error is missing on current template"}.error();
+							response.serialize(stream);
+							return true;
+						}
+
+						inner_page.apply(stream, (HTTP::Status) response);
+
+					} else if(schema.template_name && *schema.template_name) {
+
+						// Use template from schema
+						Template inner_page{schema.template_name,mimetype};
+						if(!inner_page) {
+							Logger::String{schema.template_name, " is missing on current template"}.error();
+							response.serialize(stream);
+							return true;
+						}
+
+						inner_page.apply(stream, response);
+
+					} else {
+
+						// No template, just serialize.
+						response.serialize(stream);
+					}
+
+					return true;
+
+				}
+
+				return false;
+			});
+
+		} catch(const std::exception &e) {
+
+			Logger::String{e.what()};
+			return HTTP::SystemError;
+
+		}
+
+
+		return response.status_code();
+	}
 
  }

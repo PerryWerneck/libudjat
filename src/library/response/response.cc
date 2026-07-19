@@ -41,6 +41,9 @@
 		return timestamp.expires;
 	}
 
+	void Response::state(const char *,const char *, const char *) {		
+	}
+
 	time_t Response::last_modified(const time_t tm) noexcept {
 		if(tm && (!timestamp.last_modified || timestamp.last_modified < tm)) {
 			timestamp.last_modified = tm;
@@ -58,10 +61,10 @@
 	void Response::header(const char *, const char *) noexcept {
 	}
 
-	HTTP::Status & Response::failed(const HTTP::StatusCode code) noexcept {
-		debug("Request failed with http error ",code);
+	HTTP::Status & Response::assign(const HTTP::StatusCode code) noexcept {
+		debug("Request set to HTTP status ",code);
 		clear(Value::Object);
-		return status.failed(code);
+		return status.assign(code);
 	}
 
 	HTTP::Status & Response::failed(int syscode) noexcept {
@@ -87,6 +90,11 @@
 	void Response::serialize(std::ostream &stream) const noexcept {
 
 		debug("Serializing response");
+
+		if(status.code == HTTP::NoContent) {
+			// No Content status, the response should be empty.
+			return;
+		}
 
 		if(status.code != HTTP::Ok) {
 			status.serialize(mimetype,stream);

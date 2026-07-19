@@ -145,6 +145,7 @@ namespace Udjat {
 	class InputSchema;
 	class OutputSchema;
 	class HTTPSchema;
+	class Template;
 
 }
 #endif // __cplusplus
