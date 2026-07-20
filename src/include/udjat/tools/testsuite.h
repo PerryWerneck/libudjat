@@ -27,6 +27,7 @@
 #include <string>
 #include <cstring>
 #include <set>
+#include <list>
 #include <udjat/module.h>
 #include <memory>
 #include <ostream>
@@ -134,9 +135,7 @@ namespace Udjat {
 			groups.emplace_back(group);
 		}
 
-		inline void add(const Case &obj) {
-			groups.back().cases.push_back(obj);
-		}
+		void add(const Case &obj);
 
 #ifndef _WIN32
 		inline void add(void *handle,const char *filename) {

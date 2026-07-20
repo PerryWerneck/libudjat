@@ -400,7 +400,7 @@
 		debug("Searching for agent '",path,"'");
 		auto agent = Abstract::Agent::Controller::getInstance().find(path,false);
 		if(!agent) {
-			response =  HTTP::NotFound;
+			response = HTTP::NotFound;
 			return true;
 		}
 

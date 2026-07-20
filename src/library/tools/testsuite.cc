@@ -34,6 +34,7 @@
  #include <udjat/ui/console.h>
  #include <udjat/tools/intl.h>
  #include <algorithm>
+ #include <list>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -157,6 +158,16 @@
 	TestSuite::~TestSuite() {
 	}
 
+	void TestSuite::add(const Case &obj) {
+		for(auto &cs : groups.back().cases) {
+			if(cs == obj) {
+				// Same case, ignore it.
+				return;
+			}
+		}
+		groups.back().cases.push_back(obj);
+	}
+
 	void TestSuite::run(const char *path) noexcept {
 
 		// TODO: Refactor using groups.
@@ -262,19 +273,6 @@
 		groups.remove_if([](Group &group){
 			return group.cases.size() == 0;
 		});
-
-		// Sort options
-		for(auto &group : groups) {
-			std::sort(group.cases.begin(), group.cases.end(), [](const Case& a, const Case& b) {
-				return strcasecmp(a.label,b.label) < 0;
-			});
-
-			// Remove duplicate
-			auto it = std::unique(group.cases.begin(), group.cases.end(), [](const Case& a, const Case& b) {
-				return strcasecmp(a.label, b.label) == 0; // Note: == 0 checks for equality
-			});
-			group.cases.erase(it, group.cases.end());		
-		}
 
 		// Run menu.
 		if(groups.size() == 1) {

@@ -101,7 +101,7 @@
 			return;
 		}
 
-		string value{status.code == HTTP::Ok ? "success" : "failed"};
+		string value{(status.code >= 200 && status.code <= 299) ? "success" : "failed"};
 
 		switch(mimetype) {
 		case Udjat::Value::Undefined:

@@ -67,6 +67,26 @@
 
 	}
 
+	static const char *get_default(const char *key) {
+
+		static const struct {
+			const char *key;
+			const char *value;
+		} defs[] = {
+			{ "lang", 		N_("en") },
+			{ "page-style",	"/css/style.css" },
+			{ "page-title",	N_("Undefined page title") },
+		};
+
+		for(const auto &def : defs) {
+			if(!strcasecmp(key,def.key)) {
+				return dgettext(GETTEXT_PACKAGE,def.value);
+			}
+		}
+
+		return "";
+	}
+
 	void Template::apply(std::ostream &stream, const std::function<bool(const char *key, std::ostream &stream)> &callback) {
 
 		if(!filepath) {
@@ -104,7 +124,7 @@
 			if(!callback(key.c_str(),stream)) {
 
 				// Callback failed, fallback to configuration file.
-				Config::Value<string> value{"theme",key.c_str()};
+				Config::Value<string> value{"theme",key.c_str(),get_default(key.c_str())};
 				if(!value.empty()) {
 					stream << value.c_str();
 				} else {

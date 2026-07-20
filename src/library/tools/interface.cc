@@ -239,7 +239,7 @@
 						// Use error template.
 						Template inner_page{"dialog-error",mimetype};
 						if(!inner_page) {
-							Logger::String{"dialog-error is missing on current template"}.error();
+							Logger::String{"Template 'dialog-error is missing'"}.warning();
 							response.serialize(stream);
 							return true;
 						}
@@ -251,7 +251,7 @@
 						// Use template from schema
 						Template inner_page{schema.template_name,mimetype};
 						if(!inner_page) {
-							Logger::String{schema.template_name, " is missing on current template"}.error();
+							Logger::String{"Template '",schema.template_name, "' is missing"}.warning();
 							response.serialize(stream);
 							return true;
 						}
