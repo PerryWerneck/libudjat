@@ -39,13 +39,32 @@
 	{ "xml",	"text/xml; charset=utf-8" },
 	{ "html",	"text/html; charset=utf-8" },
 
+	// static const struct {
+	// 	MimeType mimetype;
+	// 	const char *ext;
+	// } mimetypes[] = {
+	// 	ExtensionImage FormatOfficial MIME Type
+	// 	".webp"	},	// image/webp
+	// 	".avi"	},	// image/avif
+	// 	".bmp"	},	// image/bmp
+	// 	".tiff"	},	// image/tiff
+
+	// }
+
 
 	{ "css",	"text/css; charset=utf-8" },
 	{ "js",		"application/javascript" },
 	{ "svg",	"image/svg+xml" },
 	{ "gif",	"image/gif" },
 	{ "jpg",	"image/jpeg" },
+	{ "jpeg",	"image/jpeg" },
 	{ "png",	"image/png" },
+	{ "webp",	"image/webp" },
+	{ "avi",	"image/avif" },
+	{ "bmp",	"image/bmp" },
+	{ "tiff",	"image/tiff" },
+	{ "",		"image/*" },
+
 	{ "pem",	"application/x-pem-file" },
 	{ "ico",	"image/x-icon" },
 
@@ -109,7 +128,7 @@
 
  	// Then for the extension
 	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
-		if(!strcasecmp(str,types[ix].ext)) {
+		if(*types[ix].ext && !strcasecmp(str,types[ix].ext)) {
 			return (MimeType) ix;
 		}
  	}

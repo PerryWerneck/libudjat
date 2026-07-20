@@ -42,6 +42,12 @@
 		gif,                    ///> @brief image/gif
 		jpg,                    ///> @brief image/jpeg
 		png,                    ///> @brief image/png
+		webp,					///> @brief image/webp
+		avi,					///> @brief image/avif
+		bmp,					///> @brief image/bmp
+		tiff,					///> @brief image/tiff
+		image,					///> @brief image/*
+
 		pem,                    ///> @brief application/x-pem-file
 		icon,                   ///> @brief image/x-icon
 		yaml,					///> @brief text/yaml
@@ -65,12 +71,12 @@
 		count					///> @brief Count of known mimetypes
 	};
 
-	/// @brief Create mimetype from string.
-	/// @param str Mime type string.
+	/// @brief Build mimetype from string.
+	/// @param str Mime type string (or filename).
 	/// @param log_def enable log message when using default value.
 	UDJAT_API MimeType MimeTypeFactory(const char *str, bool log_def = true) noexcept;
 
-	/// @brief Create mimetype from string with fallback.
+	/// @brief Build mimetype from string with fallback.
 	/// @param str Mime type string.
 	/// @param def Default value if not found.
 	UDJAT_API MimeType MimeTypeFactory(const char *str, const MimeType def) noexcept;
