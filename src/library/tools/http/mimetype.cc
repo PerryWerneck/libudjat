@@ -39,50 +39,30 @@
 	{ "xml",	"text/xml; charset=utf-8" },
 	{ "html",	"text/html; charset=utf-8" },
 
-	// static const struct {
-	// 	MimeType mimetype;
-	// 	const char *ext;
-	// } mimetypes[] = {
-	// 	ExtensionImage FormatOfficial MIME Type
-	// 	".webp"	},	// image/webp
-	// 	".avi"	},	// image/avif
-	// 	".bmp"	},	// image/bmp
-	// 	".tiff"	},	// image/tiff
-
-	// }
-
-
 	{ "css",	"text/css; charset=utf-8" },
 	{ "js",		"application/javascript" },
+
 	{ "svg",	"image/svg+xml" },
 	{ "gif",	"image/gif" },
-	{ "jpg",	"image/jpeg" },
 	{ "jpeg",	"image/jpeg" },
 	{ "png",	"image/png" },
 	{ "webp",	"image/webp" },
 	{ "avi",	"image/avif" },
 	{ "bmp",	"image/bmp" },
 	{ "tiff",	"image/tiff" },
+	{ "ico",	"image/x-icon" },
 	{ "",		"image/*" },
 
 	{ "pem",	"application/x-pem-file" },
-	{ "ico",	"image/x-icon" },
-
-	{ "yaml",	"text/yaml" }, // https://stackoverflow.com/a/332159/2356331
-
-	// https://mimetype.io/application/gzip
-	{ "gz",		"application/gzip" },
-
-	// https://mimetype.io/application/x-rpm
-	{ "rpm",	"application/x-rpm" },
+	{ "yaml",	"text/yaml" }, 			// https://stackoverflow.com/a/332159/2356331
+	{ "gz",		"application/gzip" },	// https://mimetype.io/application/gzip
+	{ "rpm",	"application/x-rpm" },	// https://mimetype.io/application/x-rpm
 
 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 	{ "odt",	"application/vnd.oasis.opendocument.text" },
 	{ "ods",	"application/vnd.oasis.opendocument.spreadsheet" },
 	{ "sh",		"application/x-sh" },
-
-	// https://gist.github.com/jimschubert/94894c938d8f9f64c6863b28c70a22cc
-	{ "pdf",	"application/pdf" },
+	{ "pdf",	"application/pdf" },	// https://gist.github.com/jimschubert/94894c938d8f9f64c6863b28c70a22cc
 
 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 	{ "rtf",	"text/richtext" },
@@ -90,13 +70,13 @@
 	{ "zip",	"application/zip" },
 
 	// SSL & cia
-	{ "cacert",	"application/x-x509-ca-cert" },
+	{ "cacert",			"application/x-x509-ca-cert" },
 
 	// Form parser
 	{ "form-urlencoded",	"x-www-form-urlencoded" },
 
 	// Markdown
-	{ "md",					"text/markdown; charset=UTF-8" },
+	{ "md",				"text/markdown; charset=UTF-8" },
 
  };
 

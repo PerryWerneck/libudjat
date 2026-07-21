@@ -34,6 +34,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/value.h>
  #include <stdexcept>
+ #include <sstream>
 
  using namespace std;
 
@@ -196,5 +197,10 @@
 
 	}
 
+	std::string Template::to_string(const std::function<bool(const char *key, std::ostream &stream)> &callback) {
+		stringstream stream;
+		apply(stream,callback);
+		return stream.str();
+	}
 
  }

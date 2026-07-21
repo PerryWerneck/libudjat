@@ -28,6 +28,7 @@
 
 	enum MimeType : uint8_t {
 		none,					///> @brief Custom
+
 		json,                   ///> @brief application/json; charset=utf-8
 		csv,                    ///> @brief text/csv; charset=utf-8
 		tsv,                    ///> @brief text/tab-separated-values; charset=utf-8
@@ -46,10 +47,10 @@
 		avi,					///> @brief image/avif
 		bmp,					///> @brief image/bmp
 		tiff,					///> @brief image/tiff
+		icon,                   ///> @brief image/x-icon
 		image,					///> @brief image/*
 
 		pem,                    ///> @brief application/x-pem-file
-		icon,                   ///> @brief image/x-icon
 		yaml,					///> @brief text/yaml
 		gz,						///> @brief application/gzip
 		rpm,					///> @brief application/x-rpm
@@ -62,6 +63,7 @@
 		rtf,					///> @brief application/rtf
 		xhtml,					///> @brief application/xhtml+xml
 		zip,					///> @brief application/zip
+
 		cacert,					///> @brief application/x-x509-ca-cert
 
 		form_urlencoded,		///> @brief application/x-www-form-urlencoded

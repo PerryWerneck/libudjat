@@ -52,6 +52,12 @@
 		/// @brief Apply template.
 		/// @param stream Output stream.
 		/// @param callback callback for %{} processing, return true if key was recognized, false if not.
+		/// @return string with processed template
+		std::string to_string(const std::function<bool(const char *key, std::ostream &stream)> &callback);
+
+		/// @brief Apply template.
+		/// @param stream Output stream.
+		/// @param callback callback for %{} processing, return true if key was recognized, false if not.
 		void apply(std::ostream &stream, const std::function<bool(const char *key, std::ostream &stream)> &callback);
 
 		/// @brief Apply value on template.
