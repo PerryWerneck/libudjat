@@ -96,14 +96,15 @@
 				return assign(code);
 			} 
 
+			inline Status & operator=(const MimeType mimetype) noexcept {
+				this->mimetype = mimetype;
+				return *this;
+			} 
+
 			/// @brief Set contents from syscode.
 			/// @param syscode System code to set (From errno).
 			/// @return *this;
 			Status & assign(int syscode, const char *message = nullptr);
-
-			inline Status & operator=(const HTTP::StatusCode code) noexcept {
-				return assign(code);
-			} 
 
 			inline Status & operator=(const int syscode) noexcept {
 				return assign(syscode);

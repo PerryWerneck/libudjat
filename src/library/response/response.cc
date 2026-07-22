@@ -35,20 +35,20 @@
 	}
 
 	time_t Response::expires(const time_t tm) noexcept {
-		if(tm && (!timestamp.expires || timestamp.expires > tm)) {
-			timestamp.expires = tm;
+		if(tm && (!status.expires || status.expires > tm)) {
+			status.expires = tm;
 		}
-		return timestamp.expires;
+		return status.expires;
 	}
 
 	void Response::state(const char *,const char *, const char *) {		
 	}
 
 	time_t Response::last_modified(const time_t tm) noexcept {
-		if(tm && (!timestamp.last_modified || timestamp.last_modified < tm)) {
-			timestamp.last_modified = tm;
+		if(tm && (!status.last_modified || status.last_modified < tm)) {
+			status.last_modified = tm;
 		}
-		return timestamp.last_modified;
+		return status.last_modified;
 	}
 
 	const char * Response::message() const noexcept {
@@ -97,18 +97,19 @@
 		}
 
 		if(status.code != HTTP::Ok) {
-			status.serialize(mimetype,stream);
+			status.serialize(stream);
 			return;
 		}
 
 		string value{(status.code >= 200 && status.code <= 299) ? "success" : "failed"};
 
-		switch(mimetype) {
+		switch(status.mimetype) {
 		case Udjat::Value::Undefined:
 			{
 				HTTP::Status st{HTTP::SystemError};
 				st.failed(_("Unable to serialize undefined value"));
-				st.serialize(mimetype,stream);
+				st.mimetype = status.mimetype;
+				st.serialize(stream);
 			}
 			break;
 
@@ -165,7 +166,7 @@
 			break;
 
 		default:
-			Value::serialize(stream,mimetype);
+			Value::serialize(stream,status.mimetype);
 		}
 
 	}
