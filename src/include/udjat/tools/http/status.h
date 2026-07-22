@@ -76,9 +76,14 @@
 			/// @brief Build empty status.
 			Status(StatusCode c = Ok, const char *message = nullptr);
 
+			Status(StatusCode code, const MimeType mimetype);
+
+			Status(const MimeType mimetype) : Status{Ok, mimetype} {				
+			}
+
 			/// @brief Build status from exception.
 			/// @param e The exception for status.
-			Status(const std::exception &e);
+			Status(const std::exception &e, const MimeType mimetype = MimeType::none);
 
 			inline operator bool() const noexcept {
 				return code != HTTP::Ok;

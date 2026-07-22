@@ -55,11 +55,15 @@
 		{ HTTP::Unprocessable,		ENOENT		},
 	};
 
+	HTTP::Status::Status(StatusCode code, const MimeType m) : mimetype{m} {
+		assign(code);
+	}
+
 	HTTP::Status::Status(StatusCode code, const char *message) {
 		assign(code,message);
 	}
 
-	HTTP::Status::Status(const std::exception &e) {
+	HTTP::Status::Status(const std::exception &e, const MimeType m) : mimetype{m} {
 		assign(e);
 	}
 
