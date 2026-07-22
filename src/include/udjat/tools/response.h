@@ -30,61 +30,17 @@
 	/// @brief Object response.
 	/// Response for api call in format jsend (https://github.com/omniti-labs/jsend)
 	class UDJAT_API Response : public Value {
-	public:
-		// enum State : uint8_t {
-		// 	Success = 0,
-		// 	Error = 1,
-		// 	Failure = 2
-		// };
-
-		// class Exception : public std::exception, public HTTP::Status {
-		// public:
-		// 	Exception(const char *m) : Status{Failure} {
-		// 		assign(-1);
-		// 		body = m;
-		// 	}
-
-		// 	Exception(const int syscode, const char *m) : Status{Failure} {
-		// 		Status::assign(syscode);
-		// 		body = m;
-		// 	}
-
-		// 	const char * what() const noexcept override {
-		// 		return body.c_str();
-		// 	}
-
-		// };
-
 	protected:
-
-		/// @brief Response type.
-		MimeType mimetype = MimeType::none;
 
 		/// @brief The response status.
 		HTTP::Status status;
-
-		/// @brief Caching information.
-		struct {
-			/// @brief The expiration time.
-			TimeStamp expires = 0;
-
-			/// @brief The last update time.
-			TimeStamp last_modified = 0;
-		} timestamp;
-
-		/// @brief Values for content-range & X-Total-Count headers.
-		struct {
-			size_t from = 0;
-			size_t to = 0;
-			size_t total = 0;
-			size_t count = 0; ///< @brief The item count (for X-Total-Count http header)
-		} range;
 
 	private:
 		const Abstract::Object *object = nullptr;
 
 	public:
-		Response(const MimeType m = MimeType::json) : mimetype(m) {
+		Response(const MimeType m = MimeType::json) {
+			status.mimetype = m;
 		}
 
 		virtual ~Response();
@@ -113,7 +69,7 @@
 		}
 
 		inline operator MimeType() const noexcept {
-			return this->mimetype;
+			return this->status.mimetype;
 		}
 
 		inline operator HTTP::Status() const noexcept {
@@ -121,11 +77,11 @@
 		}
 
 		inline bool operator ==(const MimeType mimetype) const noexcept {
-			return this->mimetype == mimetype;
+			return this->status.mimetype == mimetype;
 		}
 
 		inline bool operator !=(const MimeType mimetype) const noexcept {
-			return this->mimetype != mimetype;
+			return this->status.mimetype != mimetype;
 		}
 
 		inline operator bool() const noexcept {
@@ -135,7 +91,7 @@
 		/// @brief Set item count for this response.
 		/// @param value The item count (for X-Total-Count http header).
 		inline void count(size_t value) noexcept {
-			range.count = value;
+			status.range.count = value;
 		}
 
 		/// @brief Set response state.
@@ -143,7 +99,7 @@
 		virtual void state(const char *object_name,const char *value, const char *message);
 
 		inline size_t count() const noexcept {
-			return range.count;
+			return status.range.count;
 		}
 
 		/// @brief Set response message.
@@ -193,9 +149,9 @@
 		/// @param to Last item.
 		/// @param total Item count.
 		inline void content_range(size_t from, size_t to, size_t total) noexcept {
-			range.from = from;
-			range.to = to;
-			range.total = total;
+			status.range.from = from;
+			status.range.to = to;
+			status.range.total = total;
 		}
 
 		/// @brief Serialize according to the mimetype.
@@ -204,7 +160,7 @@
 
 		/// @brief Set 'not-modified' status.
 		inline void not_modified() noexcept {
-			status = HTTP::NotModified;
+			status.assign(HTTP::NotModified);
 		}
 
 		/// @brief Get 'not-modified' status.
@@ -225,11 +181,11 @@
 		virtual void header(const char *name, const char *value) noexcept;
 
 		inline time_t last_modified() const noexcept {
-			return (time_t) timestamp.last_modified;
+			return (time_t) status.last_modified;
 		}
 
 		inline time_t expires() const noexcept {
-			return (time_t) timestamp.expires;
+			return (time_t) status.expires;
 		}
 
 	};

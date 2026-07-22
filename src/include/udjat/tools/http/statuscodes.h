@@ -31,6 +31,7 @@
 			Undefined				= 0,	///< @brief Status code is undefined.
 			Ok 						= 200,	///< @brief The request succeeded. The result and meaning of "success" depends on the HTTP method
 			NoContent				= 204,	///< @brief There is no content to send for this request, but the headers are useful.
+			SeeOther				= 303,	///< @brief Direct the client to get the requested resource at another URI with a GET request.
 			NotModified				= 304,
 			BadRequest				= 400,	///< @brief The server cannot or will not process the request due to something that is perceived to be a client error
 			UnAuthenticated			= 401,

@@ -23,6 +23,7 @@
  #include <udjat/tools/http/statuscodes.h>
  #include <udjat/tools/http/mimetype.h>
  #include <string>
+ #include <functional>
 
  namespace Udjat {
 
@@ -33,16 +34,47 @@
 
 			StatusCode code = HTTP::Ok;
 
-			std::string title;			///< @brief The response title.
-			std::string message;		///< @brief The status message.
-			std::string body;			///< @brief The status details.
+			/// @brief The response title.
+			std::string title;			
+
+			/// @brief The status message.
+			std::string message;		
+
+			/// @brief Mimetype for responses.
+			MimeType mimetype = MimeType::none;
+
+			/// @brief The body for status dialog.
+			std::string body;
+
 			std::string domain;
 			std::string url;
 			std::string category;
 
+			/// @brief The expiration time (0 to disable caching).
+			time_t expires = (time_t) -1;
+
+			/// @brief The last update time (for caching information).
+			time_t last_modified = 0;
+
+			/// @brief Values for content-range & X-Total-Count headers.
+			struct {
+
+				/// @param from First item.
+				size_t from = 0;
+				
+				/// @param to Last item.
+				size_t to = 0;
+
+				/// @param total Item count.
+				size_t total = 0;
+
+				/// @brief The item count (for X-Total-Count http header)
+				size_t count = 0; 
+
+			} range;
+
 			/// @brief Build empty status.
-			Status(StatusCode c = Ok) : code{c} {
-			}
+			Status(StatusCode c = Ok, const char *message = nullptr);
 
 			/// @brief Build status from exception.
 			/// @param e The exception for status.
@@ -58,7 +90,7 @@
 			/// @brief Set contents from HTTP status code.
 			/// @param code The status code to set.
 			/// @return *this
-			Status & assign(HTTP::StatusCode code) noexcept;
+			Status & assign(HTTP::StatusCode code, const char *message = nullptr) noexcept;
 
 			inline Status & operator=(const HTTP::StatusCode code) noexcept {
 				return assign(code);
@@ -67,7 +99,11 @@
 			/// @brief Set contents from syscode.
 			/// @param syscode System code to set (From errno).
 			/// @return *this;
-			Status & assign(int syscode);
+			Status & assign(int syscode, const char *message = nullptr);
+
+			inline Status & operator=(const HTTP::StatusCode code) noexcept {
+				return assign(code);
+			} 
 
 			inline Status & operator=(const int syscode) noexcept {
 				return assign(syscode);
@@ -77,13 +113,17 @@
 				return assign(e);
 			} 
 
+			inline bool success() const noexcept {
+				return code == HTTP::Ok || code == HTTP::NoContent;
+			}
+
 			/// @brief Serialize according to the mimetype.
 			/// Uses jsend format (https://github.com/omniti-labs/jsend) for xml, yaml & json.
 			/// @param mimetype The requested mimetype.
 			/// @param stream Stream to serialize.
-			void serialize(const MimeType &mimetype, std::ostream &stream) const noexcept;
+			void serialize(std::ostream &stream) const noexcept;
 
-			std::string to_string(const MimeType &mimetype) const;
+			std::string to_string() const;
 			
 			Status & failed(int syscode) noexcept;
 			Status & failed(const std::exception &e) noexcept;
@@ -95,6 +135,9 @@
 			/// @return The corresponding system error code (or -1 if there's no one).
 			static int syscode(const StatusCode code) noexcept;
 
+			/// @brief Build http headers.
+			/// @param callback Callback method to receive the headers.
+			void http_headers(const std::function<void(const char *name, const char *value)> &callback) const noexcept;
 
 		};
 

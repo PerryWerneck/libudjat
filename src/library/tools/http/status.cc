@@ -28,6 +28,7 @@
  #include <stdexcept>
  #include <sstream>
  #include <libintl.h>
+ #include <udjat/tools/http/timestamp.h>
 
  using namespace Udjat;
  using namespace std;
@@ -54,6 +55,10 @@
 		{ HTTP::Unprocessable,		ENOENT		},
 	};
 
+	HTTP::Status::Status(StatusCode code, const char *message) {
+		assign(code,message);
+	}
+
 	HTTP::Status::Status(const std::exception &e) {
 		assign(e);
 	}
@@ -61,13 +66,73 @@
 	HTTP::Status & HTTP::Status::clear() noexcept {
 		code = HTTP::Ok;
 
+		expires = (time_t) -1;
+		last_modified = (time_t) -1;
+
+		range.count = 0;
+		range.from = 0;
+		range.to = 0;
+		range.total = 0;
+
 		title.clear();
-		message.clear();
+		title.clear();
 		body.clear();
 		domain.clear();
 		url.clear();
 		category.clear();
 		return *this;
+
+	}
+
+	void HTTP::Status::http_headers(const std::function<void(const char *name, const char *value)> &callback) const noexcept {
+
+		time_t now = time(0);
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+		if(expires != (time_t) -1 && expires > now) {
+			
+			// Setup expiration time.
+			unsigned int max_age = (now - expires);
+			callback(
+				"Cache-Control",
+				Udjat::String{"max-age=",max_age,", private"}.c_str()
+			);
+
+			callback(
+				"Expires",
+				HTTP::TimeStamp{expires}.to_string().c_str()
+			);
+	
+		} else if(expires == 0) {
+
+			// No cache
+			callback("Cache-Control","no-cache, no-store, must-revalidate, private, max-age=0");
+			callback("Expires", "0");
+
+		}
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified
+		if(last_modified) {
+			callback(
+				"last-modified",
+				HTTP::TimeStamp{last_modified}.to_string().c_str()
+			);
+		}
+
+		// https://stackoverflow.com/questions/3715981/what-s-the-best-restful-method-to-return-total-number-of-items-in-an-object
+		if(range.count) {
+			callback(
+				"X-Total-Count",
+				std::to_string(range.count).c_str()
+			);
+		}
+
+		if(range.total && code != HTTP::NoContent) {
+			callback(
+				"Content-Range",
+				Udjat::String{"items ",range.from,"-",range.to,"/",range.total}.c_str()
+			);
+		}
 
 	}
 
@@ -82,13 +147,13 @@
 		return -1;
 	}
 
-	std::string HTTP::Status::to_string(const MimeType &mimetype) const {
+	std::string HTTP::Status::to_string() const {
 		stringstream out;
-		serialize(mimetype,out);
+		serialize(out);
 		return out.str();
 	}
 
-	void HTTP::Status::serialize(const MimeType &mimetype, std::ostream &out) const noexcept {
+	void HTTP::Status::serialize(std::ostream &out) const noexcept {
 
 		Value response{Value::Object};
 		response["code"] = (int) code;
@@ -99,11 +164,19 @@
 		response["url"] = url;
 		response["category"] = category;	
 		
-		string value{code == HTTP::Ok ? "success" : "failed"};
+		string value{ success() ? "success" : "failed" };
 
 		switch(mimetype) {
 		case Udjat::Value::Undefined:
-			Logger::String{"Unable to serialize undefined value"}.error("http");
+			{
+				Logger::String{"Unable to serialize undefined value"}.error("http");
+				Status st{
+					HTTP::SystemError,
+					_("Unable to serialize undefined value")
+				};
+				st.mimetype = mimetype;
+				st.serialize(out);
+			}
 			break;
 
 		case Udjat::MimeType::xml:
@@ -201,22 +274,30 @@
 		return *this;
 	}
 
-	HTTP::Status & HTTP::Status::assign(HTTP::StatusCode code) noexcept {
+	HTTP::Status & HTTP::Status::assign(HTTP::StatusCode code, const char *msg) noexcept {
 
 		clear();
 		this->code = code;
 
 		if(code >= (HTTP::StatusCode) 500 && code <= (HTTP::StatusCode) 599) {
 			message = _("We're sorry, but we encountered an error while processing your request.");
-			body = std::to_string(code);
+			if(msg) {
+				body = msg;
+			} else {
+				body = std::to_string(code);
+			}
 			return *this;
 		}
 
 		message = std::to_string(code);
+		if(msg) {
+			body = msg;
+		}
+
 		return *this;
 	}
 
-	HTTP::Status & HTTP::Status::assign(int syscode) {
+	HTTP::Status & HTTP::Status::assign(int syscode, const char *msg) {
 
 		clear();
 
@@ -225,10 +306,22 @@
 
 		code = HTTP::SystemError;
 
-		body = Logger::Message{
-			_("The system error was '{}'"),
-			strerror(syscode)
-		};
+		if(msg) {
+			body = msg;
+
+			body += " (";
+			body += Logger::Message{
+				_("The system error was '{}'"),
+				strerror(syscode)
+			};
+			body += ")";
+
+		} else {
+			body = Logger::Message{
+				_("The system error was '{}'"),
+				strerror(syscode)
+			};
+		}
 
 		for(const auto &item : syscodes) {
 			if(item.system == syscode) {
