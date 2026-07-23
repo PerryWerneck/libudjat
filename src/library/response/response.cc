@@ -106,9 +106,9 @@
 		switch(status.mimetype) {
 		case Udjat::Value::Undefined:
 			{
-				HTTP::Status st{HTTP::SystemError};
+				debug("Undefined value, error");
+				HTTP::Status st{HTTP::SystemError,MimeType::html};
 				st.failed(_("Unable to serialize undefined value"));
-				st.mimetype = status.mimetype;
 				st.serialize(stream);
 			}
 			break;

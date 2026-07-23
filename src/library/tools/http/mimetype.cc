@@ -110,11 +110,18 @@
  	}
 
  	// Then for the extension
-	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
-		if(*types[ix].ext && !strcasecmp(str,types[ix].ext)) {
-			return (MimeType) ix;
+	{
+		const char *ext = strrchr(str,'.');
+		if(ext && ext[1]) {
+			ext++;
+			debug("Searching for '",ext,"'")
+			for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
+				if(*types[ix].ext && !strcasecmp(ext,types[ix].ext)) {
+					return (MimeType) ix;
+				}
+			}
 		}
- 	}
+	}
 
  	// Again, only the length of str.
  	size_t length = strlen(str);
@@ -126,9 +133,9 @@
 
  	// Not found!
  	if(log_def) {
-		Logger::String{"Unknown mimetype '",str,"' assuming '",types[0].str,"'"}.warning("http");
+		Logger::String{"Unknown mimetype '",str,"' assuming 'html'"}.warning("http");
  	}
- 	return (Udjat::MimeType) 0;
+ 	return MimeType::html;
  }
 
  Udjat::MimeType Udjat::MimeTypeFactory(const char *str, const Udjat::MimeType def) noexcept {

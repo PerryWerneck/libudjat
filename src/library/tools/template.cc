@@ -54,15 +54,7 @@
 #endif
 		}
 
-		filepath.append(
-			"/",name
-		);
-
-		if(mimetype != MimeType::none) {
-			filepath.append(
-				".",std::to_string(mimetype,true)
-			);
-		}
+		filepath.append(name,".",std::to_string(mimetype,true));
 
 		debug("Template file set to '",filepath.c_str(),"'");
 
@@ -122,10 +114,14 @@
 			std::string key{mark,(size_t) (ptr-mark)};
 			ptr++;
 
+			debug("---> key=",key.c_str());
+
 			if(!callback(key.c_str(),stream)) {
 
 				// Callback failed, fallback to configuration file.
 				Config::Value<string> value{"theme",key.c_str(),get_default(key.c_str())};
+				debug(key,"='",value.c_str(),"'");
+
 				if(!value.empty()) {
 					stream << value.c_str();
 				} else {

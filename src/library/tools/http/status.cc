@@ -178,11 +178,8 @@
 		case Udjat::Value::Undefined:
 			{
 				Logger::String{"Unable to serialize undefined value"}.error("http");
-				Status st{
-					HTTP::SystemError,
-					_("Unable to serialize undefined value")
-				};
-				st.mimetype = mimetype;
+				Status st{HTTP::SystemError,MimeType::html};
+				st.failed(_("Unable to serialize undefined value"));
 				st.serialize(out);
 			}
 			break;
@@ -237,9 +234,19 @@
 			response.to_sh(out);
 			break;
 
+		case MimeType::css:
+			out << message << endl;
+			break;
+
 		default:
-			response["status"] = std::to_string(value);
-			response.serialize(out,mimetype);
+
+			try {
+				response["status"] = std::to_string(value);
+				response.serialize(out,mimetype);
+			} catch(const std::exception &e) {
+
+				Logger::String{e.what()}.error();
+			}
 
 		}
 
