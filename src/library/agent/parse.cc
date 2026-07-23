@@ -43,6 +43,10 @@ namespace Udjat {
 			return true;
 		}
 
+		if(props.build()) {
+			return true;
+		}
+
 		// It's a state?
 		if(props == "state") {
 

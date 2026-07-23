@@ -80,6 +80,10 @@
 		/// @brief Parse properties, build objects.
 		static bool build(const Properties &props);
 
+		inline bool build() const {
+			return build(*this);
+		}
+
 		/// @brief Check if it's a reserved tag.
 		/// @return true if this is a reserved tag and should be ignored by factories.
 		virtual bool reserved() const noexcept;

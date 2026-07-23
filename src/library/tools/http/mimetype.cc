@@ -19,6 +19,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/logger.h>
  #include <cstring>
  #include <iostream>
 
@@ -94,11 +95,13 @@
 
  	if(!(str && *str)) {
 		if(log_def) {
-			cerr << "http\tEmpty mimetype, assuming '" << types[0].str << "'" << endl;
+			Logger::String{"Empty mimetype, assuming '",types[0].str,"'"}.error("http");
 		}
 		return (Udjat::MimeType) 0;
  	}
 
+	debug("Finding mimetype for '",str,"'");
+	
 	// First check for the name
 	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
 		if(!strcasecmp(str,types[ix].str)) {
@@ -123,7 +126,7 @@
 
  	// Not found!
  	if(log_def) {
-		clog << "http\tUnknown mimetype '" << str << "' assuming '" << types[0].str << "'" << endl;
+		Logger::String{"Unknown mimetype '",str,"' assuming '",types[0].str,"'"}.warning("http");
  	}
  	return (Udjat::MimeType) 0;
  }
