@@ -35,13 +35,6 @@
  #include <udjat/alert.h>
  #include <udjat/action.h>
 
- //  #include <udjat/tools/object.h>
-//  #include <udjat/tools/configuration.h>
-//  #include <udjat/action.h>
-//  #include <udjat/tools/event.h>
-//  #include <udjat/tools/mainloop.h>
-//  #include <udjat/tools/logger.h>
-
 namespace Udjat {
 
 	bool Abstract::Agent::append_child(const Properties &props) {
@@ -73,7 +66,11 @@ namespace Udjat {
 			return true; // Handled by action.
 		}
 
-		Logger::String{"Ignoring build of '",props.node_name(),"'"}.warning(name());
+		auto logname = props["name"];
+		if(logname.empty()) {
+			logname = name();
+		}
+		Logger::String{"Cant find factory for '",props.node_name(),"', ignoring ",props.path().c_str()}.warning(logname.c_str());
 
 		return false;
 	}

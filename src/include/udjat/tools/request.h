@@ -151,9 +151,9 @@
 
 #endif
 
-		/// @brief Check the required role for this interface.
+		/// @brief Check the required role for this request.
 		/// @param role The current user role.
-		/// @return true if the user has access to this interface.
+		/// @return true if the user has access to this request.
 		inline bool allow(const Authentication::Role role = Authentication::None) const {
 			return authentication()->allow(role);
 		}

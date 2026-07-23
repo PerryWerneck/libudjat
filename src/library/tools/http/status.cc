@@ -92,6 +92,10 @@
 
 		time_t now = time(0);
 
+		if(mimetype != MimeType::none) {
+			callback("Content-Type",std::to_string(mimetype));
+		}
+
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
 		if(expires != (time_t) -1 && expires > now) {
 			

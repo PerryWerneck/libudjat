@@ -126,7 +126,7 @@
 		}
 
 		const char *name = props.node_name();	// Get property name, for factories.
-		debug("Node name for '",props.path()," is '",name,"'");
+		debug("Node name for '",props.path()," is '",name,"', searching factories");
 
 		// TODO: Rewrite init actions to use Object::Factory.
 		// if(strcasecmp(props.node_name(),"init") == 0) {
@@ -137,6 +137,7 @@
 		// Is it a factory?
 		for(const auto factory : Factories()) {
 
+			debug("Testing factory '",factory->c_str(),"'");
 			if(*factory == name) {
 
 				// Apend object.
