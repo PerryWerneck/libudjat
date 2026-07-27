@@ -35,6 +35,7 @@
  #include <udjat/tools/value.h>
  #include <stdexcept>
  #include <sstream>
+ #include <udjat/tools/file/path.h>
 
  using namespace std;
 
@@ -59,6 +60,27 @@
 		debug("Template file set to '",filepath.c_str(),"'");
 
 	}
+
+	// time_t Template::last_modified() const {
+
+	// 	struct stat st;
+	// 	if(stat(filename.c_str(), &st) < 0) {
+
+	// 		Logger::String{filename.c_str(),": ",strerror(errno)}.error();
+	// 		status.assign(HTTP::NotFound);
+	// 		return send(status,false);
+
+	// 	}
+
+	// 	if(!S_ISREG(st.st_mode)) {
+		
+	// 		status.assign(HTTP::NotFound);
+	// 		error(status.code,String{filename.c_str()," is not a regular file"}.c_str());
+	// 		return send(status,false);
+
+	// 	}
+
+	// }
 
 	static const char *get_default(const char *key) {
 
@@ -118,18 +140,26 @@
 
 			if(!callback(key.c_str(),stream)) {
 
-				// Callback failed, fallback to configuration file.
-				Config::Value<string> value{"theme",key.c_str(),get_default(key.c_str())};
+				// Callback failed, try configuration file.
+				std::string value = Config::Value<string>{"theme",key.c_str(),get_default(key.c_str())}.c_str();
 				debug(key,"='",value.c_str(),"'");
 
-				if(!value.empty()) {
-					stream << value.c_str();
-				} else {
+				if(value.empty()) {
+					// Cant get from configuration, try environment.
+					const char *env = getenv(key.c_str());
+					if(env) {
+						value =env;
+					}
+				}
+				
+				if(value.empty()) {
 					throw runtime_error(Logger::Message(
 						_("Unable to resolve '{}' on template '{}'"),
 						key.c_str(),filepath.c_str()
 					));
 				}
+
+				stream << value.c_str();
 
 			}
 

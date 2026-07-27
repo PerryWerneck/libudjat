@@ -204,6 +204,20 @@
 		return attr & FILE_ATTRIBUTE_NORMAL;
 	}
 
+	time_t File::Path::last_modified(const char *pathname) {
+
+		if(!(pathname && *pathname)) {
+			return 0;
+		}
+
+		struct stat s;
+		if(stat(pathname,&s) != 0) {
+			throw system_error(errno,system_category(),pathname);
+		}
+
+		return s.st_mtime;
+	}
+
 	bool File::Path::mkdir(const char *dirname, bool required, int UDJAT_UNUSED(mode)) {
 
 		if(!(dirname && *dirname)) {

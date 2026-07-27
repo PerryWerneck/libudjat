@@ -46,7 +46,12 @@
 		Template(const char *name, const MimeType mimetype = MimeType::none);
 
 		inline operator bool() const noexcept {
-			return (bool) filepath;
+			return filepath.regular();
+		}
+
+		/// @brief Get timestamp of the last file change.
+		inline time_t last_modified() const {
+			return filepath.last_modified();
 		}
 
 		/// @brief Apply template.

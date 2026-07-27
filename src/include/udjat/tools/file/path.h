@@ -79,15 +79,29 @@ namespace Udjat {
 			/// @return true if pathname is a regular file.
 			static bool regular(const char *pathname);
 
+			/// @brief Check if path is a regular file.
+			/// @return true if this file is a regular one.
+			inline bool regular() const {
+				return regular(c_str());
+			}
+
+			/// @brief Get timestamp of the last file change.
+			/// @param pathname the pathname to check;
+			/// @return Timestamp of the last modification.
+			static time_t last_modified(const char *pathname);
+
+			/// @brief Get timestamp of the last file change.
+			/// @return Timestamp of the last modification.
+			inline time_t last_modified() const {
+				return last_modified(c_str());
+			}
+
 			const char * name() const noexcept;
 
 			inline bool dir() const {
 				return dir(c_str());
 			}
 
-			inline bool regular() const {
-				return regular(c_str());
-			}
 
 			/// @brief Check if file match wildcard.
 			static bool match(const char *pathname, const char *pattern) noexcept;
