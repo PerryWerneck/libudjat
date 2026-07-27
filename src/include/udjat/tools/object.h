@@ -200,7 +200,7 @@
 			/// @brief Add object properties to the value.
 			virtual Value & get_properties(Value &value) const;
 
-			virtual int process(const char *path, const Request &request, Response &response);
+			virtual int process(const Request &request, Response &response);
 
 		};
 

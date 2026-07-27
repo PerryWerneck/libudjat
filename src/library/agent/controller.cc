@@ -389,7 +389,7 @@
 		return child;
 	}
 
-	bool Abstract::Agent::Controller::process(const char *path, const Request &request, Response &response) const {
+	bool Abstract::Agent::Controller::process(const Request &request, Response &response) const {
 
 		if(!this->root) {
 			request.error(Interface::name(),"Root agent is not available");
@@ -397,8 +397,8 @@
 			return true;
 		}
 
-		debug("Searching for agent '",path,"'");
-		auto agent = Abstract::Agent::Controller::getInstance().find(path,false);
+		debug("Searching for agent '",request.path(),"'");
+		auto agent = Abstract::Agent::Controller::getInstance().find(request.path(),false);
 		if(!agent) {
 			response = HTTP::NotFound;
 			return true;
@@ -443,7 +443,7 @@
 		}
 
 		OutputSchema out;
-		if(schema(path,out)) {
+		if(schema(request.path(),out)) {
 			for(const auto &item : out) {
 				agent->get_property(item.name(),response[item.name()]);
 			}

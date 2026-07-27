@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/container.h>
+ #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
  #include <udjat/tools/file/path.h>
  #include <udjat/tools/intl.h>
@@ -166,12 +167,12 @@
 		return value;
 	}
 
-	int Abstract::Object::process(const char *path, const Request &, Response &response) {
+	int Abstract::Object::process(const Request &request, Response &response) {
 
 		response.set(this);
 
 		OutputSchema schema;
-		if(this->schema(path,schema)) {
+		if(this->schema(request.path(),schema)) {
 
 			// Has schema, use it
 			for(const auto &item : schema) {

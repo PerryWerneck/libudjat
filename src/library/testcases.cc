@@ -86,7 +86,7 @@
 					Request request{path};
 					Response response{MimeType::yaml};
 
-					if(!intf->process(path,request,response)) {
+					if(!intf->process(request,response)) {
 						throw runtime_error("Request /module was not processed");
 					}
 
@@ -127,7 +127,7 @@
 					Request request;
 					Response response{MimeType::yaml};
 
-					agent.process("",request,response);
+					agent.process(request,response);
 
 					stream	<< "Got agent response:" 
 							<< endl
@@ -179,7 +179,9 @@
 						stream << "Processing" << (request.apicall() ? " API " : " ") 
 							<< "request for '" << request.path() << "' using interface '" 
 							<< intf->name() << "':" << endl;
-						if(!intf->process(request,stream)) {
+
+						HTTP::Status status;
+						if(!intf->process(request,status,stream)) {
 							throw runtime_error(String{"Interface was unable to process '",request.path(),"'"});
 						}
 						stream << endl;

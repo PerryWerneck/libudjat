@@ -161,7 +161,7 @@
 
 				auto name_offset = get_uint32(chain_offset + 4);
 
-				debug("- ",get_string_ptr(name_offset));
+				// debug("- ",get_string_ptr(name_offset));
 				if(!strcasecmp(name,get_string_ptr(name_offset))) {
 
 					auto image_list_offset = get_uint32(chain_offset + 8);

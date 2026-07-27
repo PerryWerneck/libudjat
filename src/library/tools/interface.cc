@@ -31,6 +31,7 @@
  #include <udjat/tools/template.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/template.h>
+ #include <udjat/tools/configuration.h>
  
  using namespace std;
 
@@ -105,17 +106,7 @@
 		return false;
 	}
 
-	bool Interface::process(const Request &request, Response &response) const {
-		debug(__FUNCTION__);
-		return process(request.path(),request,response);
-	}
-
-	bool Interface::process(const Request &request, std::ostream &stream) const {
-		debug(__FUNCTION__);
-		return process(request.path(),request,stream);
-	}
-
-	bool Interface::process(const char *, const Request &, Response &response) const {
+	bool Interface::process(const Request &, Response &response) const {
 		Logger::String{"Unable to process requests, the method 'process' was not overrided by interface code"}.error(name());
 		response.failed(HTTP::NotFound);
 		return true;
@@ -154,132 +145,68 @@
 		if(Logger::enabled(Logger::Debug)) {
 			request.info(name(),"Accepted");
 		}
+
+
 		return true;
 	}
 
-	HTTP::StatusCode Interface::process(const char *path, const Request &request, std::ostream &stream) const noexcept {
+	bool Interface::process(const Request &request, HTTP::Status &status, std::ostream &stream) const noexcept {
 
-		// Default process: Call API, format response on requested mimetype.
+		/// @brief Adapter.
+		class Adapter : public Udjat::Response {
+		public:
+			Adapter(HTTP::Status &status) : Udjat::Response{status.mimetype} {
+				this->status = status;
+			}
 
-		debug("Processing path '",path,"' at interface '",name(),"'");
-		
-		MimeType mimetype = request.mimetype();
-		Response response{mimetype};
+			~Adapter() override {
+			}
+
+		};
 
 		try {
 
-			if(allow(path,request,response)) {
+			Adapter response{status};
+			if(process(request,response)) {
 
-				// Request was allowed.
-				if(!process(path,request,response)) {
-					// Request was not processed.
-					response.failed(HTTP::NotFound);
+				// copy response;
+				status = (HTTP::Status) response;
+
+				if(status == HTTP::Ok) {
+
+					OutputSchema schema;
+					if(request.apicall() || status.mimetype != MimeType::html || !this->schema(request.path(),schema)) {
+
+						// It's an API call, dont have schema or not an html request, just serialize.
+						response.serialize(stream);
+
+					} else if(schema.template_name) {
+
+						// Have template, use it.
+						Template{schema.template_name}.apply(stream,response);
+		
+					} else {
+
+						// FIX-ME: Has schema but no template, serialize using schema.
+						response.serialize(stream);
+
+					}
+
 				}
+
+			} else {
+
+				// Rejected, return 'not found'
+				status = HTTP::NotFound;
 
 			}
 
 		} catch(const std::exception &e) {
-
-			response.failed(e);
-
-		} catch(...) {
-
-			response.failed(_("Unexpected error processing request"));
-
-		}
-
-		if(!request.apicall()) {
-
-			// It's not an apicall, try to use templates.
-			OutputSchema schema;
-			this->schema(schema);
-
-			return main_page(schema, response, stream);
-
-		} else {
-
-			response.serialize(stream);
-
-		}
-
-		return response.status_code();
-	}
-
-	HTTP::StatusCode Interface::main_page(const OutputSchema &schema, Response &response, std::ostream &stream) const noexcept {
-	
-		Template main_page{"main",(MimeType) response};
-
-		if(!main_page) {
-			Logger::String{"Main page template is not available."}.error();
-			response.failed(
-				_("A required file is unavailable within the selected theme. Please contact the system administrator for assistance.")
-			);
-			response.serialize(stream);
-			return response.status_code();
-		}
-
-		try {
-
-			main_page.apply(stream,[&schema,&response](const char *key, std::ostream &stream){
-
-				if(!strcasecmp(key,"page-summary")) {
-
-					// Page-summary is unsupported (for now).
-					return true;
-
-				}
-
-				MimeType mimetype = (MimeType) response;
-
-				if(!strcasecmp(key,"page-contents")) {
-
-					// Parse page contents.
-					if(response.status_code() != HTTP::Ok) {
-
-						// Use error template.
-						Template inner_page{"dialog-error",mimetype};
-						if(!inner_page) {
-							Logger::String{"Template 'dialog-error is missing'"}.warning();
-							response.serialize(stream);
-							return true;
-						}
-
-						inner_page.apply(stream, (HTTP::Status) response);
-
-					} else if(schema.template_name && *schema.template_name) {
-
-						// Use template from schema
-						Template inner_page{schema.template_name,mimetype};
-						if(!inner_page) {
-							Logger::String{"Template '",schema.template_name, "' is missing"}.warning();
-							response.serialize(stream);
-							return true;
-						}
-
-						inner_page.apply(stream, response);
-
-					} else {
-
-						// No template, just serialize.
-						response.serialize(stream);
-					}
-
-					return true;
-
-				}
-
-				return false;
-			});
-
-		} catch(const std::exception &e) {
-
-			Logger::String{e.what()};
-			return HTTP::SystemError;
-
+			status.assign(e);
 		}
 
 
-		return response.status_code();
+		return true;
 	}
 
  }

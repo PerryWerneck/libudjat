@@ -26,6 +26,7 @@
  #include <udjat/defs.h>
  #include <udjat/authentication.h>
  #include <udjat/tools/http/statuscodes.h>
+ #include <udjat/tools/http/status.h>
  #include <cstring>
  #include <ostream>
 
@@ -46,13 +47,6 @@
 		/// @param response The response to receive the status code and error message.
 		/// @return true if the request can bem processed.
 		bool allow(const char *path, const Request &request, Response &response) const noexcept;
-
-		/// @brief Apply main page template.
-		/// @param request The current request.
-		/// @param response The current response.
-		/// @param stream The stream output.
-		/// @return HTTP Status code from response.
-		HTTP::StatusCode main_page(const OutputSchema &schema, Response &response, std::ostream &stream) const noexcept;
 
 	public:
 		Interface(const char *name, const Authentication::Role = Authentication::Admin);
@@ -111,18 +105,15 @@
 		/// @param request The client request.
 		/// @param response The expected response.
 		/// @return true if the request was recognized and processed.
-		virtual bool process(const char *path, const Request &request, Response &response) const;
-
-		bool process(const Request &request, Response &response) const;
+		virtual bool process(const Request &request, Response &response) const;
 
 		/// @brief Process a stream request (usually from HTTP server);
 		/// @param path The request path.
 		/// @param request The client request.
-		/// @param stream The output stream.
-		/// @return The status code.
-		virtual HTTP::StatusCode process(const char *path, const Request &request, std::ostream &stream) const noexcept;
-
-		bool process(const Request &request, std::ostream &stream) const;
+		/// @param status Object to receive the processing status.
+		/// @param stream The output stream to receive the interface section.
+		/// @return true if the request was recognized and processed.
+		virtual bool process(const Request &request, HTTP::Status &status, std::ostream &stream) const noexcept;
 
 		/// @brief Enumerate interfaces.
 		static bool for_each(const std::function<bool(const Interface &interface)> &func);

@@ -26,6 +26,7 @@
 #include <udjat/tools/container.h>
 #include <iostream>
 #include <udjat/tools/logger.h>
+#include <udjat/tools/request.h>
 #include <udjat/tools/response.h>
 #include <udjat/tools/report.h>
 #include <udjat/tools/intl.h>
@@ -62,9 +63,9 @@ namespace Udjat {
 		return modules.for_each(method);
 	}
 
-	bool Module::Controller::process(const char *path, const Request &request, Response &response) const {
+	bool Module::Controller::process(const Request &request, Response &response) const {
 
-		if(*path) {
+		if(request.root()) {
 			response.failed(ENOENT);
 			return true;
 		}

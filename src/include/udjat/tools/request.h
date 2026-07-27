@@ -72,6 +72,12 @@
 			return apiver != 0;
 		}
 
+		/// @bref Check if request is for root page.
+		/// @return true if the path is "/"
+		inline bool root() const noexcept {
+			return reqpath[0] == '/' && reqpath[1] == 0;
+		}
+
 		virtual MimeType mimetype() const noexcept;
 
 		virtual HTTP::Method method() const noexcept;
