@@ -43,6 +43,7 @@
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/http/exception.h>
  #include <unistd.h>
 
  #include <udjat/tools/logger.h>
@@ -393,7 +394,7 @@
 
 		if(!this->root) {
 			request.error(Interface::name(),"Root agent is not available");
-			response.failed(HTTP::Unavailable);
+			response = HTTP::Unavailable;
 			return true;
 		}
 

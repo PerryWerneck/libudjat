@@ -172,27 +172,39 @@
 				// copy response;
 				status = (HTTP::Status) response;
 
-				if(status == HTTP::Ok) {
+				if(status.code >= 200 && status.code <= 299) {
+
+					debug("Process returned OK");
 
 					OutputSchema schema;
 					if(request.apicall() || status.mimetype != MimeType::html || !this->schema(request.path(),schema)) {
 
 						// It's an API call, dont have schema or not an html request, just serialize.
+						debug("API call or not html, just serializing");
 						response.serialize(stream);
 
 					} else if(schema.template_name) {
 
 						// Have template, use it.
+						debug("Trying template");
 						Template{schema.template_name}.apply(stream,response);
 		
 					} else {
 
-						// FIX-ME: Has schema but no template, serialize using schema.
+							// FIX-ME: Has schema but no template, serialize using schema.
+						debug("Serializing from schema");
+						stream << "<section>"; 
 						response.serialize(stream);
+						stream << "</section>";
 
 					}
 
 				}
+#ifdef DEBUG
+				else {
+					debug("Status was not ok (",(int) status.code,")");
+				}
+#endif
 
 			} else {
 
@@ -205,8 +217,8 @@
 			status.assign(e);
 		}
 
-
 		return true;
+
 	}
 
  }
