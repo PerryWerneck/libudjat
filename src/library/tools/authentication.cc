@@ -348,6 +348,7 @@
 	}
 
 	void Authentication::clear() noexcept {
+		debug("Authentication set to 'none'")
 		user.role = Role::None;
 		user.name.clear();
 	}

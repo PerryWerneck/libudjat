@@ -209,8 +209,9 @@
 		/// @return The path remaining after 'pop()' calls.
 		const char * path() const noexcept;
 
-		/// @brief pop() first element from path, select it from list.
-		/// @return Index of the selected action or negative if not found.
+		/// @brief Scan path prefix from a list of options, if found remove the option from path..
+		/// @return Index of the action fround and removed from path;.
+		/// @retval -EINVAL The current path doesnt start with '/'
 		/// @retval -ENODATA The request is empty.
 		/// @retval -ENOENT The action is not in the list.
 		/// @see pop()

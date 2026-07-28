@@ -217,11 +217,28 @@
 
 	int Request::select(const char *value, ...) noexcept {
 
-		Udjat::String action{pop()};
+		if(argptr[0] == 0 || argptr[1] == 0) {
+			return -ENODATA;
+		}
 
+		if(argptr[0] != '/') {
+			return -EINVAL;
+		}
+
+		int rc = -ENOENT;
+		int index = 0;
 		va_list args;
 		va_start(args, value);
-		int rc = action.select(value,args);
+
+		while(value) {
+			if(pop(value,argptr)) {
+				rc = index;
+				break;
+			}
+			index++;
+			value = va_arg(args, const char *);
+		}
+
 		va_end(args);
 		return rc;
 
