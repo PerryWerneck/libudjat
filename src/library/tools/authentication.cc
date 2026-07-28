@@ -322,7 +322,9 @@
 
 		Config::Value<string> owner{"authentication","owner"};
 
-		if(!(owner.empty() || strcasecmp(email,owner.c_str()))){
+		this->email(email);
+
+		if(!(owner.empty() || strcmp(email,owner.c_str()))){
 			Logger::String{"User '",email,"' logged in as owner"}.info();
 			return user.role = Role::Owner;
 		}

@@ -142,9 +142,21 @@
 					return user.name.c_str();
 				}
 
-			protected:
+				inline const char *email() const noexcept {
+					return user.email.c_str();
+				}
+
+				protected:
 				inline void name(const char *name) noexcept {
 					user.name = name;
+				}
+
+				inline void role(const Role role) noexcept {
+					user.role = role;
+				}
+
+				inline void email(const char *email) noexcept {
+					user.email = email;
 				}
 
 				/// @brief Set login name to 'email', update role.
@@ -157,6 +169,7 @@
 				struct {
 					Role role = None;
 					std::string name;
+					std::string email;
 				} user;
 
 
