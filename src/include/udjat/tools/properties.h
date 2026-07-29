@@ -161,7 +161,20 @@
 		/// @return Test result.
 		/// @retval false if callback function returned false in all children.
 		/// @retval true if callback function returned true.
-		virtual bool for_each_child(const char *tagname, const std::function<bool(const Properties &property)> &call) const;
+		virtual bool for_each_child(const char *attrname, const std::function<bool(const Properties &property)> &call) const;
+
+		/// @brief Load multiple child nodes into a container.
+		/// @details This function loads all child nodes with the given name into the provided container.
+		/// @tparam C The container element class (usually a vector).
+		/// @param attrname Attribute name for child nodes.
+		/// @param container The container to load nodes into.
+		template <class C>
+		inline bool load_children(const char *attrname, C &container) const {
+			return for_each_child(attrname,[&container](const Properties &child){
+				container.emplace_back(child);
+				return false;
+			});
+		}
 
 		/// @brief Navigate thru XML nodes, including groups.
 		/// @param node The XML node to start search.
