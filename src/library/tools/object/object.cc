@@ -70,22 +70,25 @@
 		return NamedObject::schema(path,schema);
 	}
 
-	bool Object::schema(const char *path, InputSchema &schema) const noexcept {
-		return NamedObject::schema(path,schema);
+	bool Object::schema(const HTTP::Method method, const char *path, InputSchema &schema) const noexcept {
+		return NamedObject::schema(method,path,schema);
 	}
 
-	bool Object::schema(const char *path, OutputSchema &schema) const noexcept {
+	bool Object::schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept {
 
-		NamedObject::schema(path,schema);
+		auto rc = NamedObject::schema(method,path,schema);
 
-		schema.add(
-			Schema::Item{ "summary",	Schema::String,	},
-			Schema::Item{ "label",		Schema::String,	},
-			Schema::Item{ "url",		Schema::String,	},
-			Schema::Item{ "icon",		Schema::Icon,	}
-		);
+		if(method == HTTP::Get) {
+			schema.add(
+				Schema::Item{ "summary",	Schema::String,	},
+				Schema::Item{ "label",		Schema::String,	},
+				Schema::Item{ "url",		Schema::String,	},
+				Schema::Item{ "icon",		Schema::Icon,	}
+			);
+			return true;
+		}
 
-		return true;
+		return rc;
 	}
 
 	bool Object::get_property(const char *key, Value &value) const {

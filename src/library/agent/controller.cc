@@ -63,14 +63,14 @@
 		Logger::String{"Deinitializing controller"}.trace();
 	}
 
-	bool Abstract::Agent::Controller::schema(const char *path, OutputSchema &schema) const noexcept {
+	bool Abstract::Agent::Controller::schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept {
 
 		debug("Getting output schema for '",Interface::name(),"' at '",path,"'");
 
 		if(!(root && (path && *path))) {
 			// Return default output schema.
 			debug("Returning default output schema for '",Interface::name(),"'");
-			return Abstract::Agent{}.schema("",schema);
+			return Abstract::Agent{}.schema(method,"",schema);
 		}
 
 		auto agent = root;
@@ -83,10 +83,10 @@
 		}
 
 		debug("Returning agent output schema for '",Interface::name(),"'");
-		return agent->schema("",schema);
+		return agent->schema(method,"",schema);
 	}
 
-	bool Abstract::Agent::Controller::schema(const char *path, InputSchema &schema) const noexcept {
+	bool Abstract::Agent::Controller::schema(const HTTP::Method method, const char *path, InputSchema &schema) const noexcept {
 
 		if(!(root && (path && *path))) {
 			// No root or no path, return the default 'No-schema'.
@@ -101,7 +101,7 @@
 			}
 		}
 
-		return agent->schema("",schema);
+		return agent->schema(method,"",schema);
 
 	}
 
@@ -444,7 +444,7 @@
 		}
 
 		OutputSchema out;
-		if(schema(request.path(),out)) {
+		if(schema(request.method(),request.path(),out)) {
 			for(const auto &item : out) {
 				agent->get_property(item.name(),response[item.name()]);
 			}

@@ -54,11 +54,11 @@
 		return true;
 	}
 
-	bool Abstract::Object::schema(const char *, InputSchema &) const noexcept {
+	bool Abstract::Object::schema(const HTTP::Method, const char *, InputSchema &) const noexcept {
 		return false;
 	}
 
-	bool Abstract::Object::schema(const char *, OutputSchema &) const noexcept {
+	bool Abstract::Object::schema(const HTTP::Method, const char *, OutputSchema &) const noexcept {
 		return false;
 	}
 
@@ -159,7 +159,7 @@
 
 	Value & Abstract::Object::get_properties(Value &value) const {
 		OutputSchema schema;
-		if(this->schema("",schema)) {
+		if(this->schema(HTTP::Get,"",schema)) {
 			for(const auto &item : schema) {
 				get_property(item.name(),value);
 			}
@@ -172,7 +172,7 @@
 		response.set(this);
 
 		OutputSchema schema;
-		if(this->schema(request.path(),schema)) {
+		if(this->schema(request.method(),request.path(),schema)) {
 
 			// Has schema, use it
 			for(const auto &item : schema) {

@@ -234,6 +234,8 @@
 
 			~Agent() override;
 
+			virtual const Schema::Type type() const noexcept;
+
 			/// @brief Append child object from properties.
 			/// @details This method is called by parse_children() for every child.
 			/// @param props The children properties.
@@ -338,13 +340,13 @@
 			/// @param path The request path for schema.
 			/// @param[out] schema Object populated with the output schema details.
 			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
-			bool schema(const char *path, InputSchema &schema) const noexcept override;
+			bool schema(const HTTP::Method method, const char *path, InputSchema &schema) const noexcept override;
 
 			/// @brief Retrieves the schema definition for the object outputs.
 			/// @param path The request path for schema.
 			/// @param[out] schema Object populated with the output schema details.
 			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
-			bool schema(const char *path, OutputSchema &s) const noexcept override;
+			bool schema(const HTTP::Method method, const char *path, OutputSchema &s) const noexcept override;
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
@@ -514,6 +516,10 @@
 		Agent(const char *name, const T v) : Abstract::Agent{name}, value{v} {
 		}
 
+		const Schema::Type type() const noexcept override {
+			return Schema::TypeFactory<T>();
+		}
+
 		friend std::ostream& operator<<(std::ostream& out, const Agent &a) {
 			return out << a.value;
 		}
@@ -556,14 +562,6 @@
 			return state;
 		}
 
-		bool schema(const char *path, OutputSchema &schema) const noexcept override {
-			Abstract::Agent::schema(path,schema);
-			schema.add(
-				Schema::Item{ "value",	Udjat::Schema::TypeFactory<T>() }
-			);
-			return true;
-		}
-
 		std::string to_string() const noexcept override {
 			return std::to_string(value);
 		}
@@ -604,6 +602,10 @@
 		}
 
 		Agent(const char *name, const char *v) : Abstract::Agent(name), value(v) {
+		}
+
+		const Schema::Type type() const noexcept override {
+			return Schema::String;
 		}
 
 		friend std::ostream& operator<<(std::ostream& out, const Agent &a) {
@@ -649,14 +651,6 @@
 			return state;
 		}
 
-		bool schema(const char *path, OutputSchema &schema) const noexcept override {
-			Abstract::Agent::schema(path,schema);
-			schema.add(
-				Schema::Item{ "value",	Schema::String }
-			);
-			return true;
-		}
-
 		std::string to_string() const noexcept override {
 			return value;
 		}
@@ -696,6 +690,10 @@
 		Agent(const char *name, bool v) : Abstract::Agent(name), value(v) {
 		}
 
+		const Schema::Type type() const noexcept override {
+			return Schema::Boolean;
+		}
+
 		bool set(const bool value) {
 
 			if(value == this->value)
@@ -719,15 +717,6 @@
 			auto state =std::make_shared<State<bool>>(props);
 			states.push_back(state);
 			return state;
-		}
-
-		bool schema(const char *path, OutputSchema &schema) const noexcept override {
-			Abstract::Agent::schema(path,schema);
-			schema.add(
-				Schema::Item{ "value",	Schema::Boolean }
-			);
-
-			return true;
 		}
 
 		std::string to_string() const noexcept override {

@@ -111,7 +111,7 @@ namespace Udjat {
 			modules.remove(module);
 		}
 
-		bool process(const Request &request, Response &response) const override;
+		bool process(const Request &request, Response &response) const noexcept override;
 
 
 	};

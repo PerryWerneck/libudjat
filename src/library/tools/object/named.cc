@@ -35,23 +35,25 @@
 	NamedObject::NamedObject(const Properties &props) : NamedObject{props["name"].as_quark()} {
 	}
 
-	bool NamedObject::schema(const char *path, InputSchema &schema) const noexcept {
-		return Abstract::Object::schema(path,schema);
+	bool NamedObject::schema(const HTTP::Method method, const char *path, InputSchema &schema) const noexcept {
+		return Abstract::Object::schema(method,path,schema);
 	}
 
 	bool NamedObject::schema(const char *path, HTTPSchema &schema) const noexcept {
 		return Abstract::Object::schema(path,schema);
 	}
 	
-	bool NamedObject::schema(const char *path, OutputSchema &schema) const noexcept {
+	bool NamedObject::schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept {
 
-		Abstract::Object::schema(path,schema);
-
-		schema.add(
-			Schema::Item{ "name", Schema::String	}
-		);
-
-		return true;
+		auto rc = Abstract::Object::schema(method,path,schema);
+		if(method == HTTP::Get) {
+			schema.add(
+				Schema::Item{ "name", Schema::String	}
+			);
+			return true;
+		}
+		return rc;
+		
 	}
 
 	bool NamedObject::get_property(const char *key, Value &value) const {

@@ -46,8 +46,8 @@ namespace Udjat {
 
 		void update_agents();
 
-		bool schema(const char *path, OutputSchema &s) const noexcept override;
-		bool schema(const char *path, InputSchema &s) const noexcept override;
+		bool schema(const HTTP::Method method, const char *path, OutputSchema &s) const noexcept override;
+		bool schema(const HTTP::Method method, const char *path, InputSchema &s) const noexcept override;
 
 	public:
 		~Controller();
@@ -69,7 +69,7 @@ namespace Udjat {
 		std::shared_ptr<Abstract::Object> ObjectFactory(const Udjat::Properties &props) const override;
 
 		// Interface
-		bool process(const Request &request, Response &response) const override;
+		bool process(const Request &request, Response &response) const noexcept override;
 
 	};
 

@@ -26,6 +26,7 @@
  #include <udjat/defs.h>
  #include <udjat/authentication.h>
  #include <udjat/tools/http/statuscodes.h>
+ #include <udjat/tools/http/method.h>
  #include <udjat/tools/http/status.h>
  #include <cstring>
  #include <ostream>
@@ -85,19 +86,33 @@
 		virtual bool schema(const char *path, HTTPSchema &schema) const noexcept;
 
 		/// @brief Retrieves the schema definition for the interface inputs.
+		/// @param[in] method The requested method.
 		/// @param[in] path The path for required object on interface.
 		/// @param[out] s Object populated with the interface input schema details.
 		/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
-		virtual bool schema(const char *path, InputSchema &schema) const noexcept;
+		virtual bool schema(const HTTP::Method method, const char *path, InputSchema &schema) const noexcept;
+
+		inline bool schema(const char *path, InputSchema &schema) const noexcept {
+			return this->schema(HTTP::Get,path,schema);
+		}
+
+		inline bool schema(InputSchema &s) const noexcept {
+			return schema(HTTP::Get,"",s);
+		}
 
 		/// @brief Retrieves the schema definition for the interface outputs.
+		/// @param[in] method The requested method.
 		/// @param[in] path The path for required object on interface.
 		/// @param[out] s Object populated with the interface output schema details.
 		/// @return True if the interface defines an output schema; false otherwise (schema remains unmodified).
-		virtual bool schema(const char *path, OutputSchema &schema) const noexcept;
+		virtual bool schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept;
+
+		inline bool schema(const char *path, OutputSchema &schema) const noexcept {
+			return this->schema(HTTP::Get,path,schema);
+		}
 
 		inline bool schema(OutputSchema &s) const noexcept {
-			return schema("",s);
+			return schema(HTTP::Get,"",s);
 		}
 
 		/// @brief Process an API request.
@@ -105,7 +120,7 @@
 		/// @param request The client request.
 		/// @param response The expected response.
 		/// @return true if the request was recognized and processed.
-		virtual bool process(const Request &request, Response &response) const;
+		virtual bool process(const Request &request, Response &response) const noexcept;
 
 		/// @brief Process a stream request (usually from HTTP server);
 		/// @param path The request path.

@@ -132,6 +132,10 @@
 
 	}
 
+	const Schema::Type Abstract::Agent::type() const noexcept {
+		return Schema::String;	// Default type.
+	}
+
 	void Abstract::Agent::stop() {
 
 		debug("Stopping agent '",name(),"'");

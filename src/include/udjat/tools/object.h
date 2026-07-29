@@ -24,6 +24,7 @@
  #include <string>
  #include <udjat/tools/properties.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/http/method.h>
  #include <cstring>
  #include <functional>
  #include <memory>
@@ -102,17 +103,17 @@
 			/// @return True if the interface defines an http schema; false otherwise (schema remains unmodified).
 			virtual bool schema(const char *path, HTTPSchema &s) const noexcept;
 
-			/// @brief Retrieves the schema definition for the interface inputs.
-			/// @param[in] path The path for required object on interface.
+			/// @brief Retrieves the schema definition for the object inputs.
+			/// @param[in] path The request path for schema.
 			/// @param[out] s Object populated with the interface input schema details.
 			/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
-			virtual bool schema(const char *path, InputSchema &s) const noexcept;
+			virtual bool schema(const HTTP::Method method, const char *path, InputSchema &s) const noexcept;
 
 			/// @brief Retrieves the schema definition for the object outputs.
 			/// @param path The request path for schema.
 			/// @param[out] schema Object populated with the output schema details.
 			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
-			virtual bool schema(const char *path, OutputSchema &s) const noexcept;
+			virtual bool schema(const HTTP::Method method, const char *path, OutputSchema &s) const noexcept;
 
 			virtual const char * name() const noexcept;
 
@@ -291,13 +292,13 @@
 		/// @param[in] path The path for required object on interface.
 		/// @param[out] s Object populated with the interface input schema details.
 		/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
-		virtual bool schema(const char *path, InputSchema &s) const noexcept override;
+		virtual bool schema(const HTTP::Method method, const char *path, InputSchema &s) const noexcept override;
 
 		/// @brief Retrieves the schema definition for the object outputs.
 		/// @param path The request path for schema.
 		/// @param[out] schema Object populated with the output schema details.
 		/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
-		virtual bool schema(const char *path, OutputSchema &s) const noexcept override;
+		virtual bool schema(const HTTP::Method method, const char *path, OutputSchema &s) const noexcept override;
 
 	};
 
@@ -365,13 +366,13 @@
 		/// @param[in] path The path for required object on interface.
 		/// @param[out] s Object populated with the interface input schema details.
 		/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
-		virtual bool schema(const char *path, InputSchema &s) const noexcept override;
+		virtual bool schema(const HTTP::Method method, const char *path, InputSchema &s) const noexcept override;
 
 		/// @brief Retrieves the schema definition for the object outputs.
 		/// @param path The request path for schema.
 		/// @param[out] schema Object populated with the output schema details.
 		/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
-		virtual bool schema(const char *path, OutputSchema &s) const noexcept override;
+		virtual bool schema(const HTTP::Method method, const char *path, OutputSchema &s) const noexcept override;
 
 	};
 

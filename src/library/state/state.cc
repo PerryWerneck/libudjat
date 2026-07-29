@@ -164,13 +164,16 @@ namespace Udjat {
 		return value;
 	}
 
-	bool Abstract::State::schema(const char *path, OutputSchema &schema) const noexcept {
-		Object::schema(path,schema);
-		schema.add(
-			Schema::Item{ "body",	Schema::String },
-			Schema::Item{ "level",	Schema::String }
-		);
-		return true;
+	bool Abstract::State::schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept {
+		auto rc = Object::schema(method,path,schema);
+		if(method == HTTP::Get) {
+			schema.add(
+				Schema::Item{ "body",	Schema::String },
+				Schema::Item{ "level",	Schema::String }
+			);
+			return true;
+		}
+		return rc;
 	}
 
 	void Abstract::State::activate(const Abstract::Object &object) noexcept {

@@ -26,7 +26,8 @@
 
  using namespace std;
 
- static const char * method_names[] = {
+ static const char * method_names[Udjat::HTTP::MethodCount] = {
+	"INVALID",
 	"GET",
 	"HEAD",
 	"POST",
@@ -41,7 +42,7 @@
  namespace Udjat {
 
 	HTTP::Method HTTP::MethodFactory(const char *name) {
-		for(size_t ix = 0; ix < (sizeof(method_names)/sizeof(method_names[0])); ix++) {
+		for(size_t ix = 0; ix < Udjat::HTTP::MethodCount; ix++) {
 			if(!strcasecmp(name,method_names[ix])) {
 				return (Method) ix;
 			}
@@ -66,8 +67,8 @@
  namespace std {
 
 	const char * to_string(const Udjat::HTTP::Method method) {
-		if((size_t) method > (sizeof(method_names)/sizeof(method_names[0]))) {
-			throw system_error(EINVAL,system_category(),"Invalid method id");
+		if(method > Udjat::HTTP::MethodCount) {
+			return method_names[Udjat::HTTP::UnknownMethod];
 		}
 		return method_names[method];
 	}

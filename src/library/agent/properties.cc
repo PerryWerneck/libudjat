@@ -40,24 +40,27 @@
 		return true;
 	}
 
-	bool Abstract::Agent::schema(const char *path, InputSchema &schema) const noexcept {
-		return Object::schema(path,schema);
+	bool Abstract::Agent::schema(const HTTP::Method method, const char *path, InputSchema &schema) const noexcept {
+		return Object::schema(method,path,schema);
 	}
 
-	bool Abstract::Agent::schema(const char *path, OutputSchema &schema) const noexcept {
+	bool Abstract::Agent::schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept {
 
-		Object::schema(path,schema);
+		auto rc = Object::schema(method,path,schema);
 
-		schema.add(
-			Schema::Item{ "path",			Schema::String,		_("The agent path")	},
-			Schema::Item{ "message",		Schema::String,		_("The Current state text") },
-			Schema::Item{ "state",			Schema::String,		_("The current state value") },
-			Schema::Item{ "statename",		Schema::String,		_("The current state name") },
-			Schema::Item{ "stateicon",		Schema::Icon,		_("The current state icon") },
-			Schema::Item{ "timestamp",		Schema::Timestamp,	_("Timestamp of the last state change")	}
-		);
+		if(method == HTTP::Get) {
+			schema.add(
+				Schema::Item{ "path",			Schema::String,		_("The agent path")	},
+				Schema::Item{ "message",		Schema::String,		_("The Current state text") },
+				Schema::Item{ "state",			Schema::String,		_("The current state value") },
+				Schema::Item{ "statename",		Schema::String,		_("The current state name") },
+				Schema::Item{ "stateicon",		Schema::Icon,		_("The current state icon") },
+				Schema::Item{ "timestamp",		Schema::Timestamp,	_("Timestamp of the last state change")	}
+			);
+			return true;
+		}
 
-		return true;
+		return rc;
 	}
 
 	bool Abstract::Agent::get_property(const char *key, Value &value) const {

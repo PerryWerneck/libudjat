@@ -23,30 +23,30 @@
  #include <udjat/tools/properties.h>
  #include <cstdint>
 
- namespace Udjat {
+ namespace Udjat::HTTP {
 
-	namespace HTTP {
+	/// @brief Protocol Method.
+	/// <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods>
+	enum Method : uint8_t {
+		UnknownMethod,	///< @brief The method is invalid.
+		Get,			///< @brief Requests a representation of the specified resource.
+		Head,			///< @brief Asks for a response identical to that of a GET request, but without the response body.
+		Post,			///< @brief Submit an entity to the specified resource, often causing a change in state or side effects on the server.
+		Put,			///< @brief Replaces all current representations of the target resource with the request payload.
+		Delete,			///< @brief Deletes the specified resource.
+		Connect,		///< @brief Establishes a tunnel to the server identified by the target resource.
+		Options,		///< @brief Describe the communication options for the target resource.
+		Trace,			///< @brief Performs a message loop-back test along the path to the target resource.
+		Patch,			///< @brief Apply partial modifications to a resource.
 
-		/// @brief Protocol Method.
-		/// <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods>
-		enum Method : uint8_t {
-			Get,		///< @brief Requests a representation of the specified resource.
-			Head,		///< @brief Asks for a response identical to that of a GET request, but without the response body.
-			Post,		///< @brief Submit an entity to the specified resource, often causing a change in state or side effects on the server.
-			Put,		///< @brief Replaces all current representations of the target resource with the request payload.
-			Delete,		///< @brief Deletes the specified resource.
-			Connect,	///< @brief Establishes a tunnel to the server identified by the target resource.
-			Options,	///< @brief Describe the communication options for the target resource.
-			Trace,		///< @brief Performs a message loop-back test along the path to the target resource.
-			Patch,		///< @brief Apply partial modifications to a resource.
-		};
+		// Allways the last.
+		MethodCount	///< @brief Count of http methods.
+	};
 
-		UDJAT_API Method MethodFactory(const char *name);
-		UDJAT_API Method MethodFactory(const Properties &props, const char *attrname, const char *def);
-		UDJAT_API Method MethodFactory(const Properties &props, const char *def);
-		UDJAT_API Method MethodFactory(const Properties &props);
-
-	}
+	UDJAT_API Method MethodFactory(const char *name);
+	UDJAT_API Method MethodFactory(const Properties &props, const char *attrname, const char *def);
+	UDJAT_API Method MethodFactory(const Properties &props, const char *def);
+	UDJAT_API Method MethodFactory(const Properties &props);
 
  }
 

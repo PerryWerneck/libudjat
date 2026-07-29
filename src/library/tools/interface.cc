@@ -98,16 +98,16 @@
 		return true;
 	}
 
-	bool Interface::schema(const char *, InputSchema &) const noexcept {
+	bool Interface::schema(const HTTP::Method, const char *, InputSchema &) const noexcept {
 		return false;
 	}
 
-	bool Interface::schema(const char *, OutputSchema &) const noexcept {
+	bool Interface::schema(const HTTP::Method, const char *, OutputSchema &) const noexcept {
 		return false;
 	}
 
-	bool Interface::process(const Request &, Response &response) const {
-		Logger::String{"Unable to process requests, the method 'process' was not overrided by interface code"}.error(name());
+	bool Interface::process(const Request &, Response &response) const noexcept {
+		Logger::String{"Unable to process requests, the method 'process' was not overrided by interface code"}.warning(name());
 		response.failed(HTTP::NotFound);
 		return true;
 	}

@@ -170,7 +170,7 @@
 			/// @brief Retrieves the schema definition for the object outputs.
 			/// @param[out] schema Object populated with the output schema details.
 			/// @return True if the object defines an output schema; false otherwise (schema remains unmodified).
-			bool schema(const char *path, OutputSchema &schema) const noexcept override;
+			bool schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept override;
 
 			/// @brief Get agent property as string.
 			/// @param key The property name.

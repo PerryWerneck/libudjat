@@ -107,7 +107,7 @@
 					Agent<int> agent{};
 					OutputSchema schema;
 
-					if(!agent.schema("",schema)) {
+					if(!agent.schema(HTTP::Get,"",schema)) {
 						throw runtime_error("Agent should have output schema");
 					}
 
