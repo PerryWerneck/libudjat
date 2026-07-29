@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-16 16:20-0300\n"
-"PO-Revision-Date: 2026-07-16 16:21-0300\n"
+"POT-Creation-Date: 2026-07-29 17:35-0300\n"
+"PO-Revision-Date: 2026-07-29 17:40-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -20,47 +20,6 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.9\n"
 
-#: src/library/agent/state.cc:146
-msgid "Error activating state"
-msgstr "Erro ao ativar estado"
-
-#: src/library/agent/state.cc:151
-msgid "Unexpected error activating state"
-msgstr "Erro inesperado ao ativar estado"
-
-#: src/library/agent/agent.cc:236
-msgid "default"
-msgstr "padrão"
-
-#: src/library/agent/agent.cc:238
-msgid "Normal"
-msgstr "Normal"
-
-#: src/library/agent/agent.cc:239
-msgid "Agent has nothing to report"
-msgstr "Agente não tem nada a informar"
-
-#: src/library/agent/controller.cc:134
-msgid "Root agent is not available"
-msgstr "Agente raiz não está disponível"
-
-#: src/library/agent/controller.cc:391
-msgid "Get agent properties"
-msgstr "Obtém propriedades do agente"
-
-#: src/library/agent/properties.cc:39
-msgid "The agent path"
-msgstr ""
-
-#: src/library/agent/properties.cc:43
-#, fuzzy
-msgid "Icon name for the current agent state"
-msgstr "Não foi possível obter o estado da TPM"
-
-#: src/library/agent/properties.cc:44
-msgid "Timestamp of the last state change"
-msgstr "Data/hora da última mudança de estado"
-
 #: src/library/agent/root.cc:101
 #: src/library/tools/systemservice/systemservice.cc:143
 msgid "System is ready"
@@ -70,10 +29,57 @@ msgstr "Sistema em funcionamento"
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
-#: src/library/module/controller.cc:84
-#, fuzzy
+#: src/library/agent/state.cc:146
+msgid "Error activating state"
+msgstr "Erro ao ativar estado"
+
+#: src/library/agent/state.cc:151
+msgid "Unexpected error activating state"
+msgstr "Erro inesperado ao ativar estado"
+
+#: src/library/agent/agent.cc:240
+msgid "default"
+msgstr "padrão"
+
+#: src/library/agent/agent.cc:242
+msgid "Normal"
+msgstr "Normal"
+
+#: src/library/agent/agent.cc:243
+msgid "Agent has nothing to report"
+msgstr "Agente não tem nada a informar"
+
+#: src/library/agent/controller.cc:143
+msgid "Root agent is not available"
+msgstr "Agente raiz não está disponível"
+
+#: src/library/agent/properties.cc:53
+msgid "The agent path"
+msgstr ""
+
+#: src/library/agent/properties.cc:54
+msgid "The Current state text"
+msgstr ""
+
+#: src/library/agent/properties.cc:55
+msgid "The current state value"
+msgstr ""
+
+#: src/library/agent/properties.cc:56
+msgid "The current state name"
+msgstr ""
+
+#: src/library/agent/properties.cc:57
+msgid "The current state icon"
+msgstr ""
+
+#: src/library/agent/properties.cc:58
+msgid "Timestamp of the last state change"
+msgstr "Data/hora da última mudança de estado"
+
+#: src/library/module/controller.cc:85
 msgid "Available modules"
-msgstr "Testes disponíveis"
+msgstr "Módulos disponíveis"
 
 #: src/library/module/module.cc:103
 #, c++-format
@@ -85,17 +91,17 @@ msgstr "Modulo '{}' não foi carregado"
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
 
-#: src/library/state/state.cc:268 src/library/tools/converters.cc:42
+#: src/library/state/state.cc:271 src/library/tools/converters.cc:42
 msgid "on"
 msgstr "ligado"
 
-#: src/library/state/state.cc:268 src/library/tools/converters.cc:49
+#: src/library/state/state.cc:271 src/library/tools/converters.cc:49
 msgid "off"
 msgstr "desligado"
 
 #: src/library/tools/application/argparser.cc:36
 msgid "Enable auto exit timer in seconds"
-msgstr ""
+msgstr "Ativa encerramento automático após alguns segundos"
 
 #: src/library/tools/application/argparser.cc:36
 #: src/library/tools/timestamp.cc:247
@@ -108,7 +114,7 @@ msgstr ""
 
 #: src/library/tools/application/loader.cc:98
 msgid "Run all unit tests"
-msgstr ""
+msgstr "Executar todos os casos de teste"
 
 #: src/library/tools/application/loader.cc:113
 msgid "Interactive mode"
@@ -311,7 +317,7 @@ msgstr "O servidor encontrou uma situação que ele não sabe como resolver."
 msgid "Not Implemented"
 msgstr "Não implementado"
 
-#: src/library/tools/http/error.cc:166
+#: src/library/tools/http/error.cc:166 src/library/tools/http/status.cc:418
 msgid ""
 "The request method is not supported by the server and cannot be handled."
 msgstr ""
@@ -398,6 +404,66 @@ msgstr "Erro HTTP {}"
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
 
+#: src/library/tools/http/status.cc:182 src/library/response/response.cc:111
+msgid "Unable to serialize undefined value"
+msgstr "Não é possível serializar valor indefinido"
+
+#: src/library/tools/http/status.cc:213
+msgid "Failed."
+msgstr ""
+
+#: src/library/tools/http/status.cc:260 src/library/tools/http/status.cc:366
+msgid "Unable to Complete Request"
+msgstr "Não foi possível completar a requisição"
+
+#: src/library/tools/http/status.cc:261 src/library/tools/http/status.cc:298
+#: src/library/tools/http/status.cc:320 src/library/tools/http/status.cc:376
+#: src/library/tools/http/status.cc:379 src/library/tools/http/status.cc:382
+msgid "We're sorry, but we encountered an error while processing your request."
+msgstr ""
+
+#: src/library/tools/http/status.cc:281 src/library/tools/http/status.cc:329
+#: src/library/tools/http/status.cc:336
+#, c++-format
+msgid "The system error was '{}'"
+msgstr "O erro de sistema foi '{}'"
+
+#: src/library/tools/http/status.cc:319
+msgid "System error"
+msgstr "Erro de sistema"
+
+#: src/library/tools/http/status.cc:383
+msgid "Unexpected error processing request"
+msgstr "Erro inesperado processando requisição"
+
+#: src/library/tools/http/status.cc:402
+msgid "The requested resource could not be found."
+msgstr "O recurso pedido não foi encontrado."
+
+#: src/library/tools/http/status.cc:406
+msgid "You dont have access to this resource."
+msgstr "Você não tem acesso a esse recurso."
+
+#: src/library/tools/http/status.cc:410
+msgid "Request timeout."
+msgstr "Tempo da requisição esgotado."
+
+#: src/library/tools/http/status.cc:414
+msgid "Internal Server Error."
+msgstr "Erro interno."
+
+#: src/library/tools/http/status.cc:422
+msgid ""
+"Our system is temporarily unavailable. Please wait a moment and try again."
+msgstr ""
+"Nosso sistema está temporariamente indisponível. Espero um momento e tente "
+"de novo."
+
+#: src/library/tools/http/status.cc:432
+#, c++-format
+msgid "HTTP Status {}"
+msgstr "Erro HTTP {}"
+
 #: src/library/tools/mainloop/os/linux/timer.cc:166
 #: src/library/tools/mainloop/os/windows/timer.cc:166
 msgid "one second"
@@ -441,21 +507,21 @@ msgstr " {} millisegundos"
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
 
-#: src/library/tools/os/linux/file/path.cc:119
+#: src/library/tools/os/linux/file/path.cc:134
 msgid "Unable to create an empty dirname"
 msgstr "Incapaz de criar diretório sem nome"
 
-#: src/library/tools/os/linux/file/path.cc:235
+#: src/library/tools/os/linux/file/path.cc:250
 #, c++-format
 msgid "Error creating output file when saving '{}'"
 msgstr "Erro ao criar arquivo de saída salvando '{}'"
 
-#: src/library/tools/os/linux/file/path.cc:268
+#: src/library/tools/os/linux/file/path.cc:283
 #, c++-format
 msgid "Error linking output file when saving '{}'"
 msgstr "Erro ao renomear arquivo de saída para '{}'"
 
-#: src/library/tools/os/linux/file/path.cc:276
+#: src/library/tools/os/linux/file/path.cc:291
 #, c++-format
 msgid "Error setting owner & group on '{}'"
 msgstr "Erro ao setar dono e grupo para '{}'"
@@ -605,10 +671,6 @@ msgstr "numero"
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: src/library/tools/pugixml/load.cc:79
-msgid "Unable to find XML definitions"
-msgstr "Definições XML não foram encontradas"
-
 #: src/library/tools/script.cc:56
 msgid "The required attribute 'cmdline' is missing"
 msgstr "Atributo necessário 'cmdline' não está disponível"
@@ -638,6 +700,10 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 #: src/library/tools/script.cc:205
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
+
+#: src/library/tools/pugixml/load.cc:79
+msgid "Unable to find XML definitions"
+msgstr "Definições XML não foram encontradas"
 
 #: src/library/tools/logger/argparser.cc:44
 msgid "Logger options"
@@ -778,14 +844,26 @@ msgstr "Bloquear acesso a 'net stop' no serviço"
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/library/tools/interface.cc:93
-msgid "You dont have access to this resource"
+#: src/library/tools/template.cc:91
+msgid "en"
 msgstr ""
 
-#: src/library/tools/object/abstract.cc:207
+#: src/library/tools/template.cc:93
+msgid "Undefined page title"
+msgstr ""
+
+#: src/library/tools/template.cc:110
+msgid ""
+"A required file is unavailable within the selected theme. Please contact the "
+"system administrator for assistance."
+msgstr ""
+"Um arquivo necessário não está disponível no tema selecionado. Entre em "
+"contato com o administrador do sistema para auxílio."
+
+#: src/library/tools/template.cc:157
 #, c++-format
-msgid "Unable to get value of '{}'"
-msgstr "Incapaz de obter valor para '{}'"
+msgid "Unable to resolve '{}' on template '{}'"
+msgstr "Não foi possível resolver '{}' no template '{}'"
 
 #: src/library/tools/timestamp.cc:104
 msgid "Less than one minute"
@@ -877,16 +955,10 @@ msgstr "Uso inválido de argumento repetido"
 msgid "[options]"
 msgstr "[opções]"
 
-#: src/library/tools/template.cc:74
-msgid ""
-"A required file is unavailable within the selected theme. Please contact the "
-"system administrator for assistance."
-msgstr ""
-
-#: src/library/tools/template.cc:108
-#, fuzzy, c++-format
-msgid "Unable to resolve '{}' on template '{}'"
-msgstr "Incapaz de adicionar '{}' em um valor abstrato"
+#: src/library/tools/object/abstract.cc:217
+#, c++-format
+msgid "Unable to get value of '{}'"
+msgstr "Incapaz de obter valor para '{}'"
 
 #: src/library/ui/console.cc:88
 msgid "Previous page"
@@ -900,35 +972,20 @@ msgstr "Página seguinte"
 msgid "Select option (Enter to quit): "
 msgstr "Selecione opção (Enter para sair): "
 
-#: src/library/request.cc:96
+#: src/library/request.cc:127
 msgid "Invalid or unexpected API version"
 msgstr "Versão de API inválida ou não esperada"
 
-#: src/library/response.cc:99
-msgid "Failed."
-msgstr ""
-
-#: src/library/response.cc:138
-msgid "Unable to Complete Request"
-msgstr ""
-
-#: src/library/response.cc:139 src/library/response.cc:214
-msgid "We're sorry, but we encountered an error while processing your request."
-msgstr ""
-
-#: src/library/response.cc:199
-msgid ""
-"Access unauthorized. Please contact your system administrator if you believe "
-"this is an error."
-msgstr ""
-
-#: src/library/response.cc:203
-msgid "System error"
-msgstr "Erro de sistema"
-
-#: src/library/response.cc:310
+#: src/library/response/response.cc:146
 msgid "Operation failed"
 msgstr "Operação falhou"
+
+#~ msgid "Get agent properties"
+#~ msgstr "Obtém propriedades do agente"
+
+#, fuzzy
+#~ msgid "Icon name for the current agent state"
+#~ msgstr "Não foi possível obter o estado da TPM"
 
 #, c++-format
 #~ msgid "Required attribute '{}' is missing"
@@ -943,9 +1000,6 @@ msgstr "Operação falhou"
 #, fuzzy
 #~ msgid "Load module from file"
 #~ msgstr "Não foi possível ler do arquivo"
-
-#~ msgid "Unable to set environment variable"
-#~ msgstr "Incapaz de setar variável de ambiente"
 
 #~ msgid "Quit after \"seconds\""
 #~ msgstr "Encerra após \"seconds\""
