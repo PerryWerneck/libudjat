@@ -103,14 +103,21 @@
 		/// @brief Retrieves the schema definition for the interface outputs.
 		/// @param[in] method The requested method.
 		/// @param[in] path The path for required object on interface.
-		/// @param[out] s Object populated with the interface output schema details.
+		/// @param[out] schema Object populated with the interface output schema details.
 		/// @return True if the interface defines an output schema; false otherwise (schema remains unmodified).
 		virtual bool schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept;
 
+		/// @brief Retrieves the schema definition for 'get' requests.
+		/// @param[in] path The path for required object on interface.
+		/// @param[out] schema Object populated with the interface output schema details.
+		/// @return True if the interface defines an output schema; false otherwise (schema remains unmodified).
 		inline bool schema(const char *path, OutputSchema &schema) const noexcept {
 			return this->schema(HTTP::Get,path,schema);
 		}
 
+		/// @brief Retrieves the schema definition for default 'get' requests.
+		/// @param[out] schema Object populated with the interface output schema details.
+		/// @return True if the interface defines an output schema; false otherwise (schema remains unmodified).
 		inline bool schema(OutputSchema &s) const noexcept {
 			return schema(HTTP::Get,"",s);
 		}
