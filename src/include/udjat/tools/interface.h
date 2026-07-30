@@ -139,14 +139,12 @@
 
 		/// @brief Enumerate interface itens.
 		/// @param request The client request.
-		/// @param response The response to receive the item count.
-		/// @param callback Function to call on every item if request is not HTTP::Head.
-		virtual void enumerate(Request &request, Response &response, const std::function<bool(const Value &value)> &callback) const noexcept;
+		/// @param response The data table to receive the itens.
+		/// @return true if the request was recognized and processed.
+		virtual bool process(Request &request, DataTable &response) const noexcept;
 
-		/// @brief Enumerate interface itens.
-		/// @param request The client request.
-		/// @param response The response to receive the itens.
-		void enumerate(Request &request, Response &response) const noexcept;
+		/// @brief Enumerate children.
+		virtual bool for_each(const std::function<bool(const Udjat::Value &value)> &func) const noexcept;
 		
 		/// @brief Enumerate interfaces.
 		static bool for_each(const std::function<bool(const Interface &interface)> &func);

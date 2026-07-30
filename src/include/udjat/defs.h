@@ -142,6 +142,7 @@ namespace Udjat {
 	class TimeStamp;
 	class Request;
 	class Response;
+	class DataTable;
 	class InputSchema;
 	class OutputSchema;
 	class HTTPSchema;

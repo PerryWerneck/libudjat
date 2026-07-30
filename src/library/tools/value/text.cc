@@ -24,7 +24,6 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
- #include <udjat/tools/report.h>
  #include <iostream>
  #include <udjat/tools/intl.h>
 
@@ -77,10 +76,6 @@
 				get(val);
 				ss << " " << (val ? _("Yes") : _("No")) << endl;
 			}
-			break;
-
-		case Udjat::Value::Report:
-			// TODO: Implement.
 			break;
 
 		default:

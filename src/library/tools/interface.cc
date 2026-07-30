@@ -32,7 +32,8 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/template.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/tools/report.h>
+ #include <udjat/tools/datatable.h>
+ #include <udjat/tools/value.h>
  #include <vector>
  
  using namespace std;
@@ -110,74 +111,37 @@
 
 	bool Interface::process(Request &, Response &response) const noexcept {
 		Logger::String{"Unable to process requests, the method 'process' was not overrided by interface code"}.warning(name());
-		response.failed(HTTP::NotFound);
+		response.assign(HTTP::NotFound);
 		return true;
 	}
 
-	void Interface::enumerate(Request &request, Response &response,const std::function<bool(const Value &value)> &callback) const noexcept {
-		if(!allow(request.path(),request,response)) {
-			response = HTTP::Forbidden;
-			return;
-		}
-		response.count(0);
-	}
+	bool Interface::process(Request &request, DataTable &response) const noexcept {
 
-	void Interface::enumerate(Request &request, Response &response) const noexcept {
-
-		try {
-
-			if(!allow(request.path(),request,response)) {
-				response = HTTP::Forbidden;
-				return;
-			}
-
-			OutputSchema schema;
-			if(!this->schema(schema)) {
-				response.failed(_("The backend does not provide an output schema"));
-				return;
-			}
-
-			if(request == HTTP::Head) {
-
-				// Client just want the item count, call just one time.
-				enumerate(request,response,[](const Value &value) {
-					return true;
-				});
-
-			} else if(request == HTTP::Get) {
-
-				// Client is asking for all data, get it.
-				vector<string> columns;
-				for(const auto &item : schema) {
-					columns.push_back(item.name());
-				}
-
-				auto &report = response.ReportFactory(columns);
-
-				enumerate(request,response,[&columns,&report](const Value &value) {
-					for(const auto &column : columns) {
-						report.push_back(value[column.c_str()]);
-					}
-					return false;
-				});
-
-			} else {
-
-				// This request makes no sense, just return as 'not found'.
-				response = HTTP::NotFound;
-
-			}
-
-		} catch(const std::exception &e) {
-
-			response.failed(e);
-
-		} catch(...) {
-
-			response.failed(_("Unexpected error"));
-
+		if(!allow(request.role())) {
+			response.assign(HTTP::Forbidden);
+			return true;
 		}
 
+		OutputSchema schema;
+		if(!this->schema(schema)) {
+			response.assign(HTTP::NotFound);
+			return true;
+		}
+
+		std::vector<string> columns;
+		for(const auto &item : schema) {
+			columns.emplace_back(item.name());
+		}
+
+		response.open(columns);
+		for_each([&response,&columns](const Udjat::Value &value){
+			for(const auto &column : columns) {
+				response.push_back(value[column.c_str()]);
+			}
+			return false;
+		});
+
+		return true;
 	}
 
 	bool Interface::allow(const char *path, const Request &request, Response &response) const noexcept {

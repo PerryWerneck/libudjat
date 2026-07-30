@@ -50,7 +50,6 @@
 			case Udjat::Value::Undefined:
 			case Udjat::Value::Array:
 			case Udjat::Value::Object:
-			case Udjat::Value::Report:
 				break;
 
 			case Udjat::Value::Signed:

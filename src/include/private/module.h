@@ -113,6 +113,9 @@ namespace Udjat {
 
 		bool process(Request &request, Response &response) const noexcept override;
 
+		/// @brief Enumerate children.
+		bool for_each(const std::function<bool(const Udjat::Value &value)> &func) const noexcept override;
+
 
 	};
 

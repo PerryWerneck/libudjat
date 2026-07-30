@@ -83,4 +83,21 @@
 
 	}
 
+	bool Service::Controller::for_each(const std::function<bool(const Udjat::Value &value)> &func) const noexcept {
+
+		for(const auto service : objects) {
+			Value value;
+			value["name"] = service->name();
+			value["description"] = service->description();
+			if(func(value)) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
+
+
  }

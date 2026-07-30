@@ -35,8 +35,6 @@
 
  namespace Udjat {
 
-	class Report;
-
 	/// @brief Abstract value holding multiple types of data.
 	class UDJAT_API Value : public Abstract::Object {
 	public:
@@ -56,8 +54,6 @@
 			Icon		= 'I',			///< @brief Icon name.
 			Url			= '@',			///< @brief URL.
 			State		= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error', etc)
-
-			Report		= 'R',			///< @brief The value contains a report (internal use only).
 		};
 
 		template <typename T>
@@ -155,17 +151,6 @@
 
 		/// @brief Merge another value.
 		Value & merge(const Value &src);
-
-		/// @brief Convert this value to an empty report with defined columns.
-		/// @return The report handler.
-		Udjat::Report & ReportFactory(const char *column_name, ... ) __attribute__ ((sentinel));
-
-		/// @brief Convert this value to report, add first row.
-		/// @param first_row The first row of the report.
-		/// @return The report handler.
-		Udjat::Report & ReportFactory(const Value &first_row);
-
-		virtual Udjat::Report & ReportFactory(const std::vector<std::string> &column_names);
 
 		/// @brief Get item.
 		/// @return The item.

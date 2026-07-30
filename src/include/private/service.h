@@ -51,6 +51,9 @@
 		bool schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept override;
 
 		bool process(Request &request, Response &response) const noexcept override;
+
+		/// @brief Enumerate children.
+		bool for_each(const std::function<bool(const Udjat::Value &value)> &func) const noexcept override;
 		
 	};
 

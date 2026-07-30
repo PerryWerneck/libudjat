@@ -24,11 +24,11 @@
 #include <private/module.h>
 #include <udjat/module.h>
 #include <udjat/tools/container.h>
+#include <udjat/module.h>
 #include <iostream>
 #include <udjat/tools/logger.h>
 #include <udjat/tools/request.h>
 #include <udjat/tools/response.h>
-#include <udjat/tools/report.h>
 #include <udjat/tools/intl.h>
 
 using namespace std;
@@ -66,41 +66,30 @@ namespace Udjat {
 	bool Module::Controller::process(Request &request, Response &response) const noexcept {
 
 		if(request.root()) {
-
-			debug("Module count: ",modules.size());
-
-			response.count(modules.size());
-
-			auto &report = response.ReportFactory(
-				"name",
-				"description",
-				"build",
-				"filename",
-				NULL
-			);
-
-			report.caption(_("Available modules"));
-
-			for(const auto &module : modules) {
-
-				report 	<< module->name()
-						<< module->description()
-						<< module->build()
-						<< module->filename().c_str();
-
-			}
-
-		} else {
-
-			// TODO: Get info about the module on path.
-
-			Logger::String{"Module information is incomplete"}.error();
-			response = HTTP::SystemError;
-
+			response = HTTP::BadRequest;
+			return true;	
 		}
+
+		// TODO: Get info about the module on path.
+
+		Logger::String{"Module information is incomplete"}.error();
+		response = HTTP::SystemError;
 
 		return true;
 	}
 
+	bool Module::Controller::for_each(const std::function<bool(const Udjat::Value &value)> &func) const noexcept {
+		for(const auto module : modules) {
+			Value value;
+			value["name"] = module->module_name;
+			value["description"] = module->info.description;
+			value["version"] = module->info.version;
+			value["filename"] = module->filename();
+			if(func(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
 
