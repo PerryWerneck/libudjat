@@ -63,33 +63,38 @@ namespace Udjat {
 		return modules.for_each(method);
 	}
 
-	bool Module::Controller::process(const Request &request, Response &response) const {
+	bool Module::Controller::process(Request &request, Response &response) const noexcept {
 
 		if(request.root()) {
-			response.failed(ENOENT);
-			return true;
-		}
 
-		debug("Module count: ",modules.size());
+			debug("Module count: ",modules.size());
 
-		response.count(modules.size());
+			response.count(modules.size());
 
-		auto &report = response.ReportFactory(
-			"name",
-			"description",
-			"build",
-			"filename",
-			NULL
-		);
+			auto &report = response.ReportFactory(
+				"name",
+				"description",
+				"build",
+				"filename",
+				NULL
+			);
 
-		report.caption(_("Available modules"));
+			report.caption(_("Available modules"));
 
-		for(const auto &module : modules) {
+			for(const auto &module : modules) {
 
-			report 	<< module->name()
-					<< module->description()
-					<< module->build()
-					<< module->filename().c_str();
+				report 	<< module->name()
+						<< module->description()
+						<< module->build()
+						<< module->filename().c_str();
+
+			}
+
+		} else {
+
+			// TODO: Get info about the module on path.
+
+			response.failed(HTTP::SystemError);
 
 		}
 

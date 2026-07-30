@@ -106,7 +106,7 @@
 		return false;
 	}
 
-	bool Interface::process(const Request &, Response &response) const noexcept {
+	bool Interface::process(Request &, Response &response) const noexcept {
 		Logger::String{"Unable to process requests, the method 'process' was not overrided by interface code"}.warning(name());
 		response.failed(HTTP::NotFound);
 		return true;
@@ -150,7 +150,7 @@
 		return true;
 	}
 
-	bool Interface::process(const Request &request, HTTP::Status &status, std::ostream &stream) const noexcept {
+	bool Interface::process(Request &request, HTTP::Status &status, std::ostream &stream) const noexcept {
 
 		/// @brief Adapter.
 		class Adapter : public Udjat::Response {

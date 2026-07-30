@@ -24,7 +24,10 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/service.h>
+ #include <udjat/tools/intl.h>
  #include <private/service.h>
+ #include <udjat/tools/request.h>
+ #include <udjat/tools/response.h>
 
  #ifdef _WIN32
 	#include <private/win32/mainloop.h>
@@ -63,12 +66,57 @@
 
 	Value & Service::get_properties(Value &properties) const {
 		properties["name"] = service_name;
+		properties["description"] = service_description;
 		properties["active"] = state.active;
 		return properties;
 	}
 
 	const Service * Service::find(const char *name) noexcept {
 		return Controller::getInstance().find(name);
+	}
+
+	bool Service::get_property(const char *key, Value &value) const {
+
+		return false;
+	}
+
+	bool Service::Controller::process(Request &request, Response &response) const noexcept {
+
+		if(request.root()) {
+			response.failed(ENOENT);
+			return true;
+		}
+
+		for(const auto service : *this) {
+
+			if(request.pop(service->name())) {
+
+				response["name"] = service->service_name;
+				response["description"] = service->service_description;
+				response["active"] = service->state.active;
+				return true;
+
+			}
+
+		}
+
+		response.failed(ENOENT);
+		return true;
+	}
+
+	bool Service::Controller::schema(const HTTP::Method method, const char *, OutputSchema &schema) const noexcept {
+
+		if(method != HTTP::Get) {
+			return false;
+		}
+
+		schema.add(
+			Schema::Item{ "name", 			Schema::String,		_("The Service name")			},
+			Schema::Item{ "description", 	Schema::String,		_("The Service description")	},
+			Schema::Item{ "active", 		Schema::Boolean,	_("Service state")				}			
+		);
+
+		return true;
 	}
 
  }

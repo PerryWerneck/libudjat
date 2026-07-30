@@ -127,7 +127,7 @@
 		/// @param request The client request.
 		/// @param response The expected response.
 		/// @return true if the request was recognized and processed.
-		virtual bool process(const Request &request, Response &response) const noexcept;
+		virtual bool process(Request &request, Response &response) const noexcept;
 
 		/// @brief Process a stream request (usually from HTTP server);
 		/// @param path The request path.
@@ -135,7 +135,7 @@
 		/// @param status Object to receive the processing status.
 		/// @param stream The output stream to receive the interface section.
 		/// @return true if the request was recognized and processed.
-		virtual bool process(const Request &request, HTTP::Status &status, std::ostream &stream) const noexcept;
+		virtual bool process(Request &request, HTTP::Status &status, std::ostream &stream) const noexcept;
 
 		/// @brief Enumerate interfaces.
 		static bool for_each(const std::function<bool(const Interface &interface)> &func);

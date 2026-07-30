@@ -21,10 +21,12 @@
  #include <config.h>
  #include <udjat/tools/service.h>
  #include <udjat/tools/singleton.h>
+ #include <udjat/tools/interface.h>
+ #include <udjat/tools/schema.h>
 
  namespace Udjat {
 
-	class Service::Controller : public Singleton::Container<Service> {
+	class Service::Controller : public Singleton::Container<Service>, private Interface {
 	public:
 
 		static Controller & getInstance() {
@@ -32,11 +34,24 @@
 			return instance;
 		}
 
-		Controller() = default;
+		Controller() : Interface{"service"} {
+		}
 
 		void start() noexcept;
 		void stop() noexcept;
+	
+		inline const Service * find(const char *name) noexcept {
+			return Singleton::Container<Service>::find(name);
+		}
 
+		inline bool for_each(const std::function<bool(const Service &service)> &method) {
+			return Singleton::Container<Service>::for_each(method);
+		}
+
+		bool schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept override;
+
+		bool process(Request &request, Response &response) const noexcept override;
+		
 	};
 
  }

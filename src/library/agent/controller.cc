@@ -390,7 +390,7 @@
 		return child;
 	}
 
-	bool Abstract::Agent::Controller::process(const Request &request, Response &response) const {
+	bool Abstract::Agent::Controller::process(Request &request, Response &response) const noexcept {
 
 		if(!this->root) {
 			request.error(Interface::name(),"Root agent is not available");

@@ -69,7 +69,7 @@ namespace Udjat {
 		std::shared_ptr<Abstract::Object> ObjectFactory(const Udjat::Properties &props) const override;
 
 		// Interface
-		bool process(const Request &request, Response &response) const noexcept override;
+		bool process(Request &request, Response &response) const noexcept override;
 
 	};
 

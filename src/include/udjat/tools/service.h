@@ -95,6 +95,7 @@
 		static const Service * find(const char *name) noexcept;
 
 		virtual Value & get_properties(Value &properties) const;
+		virtual bool get_property(const char *key, Value &value) const;
 
 		virtual void start();
 		virtual void stop();
