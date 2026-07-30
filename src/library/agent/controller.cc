@@ -114,9 +114,10 @@
 		if(this->root) {
 			Logger::String{
 				"Root agent ",
-				std::to_string((unsigned long long) ((void *) this->root.get())),
-				" was demoted"
-			}.trace(this->root->name());
+				this->root->name(),
+				" (",to_hex_string(this->root.get()).c_str(),
+				") was demoted"
+			}.trace("agents");
 		}
 
 		if(!root) {
@@ -129,9 +130,10 @@
 
 			Logger::String{
 				"Agent ",
-				to_hex_string(root.get()).c_str(),
-				" was promoted to root"
-			}.trace(root->name());
+				this->root->name(),
+				" (",to_hex_string(this->root.get()).c_str(),
+				") was promoted to root"
+			}.trace("agents");
 
 		}
 
@@ -152,6 +154,10 @@
 
 		return root;
 
+	}
+
+	void Abstract::Agent::root(std::shared_ptr<Abstract::Agent> agent) {
+		Abstract::Agent::Controller::getInstance().set(agent);
 	}
 
 	void Abstract::Agent::deinit() {

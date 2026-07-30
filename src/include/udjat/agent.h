@@ -234,6 +234,10 @@
 
 			~Agent() override;
 
+			/// @brief Promote agent to root
+			/// @param agent The new root agent.
+			static void root(std::shared_ptr<Abstract::Agent> agent);
+
 			virtual const Schema::Type type() const noexcept;
 
 			/// @brief Append child object from properties.

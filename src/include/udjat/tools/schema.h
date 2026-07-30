@@ -29,6 +29,14 @@
 	class UDJAT_API Schema {
 	public:
 
+		/// @brief Schema capabilites.
+		enum Capabilities : uint8_t {
+			NoCapabilities		= 0x0,
+			Enumerable			= 0x1,				///< @brief Get on '/' enumerate objects.
+		};
+
+		Capabilities caps = Schema::NoCapabilities;
+
 		enum Type : uint8_t {
 			String		= Value::String,			///< @brief UTF-8 string value.
 			Timestamp	= Value::Timestamp,			///< @brief Timestamp value.
@@ -82,11 +90,22 @@
 
 		void add(const Item &item);
 
+		inline void add(const Schema::Capabilities cap) noexcept {
+			caps = (Schema::Capabilities) (caps|cap);	
+		}
+
 		template<typename... Targs>
 		inline void add(const Item &item, Targs... Fargs) {
 			add(item);
 			add(Fargs...);
 		}
+
+		template<typename... Targs>
+		inline void add(const Capabilities cap, Targs... Fargs) {
+			add(cap);
+			add(Fargs...);
+		}
+
 
 #if __cplusplus >= 201703L
 		inline auto begin() const noexcept {
@@ -134,12 +153,12 @@
 		const char *template_name = nullptr;
 
 		OutputSchema() = default;
-	
+
 		template<typename... Targs>
 		OutputSchema(Targs... Fargs) {
 			add(Fargs...);
 		}
-		
+
 	};
 
 	class HTTPSchema;

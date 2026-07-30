@@ -35,7 +35,6 @@
  #include <sstream>
  #include <stdexcept>
  #include <iomanip>
- #include <private/agent.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -159,7 +158,7 @@
 					// Build root agent to initialize agent interface.
 					auto root = Abstract::Agent::RootFactory();
 					root->push_back(make_shared<Agent<int>>("intvalue"));
-					Abstract::Agent::Controller::getInstance().set(root);
+					Abstract::Agent::root(root);
 
 					// Get root agent properties
 					for(const char *path : { "/agent", "/agent/intvalue", "/api/agent", "/api/agent/intvalue" }) {
