@@ -89,7 +89,10 @@
 
 	void Response::serialize(std::ostream &stream) const noexcept {
 
-		debug("Serializing response");
+		debug(
+			"Serializing response with mimetype ", 
+			std::to_string(status.mimetype)
+		);
 
 		if(status.code == HTTP::NoContent || status.code == HTTP::NotModified) {
 			// No Content or not-modified status, the response should be empty.
@@ -108,7 +111,7 @@
 			{
 				debug("Undefined value, error");
 				HTTP::Status st{HTTP::SystemError,MimeType::html};
-				st.failed(_("Unable to serialize undefined value"));
+				st.failed(_("Unable to serialize response with undefined mimetype"));
 				st.serialize(stream);
 			}
 			break;

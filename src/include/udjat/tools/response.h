@@ -68,6 +68,10 @@
 			return failed(string.c_str());
 		}
 
+		inline const MimeType mimetype() const noexcept {
+			return this->status.mimetype;
+		}
+
 		inline operator MimeType() const noexcept {
 			return this->status.mimetype;
 		}

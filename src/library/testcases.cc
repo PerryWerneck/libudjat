@@ -180,7 +180,7 @@
 							<< "request for '" << request.path() << "' using interface '" 
 							<< intf->name() << "':" << endl;
 
-						HTTP::Status status;
+						HTTP::Status status{MimeType::yaml};
 						if(!intf->process(request,status,stream)) {
 							throw runtime_error(String{"Interface was unable to process '",request.path(),"'"});
 						}

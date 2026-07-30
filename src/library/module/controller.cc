@@ -94,7 +94,8 @@ namespace Udjat {
 
 			// TODO: Get info about the module on path.
 
-			response.failed(HTTP::SystemError);
+			Logger::String{"Module information is incomplete"}.error();
+			response = HTTP::SystemError;
 
 		}
 

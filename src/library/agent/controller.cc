@@ -392,6 +392,8 @@
 
 	bool Abstract::Agent::Controller::process(Request &request, Response &response) const noexcept {
 
+		debug("Response type is ",std::to_string(response.mimetype()));
+		
 		if(!this->root) {
 			request.error(Interface::name(),"Root agent is not available");
 			response = HTTP::Unavailable;
@@ -404,6 +406,8 @@
 			response = HTTP::NotFound;
 			return true;
 		}
+
+		debug("Found agent '",agent->name(),"'");
 
 		time_t timestamp = agent->last_modified();
 		if(timestamp) {
@@ -446,8 +450,17 @@
 		OutputSchema out;
 		if(schema(request.method(),request.path(),out)) {
 			for(const auto &item : out) {
-				agent->get_property(item.name(),response[item.name()]);
+				debug("Getting value for '",agent->name(),".",item.name(),"'");
+				if(!agent->get_property(item.name(),response[item.name()])) {
+					response = HTTP::SystemError;
+					response.failed(
+						String{"Unable to get value for '",item.name(),"'"}.c_str()
+					);
+					return true;
+				}
 			}
+
+			debug("Got agent '",agent->name(),"' properties using outputschema");
 			return true;
 		}
 
