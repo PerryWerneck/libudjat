@@ -96,6 +96,10 @@
 		return false;
 	}
 
+	bool Interface::for_each(const std::function<bool(const Udjat::Value &value)> &) const noexcept {
+		return false;
+	}
+
 	bool Interface::schema(const char *, HTTPSchema &schema) const noexcept {
 		schema.add({ HTTP::Get, Authentication::None });
 		return true;
