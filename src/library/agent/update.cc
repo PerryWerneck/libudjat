@@ -22,6 +22,7 @@
  #include <udjat/agent.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/timestamp.h>
 
  using namespace std;
 

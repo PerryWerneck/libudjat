@@ -35,6 +35,7 @@
  #include <udjat/tools/service.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/timer.h>
+ #include <udjat/tools/timestamp.h>
  #include <iostream>
  #include <unistd.h>
  #include <udjat/tools/event.h>

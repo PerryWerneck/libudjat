@@ -35,7 +35,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/url.h>
  #include <udjat/action.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
 
  using namespace std;
 
@@ -318,21 +318,21 @@
 
 			Logger::String{"Building action based agent"}.trace(agent_name.c_str());
 
-			switch(Value::TypeFactory(props,"value-type","int")) {
-			case Value::String:
+			switch(Variant::TypeFactory(props,"value-type","int")) {
+			case Variant::String:
 				return make_shared<ActionAgent<string>>(props,action);
 
-			case Value::Signed:
+			case Variant::Signed:
 				return make_shared<ActionAgent<int>>(props,action);
 
-			case Value::Unsigned:
+			case Variant::Unsigned:
 				return make_shared<ActionAgent<unsigned int>>(props,action);
 
-			case Value::Real:
-			case Value::Fraction:
+			case Variant::Real:
+			case Variant::Fraction:
 				return make_shared<ActionAgent<double>>(props,action);
 
-			case Value::Boolean:
+			case Variant::Boolean:
 				return make_shared<ActionAgent<bool>>(props,action);
 
 			default:

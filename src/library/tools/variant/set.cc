@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <stdexcept>
  #include <string.h>
  #include <udjat/tools/timestamp.h>
@@ -32,7 +32,7 @@
 
  namespace Udjat {
 
-	Value & Value::set(const char *value, const Type type) {
+	Value & Variant::set(const char *value, const Type type) {
 
 		clear(type);
 
@@ -92,7 +92,7 @@
 		return *this;
 	}
 
-	Value & Value::erase(const char *name) {
+	Value & Variant::erase(const char *name) {
 
 		if(type != Object) {
 			throw logic_error(Logger::String{"Unable to erase element into a value type '",std::to_string(type),"'"});
@@ -106,7 +106,7 @@
 
 	}
 
-	Value & Value::append(Value::Type item_type) {
+	Value & Variant::append(Variant::Type item_type) {
 		if(type == Undefined) {
 			clear(Array);
 		}
@@ -126,7 +126,7 @@
 
 	}
 
-	Value & Value::merge(const Value &src) {
+	Value & Variant::merge(const Value &src) {
 
 		if(type == Undefined) {
 			clear(Object);
@@ -157,20 +157,20 @@
 		return *this;
 	}
 
-	Value & Value::set(const Value &src) {
+	Value & Variant::set(const Value &src) {
 
 		reset(src.type);
 		switch(src.type) {
-		case Value::Undefined:
+		case Variant::Undefined:
 			break;
 
-		case Value::Object:
+		case Variant::Object:
 			merge(src);
 			break;
 
-		case Value::String:
-		case Value::Icon:
-		case Value::Url:
+		case Variant::String:
+		case Variant::Icon:
+		case Variant::Url:
 			if(src.content.ptr) {
 				content.ptr = strdup((const char *) src.content.ptr);
 			} else {
@@ -178,22 +178,22 @@
 			}
 			break;
 
-		case Value::Timestamp:
+		case Variant::Timestamp:
 			content.timestamp = src.content.timestamp;
 			break;
 
-		case Value::Signed:
-		case Value::Boolean:
+		case Variant::Signed:
+		case Variant::Boolean:
 			content.sig = src.content.sig;
 			break;
 
-		case Value::Unsigned:
-		case Value::State:
+		case Variant::Unsigned:
+		case Variant::State:
 			content.unsig = src.content.unsig;
 			break;
 
-		case Value::Real:
-		case Value::Fraction:
+		case Variant::Real:
+		case Variant::Fraction:
 			content.dbl = src.content.dbl;
 			break;
 
@@ -204,61 +204,61 @@
 		return *this;
 	}
 
-	Value & Value::setFraction(const float fraction) {
+	Value & Variant::setFraction(const float fraction) {
 		reset(Fraction);
 		content.dbl = fraction;
 		return *this;
 	}
 
-	Value & Value::set(const short value) {
+	Value & Variant::set(const short value) {
 		reset(Signed);
 		content.sig = (int) value;
 		return *this;
 	}
 
-	Value & Value::set(const unsigned short value) {
+	Value & Variant::set(const unsigned short value) {
 		reset(Unsigned);
 		content.unsig = (unsigned int) value;
 		return *this;
 	}
 
-	Value & Value::set(const int value) {
+	Value & Variant::set(const int value) {
 		reset(Signed);
 		content.sig = value;
 		return *this;
 	}
 
-	Value & Value::set(const unsigned int value) {
+	Value & Variant::set(const unsigned int value) {
 		reset(Unsigned);
 		content.unsig = value;
 		return *this;
 	}
 
-	Value & Value::set(const TimeStamp &value) {
+	Value & Variant::set(const TimeStamp &value) {
 		reset(Timestamp);
 		content.timestamp = value;
 		return *this;
 	}
 
-	Value & Value::set(const bool value) {
+	Value & Variant::set(const bool value) {
 		reset(Boolean);
 		content.sig = value;
 		return *this;
 	}
 
-	Value & Value::set(const float value) {
+	Value & Variant::set(const float value) {
 		reset(Real);
 		content.dbl = (double) value;
 		return *this;
 	}
 
-	Value & Value::set(const double value) {
+	Value & Variant::set(const double value) {
 		reset(Real);
 		content.dbl = value;
 		return *this;
 	}
 
-	Value & Value::set(const Abstract::Object &value) {
+	Value & Variant::set(const Abstract::Object &value) {
 		reset(Object);
 		value.get_properties(*this);
 		return *this;

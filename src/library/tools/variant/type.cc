@@ -19,41 +19,41 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
  #include <libintl.h>
  
  static const struct {
-	Udjat::Value::Type type;
+	Udjat::Variant::Type type;
 	const char *name;
  } typenames[] = {
-	{ Udjat::Value::Type::Undefined,	N_("undefined") },	// Allways the first one
-	{ Udjat::Value::Type::Array,		N_("array") 	},
-	{ Udjat::Value::Type::Object,		N_("object") 	},
-	{ Udjat::Value::Type::String,		N_("string") 	},
-	{ Udjat::Value::Type::Timestamp,	N_("timestamp") },
-	{ Udjat::Value::Type::Signed,		N_("signed") 	},
-	{ Udjat::Value::Type::Unsigned,		N_("unsigned") 	},
-	{ Udjat::Value::Type::Real,			N_("real") 		},
-	{ Udjat::Value::Type::Boolean,		N_("boolean") 	},
-	{ Udjat::Value::Type::Fraction,		N_("fraction") 	},
-	{ Udjat::Value::Type::Icon,			N_("icon") 		},
-	{ Udjat::Value::Type::Url,			N_("url") 		},
-	{ Udjat::Value::Type::State,		N_("state") 	},
+	{ Udjat::Variant::Type::Undefined,	N_("undefined") },	// Allways the first one
+	{ Udjat::Variant::Type::Array,		N_("array") 	},
+	{ Udjat::Variant::Type::Object,		N_("object") 	},
+	{ Udjat::Variant::Type::String,		N_("string") 	},
+	{ Udjat::Variant::Type::Timestamp,	N_("timestamp") },
+	{ Udjat::Variant::Type::Signed,		N_("signed") 	},
+	{ Udjat::Variant::Type::Unsigned,		N_("unsigned") 	},
+	{ Udjat::Variant::Type::Real,			N_("real") 		},
+	{ Udjat::Variant::Type::Boolean,		N_("boolean") 	},
+	{ Udjat::Variant::Type::Fraction,		N_("fraction") 	},
+	{ Udjat::Variant::Type::Icon,			N_("icon") 		},
+	{ Udjat::Variant::Type::Url,			N_("url") 		},
+	{ Udjat::Variant::Type::State,		N_("state") 	},
 
-	{ Udjat::Value::Type::Signed,		N_("int") 		},
-	{ Udjat::Value::Type::Signed,		N_("integer") 	},
-	{ Udjat::Value::Type::Signed,		N_("number") 	},
+	{ Udjat::Variant::Type::Signed,		N_("int") 		},
+	{ Udjat::Variant::Type::Signed,		N_("integer") 	},
+	{ Udjat::Variant::Type::Signed,		N_("number") 	},
  };
 
  namespace Udjat {
 
-	Value::Type Value::TypeFactory(const Udjat::Properties &props, const char *attrname, const char *def) {
-		return Value::TypeFactory(props.get(attrname,def).c_str());
+	Variant::Type Variant::TypeFactory(const Udjat::Properties &props, const char *attrname, const char *def) {
+		return Variant::TypeFactory(props.get(attrname,def).c_str());
 	}
 
-	Value::Type Value::TypeFactory(const char *name) {
+	Variant::Type Variant::TypeFactory(const char *name) {
 
 		for(size_t ix = 0; ix < N_ELEMENTS(typenames); ix++) {
 			if(!strcasecmp(typenames[ix].name,name)) {
@@ -71,7 +71,7 @@
 
 		Logger::String{"Unknown type '",name,"' assuming undefined"}.warning();
 
-		return Value::Undefined;
+		return Variant::Undefined;
 
 	}
 
@@ -79,7 +79,7 @@
 
  namespace std {
 
-	UDJAT_API const char * to_string(Udjat::Value::Type type) {
+	UDJAT_API const char * to_string(Udjat::Variant::Type type) {
 
 		for(size_t ix = 0; ix < N_ELEMENTS(typenames); ix++) {
 			if(typenames[ix].type == type) {

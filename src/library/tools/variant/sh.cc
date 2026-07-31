@@ -23,7 +23,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/http/mimetype.h>
  #include <iostream>
@@ -33,30 +33,30 @@
 
  namespace Udjat {
 
-	void Value::to_sh(std::ostream &stream) const {
+	void Variant::to_sh(std::ostream &stream) const {
 
 		if(empty()) {
 			return;
 		}
 
-		if(*this != Udjat::Value::Object) {
+		if(*this != Udjat::Variant::Object) {
 			throw runtime_error(Logger::String{"Only objects can be serialized as ",std::to_string(MimeType::csv)});
 		}
 
 		// Get headers.
 		for_each([&stream](const char *key, const Udjat::Value &value){
 
-			switch((Value::Type) value) {
-			case Udjat::Value::Undefined:
-			case Udjat::Value::Array:
-			case Udjat::Value::Object:
+			switch((Variant::Type) value) {
+			case Udjat::Variant::Undefined:
+			case Udjat::Variant::Array:
+			case Udjat::Variant::Object:
 				break;
 
-			case Udjat::Value::Signed:
-			case Udjat::Value::Unsigned:
-			case Udjat::Value::Real:
-			case Udjat::Value::Boolean:
-			case Udjat::Value::Fraction:
+			case Udjat::Variant::Signed:
+			case Udjat::Variant::Unsigned:
+			case Udjat::Variant::Real:
+			case Udjat::Variant::Boolean:
+			case Udjat::Variant::Fraction:
 				stream << key << "=" << value << endl;
 				break;
 

@@ -24,7 +24,7 @@
  #include <udjat/agent.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
 
  #include <string>
 
@@ -87,7 +87,7 @@
 		if(!strcasecmp(path,"states")) {
 
 			for_each([this,&value](const Abstract::State &state) {
-				auto &row = value.append(Value::Object);
+				auto &row = value.append(Variant::Object);
 				state.get_properties(row);
 				row["active"] = (&state == current_state.selected.get());
 			});

@@ -20,7 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <vector>
 
  namespace Udjat {
@@ -38,17 +38,17 @@
 		Capabilities caps = Schema::NoCapabilities;
 
 		enum Type : uint8_t {
-			String		= Value::String,			///< @brief UTF-8 string value.
-			Timestamp	= Value::Timestamp,			///< @brief Timestamp value.
-			Signed		= Value::Signed,			///< @brief Signed integer value.
-			Unsigned	= Value::Unsigned,			///< @brief Unsigned integer value.
-			Double		= Value::Real,				///< @brief Double value.
-			Float		= Value::Real,				///< @brief Float value.
-			Boolean		= Value::Boolean,			///< @brief Boolean value.
-			Icon		= Value::Icon,				///< @brief Icon name.
-			Url			= Value::Url,				///< @brief URL.
-			State		= Value::State,				///< @brief Agent state (Ready=✓, Warning=⚠, error=✘, etc.)
-			Percent		= Value::Fraction,			///< @brief Percent value (Float from 0.0 to 1.0).
+			String		= Variant::String,			///< @brief UTF-8 string value.
+			Timestamp	= Variant::Timestamp,			///< @brief Timestamp value.
+			Signed		= Variant::Signed,			///< @brief Signed integer value.
+			Unsigned	= Variant::Unsigned,			///< @brief Unsigned integer value.
+			Double		= Variant::Real,				///< @brief Double value.
+			Float		= Variant::Real,				///< @brief Float value.
+			Boolean		= Variant::Boolean,			///< @brief Boolean value.
+			Icon		= Variant::Icon,				///< @brief Icon name.
+			Url			= Variant::Url,				///< @brief URL.
+			State		= Variant::State,				///< @brief Agent state (Ready=✓, Warning=⚠, error=✘, etc.)
+			Percent		= Variant::Fraction,			///< @brief Percent value (Float from 0.0 to 1.0).
 		};
 
 		template <typename T>

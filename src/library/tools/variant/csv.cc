@@ -23,7 +23,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/http/mimetype.h>
  #include <iostream>
@@ -33,11 +33,11 @@
 
  namespace Udjat {
 
-	void Value::to_csv(std::ostream &ss, char delimiter) const {
+	void Variant::to_csv(std::ostream &ss, char delimiter) const {
 
-		if(*this != Udjat::Value::Array) {
+		if(*this != Udjat::Variant::Array) {
 			if(!for_each([&ss,delimiter](const char *, const Value &value) {
-				if(value == Udjat::Value::Array) {
+				if(value == Udjat::Variant::Array) {
 					value.to_csv(ss,delimiter);
 					return true;
 				}

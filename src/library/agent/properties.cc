@@ -23,7 +23,8 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/schema.h>
  #include <udjat/tools/intl.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
+ #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/schema.h>
  #include <udjat/agent.h>
  #include <mutex>

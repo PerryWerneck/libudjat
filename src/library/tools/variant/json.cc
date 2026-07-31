@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <iostream>
  #include <cstring>
 
@@ -27,14 +27,14 @@
 
  namespace Udjat {
 
-	void Value::to_json(std::ostream &output) const {
+	void Variant::to_json(std::ostream &output) const {
 
-		switch((Value::Type) *this) {
-		case Udjat::Value::Undefined:
+		switch((Variant::Type) *this) {
+		case Udjat::Variant::Undefined:
 			output << "null";
 			break;
 
-		case Udjat::Value::Array:
+		case Udjat::Variant::Array:
 			{
 				output << '[';
 				bool sep = false;
@@ -50,7 +50,7 @@
 			}
 			break;
 
-		case Udjat::Value::Object:
+		case Udjat::Variant::Object:
 			{
 				output << '{';
 				bool sep = false;
@@ -67,15 +67,15 @@
 			}
 			break;
 
-		case Udjat::Value::Signed:
-		case Udjat::Value::Unsigned:
-		case Udjat::Value::Real:
-		case Udjat::Value::Boolean:
-		case Udjat::Value::Fraction:
+		case Udjat::Variant::Signed:
+		case Udjat::Variant::Unsigned:
+		case Udjat::Variant::Real:
+		case Udjat::Variant::Boolean:
+		case Udjat::Variant::Fraction:
 			output << to_string();
 			break;
 
-		case Udjat::Value::Timestamp:
+		case Udjat::Variant::Timestamp:
 			// Option 1: UTC Time with 'Z' Suffix (Recommended)This is the cleanest and most common JSON format. 
 			// Force your time structure to UTC using std::gmtime, then hardcode the literal 'Z' at 
 			// the end of the format string.
@@ -121,14 +121,14 @@
 
  namespace Udjat {
 
-	void HTTP::Value::json(std::stringstream &ss) const {
+	void HTTP::Variant::json(std::stringstream &ss) const {
 
 		switch(this->type) {
-		case Udjat::Value::Undefined:
+		case Udjat::Variant::Undefined:
 			ss << "null";
 			break;
 
-		case Udjat::Value::Array:
+		case Udjat::Variant::Array:
 			{
 				ss << '[';
 
@@ -145,7 +145,7 @@
 			}
 			break;
 
-		case Udjat::Value::Object:
+		case Udjat::Variant::Object:
 			{
 				ss << '{';
 
@@ -163,11 +163,11 @@
 			}
 			break;
 
-		case Udjat::Value::Signed:
-		case Udjat::Value::Unsigned:
-		case Udjat::Value::Real:
-		case Udjat::Value::Boolean:
-		case Udjat::Value::Fraction:
+		case Udjat::Variant::Signed:
+		case Udjat::Variant::Unsigned:
+		case Udjat::Variant::Real:
+		case Udjat::Variant::Boolean:
+		case Udjat::Variant::Fraction:
 			ss << this->value;
 			break;
 

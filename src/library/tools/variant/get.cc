@@ -19,7 +19,8 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
+ #include <udjat/tools/timestamp.h>
  #include <udjat/tools/logger.h>
  #include <stdexcept>
  #include <udjat/agent/level.h>
@@ -36,7 +37,7 @@
 
  namespace Udjat {
  
- 	bool Value::empty() const noexcept {
+ 	bool Variant::empty() const noexcept {
 
 		if(type == Array) {
 
@@ -65,22 +66,22 @@
 
 	}
 
-	bool Value::isNull() const noexcept {
+	bool Variant::isNull() const noexcept {
 		return (type == Undefined) || ((type == String || type == Icon || type == Url) && !content.ptr);
 	}
 
-	bool Value::isString() const noexcept {
+	bool Variant::isString() const noexcept {
 		return (type == String || type == Icon || type == Url) && content.ptr;
 	}
 
-	const char * Value::c_str() const noexcept {
+	const char * Variant::c_str() const noexcept {
 		if(isString()) {
 			return (const char *) content.ptr;
 		}
 		return "";
 	}
 
-	const Value & Value::get(std::string &value) const {
+	const Value & Variant::get(std::string &value) const {
 
 		switch(type) {
 		case Undefined:
@@ -148,7 +149,7 @@
 		return *this;
 	}
 
-	class Value::Getter {
+	class Variant::Getter {
 	public:
 
 #if __cplusplus >= 201703L	
@@ -164,38 +165,38 @@
 		template <typename T>
 		inline const Value & get(T &dst) const {
 
-			switch((Value::Type) src) {
-			case Value::Undefined:
+			switch((Variant::Type) src) {
+			case Variant::Undefined:
 				throw logic_error("The value is undefined");
 				break;
 
-			case Value::Array:
-			case Value::Object:
+			case Variant::Array:
+			case Variant::Object:
 				throw logic_error("Unable to convert value");
 				break;
 
-			case Value::Icon:
-			case Value::Url:
-			case Value::String:
+			case Variant::Icon:
+			case Variant::Url:
+			case Variant::String:
 				dst = (T) stoi((const char *) src.content.ptr);
 				break;
 
-			case Value::Timestamp:
+			case Variant::Timestamp:
 				dst = (T) src.content.timestamp;
 				break;
 
-			case Value::Signed:
-			case Value::Boolean:
+			case Variant::Signed:
+			case Variant::Boolean:
 				dst = (T) src.content.sig;
 				break;
 
-			case Value::Unsigned:
-			case Value::State:
+			case Variant::Unsigned:
+			case Variant::State:
 				dst = (T) src.content.unsig;
 				break;
 
-			case Value::Real:
-			case Value::Fraction:
+			case Variant::Real:
+			case Variant::Fraction:
 				dst = (T) src.content.dbl;
 				break;
 
@@ -207,7 +208,7 @@
 		}
 	};
 
-	const Value & Value::get(short &value) const {
+	const Value & Variant::get(short &value) const {
 		if(type == String) {
 			value = (short) atoi((const char *) content.ptr);
 			return *this;
@@ -215,7 +216,7 @@
 		return Getter{*this}.get(value);
 	}
 
-	const Value & Value::get(unsigned short &value) const {
+	const Value & Variant::get(unsigned short &value) const {
 		if(type == String) {
 			value = (unsigned short) atoi((const char *) content.ptr);
 			return *this;
@@ -223,7 +224,7 @@
 		return Getter{*this}.get(value);
 	}
 
-	const Value & Value::get(int &value) const {
+	const Value & Variant::get(int &value) const {
 		if(type == String) {
 			value = (int) atoi((const char *) content.ptr);
 			return *this;
@@ -231,7 +232,7 @@
 		return Getter{*this}.get(value);
 	}
 
-	const Value & Value::get(unsigned int &value) const {
+	const Value & Variant::get(unsigned int &value) const {
 		if(type == String) {
 			value = (unsigned int) atol((const char *) content.ptr);
 			return *this;
@@ -239,7 +240,7 @@
 		return Getter{*this}.get(value);
 	}
 
-	const Value & Value::get(long &value) const {
+	const Value & Variant::get(long &value) const {
 		if(type == String) {
 			value = (long) atol((const char *) content.ptr);
 			return *this;
@@ -247,7 +248,7 @@
 		return Getter{*this}.get(value);
 	}
 
-	const Value & Value::get(unsigned long &value) const {
+	const Value & Variant::get(unsigned long &value) const {
 		if(type == String) {
 			value = (unsigned long) atol((const char *) content.ptr);
 			return *this;
@@ -255,7 +256,7 @@
 		return Getter{*this}.get(value);
 	}
 
-	const Value & Value::get(TimeStamp &value) const {
+	const Value & Variant::get(TimeStamp &value) const {
 		if(likely(type == Timestamp)) {
 			value = TimeStamp{content.timestamp};
 		} else if(type == String) {
@@ -266,13 +267,13 @@
 		return *this;
 	}
 
-	bool Value::as_bool() const {
+	bool Variant::as_bool() const {
 		bool rc;
 		get(rc);
 		return rc;
 	}
 
-	const Value & Value::get(bool &value) const {
+	const Value & Variant::get(bool &value) const {
 		if(type == String) {
 			value = Udjat::String{(const char *) content.ptr}.as_bool();
 			return *this;
@@ -280,7 +281,7 @@
 		return Getter{*this}.get(value);
 	}
 
-	const Value & Value::get(float &value) const {
+	const Value & Variant::get(float &value) const {
 		if(type == String) {
 			value = atof((const char *) content.ptr);
 			return *this;
@@ -288,7 +289,7 @@
 		return Getter{*this}.get(value);
 	}
 
-	const Value & Value::get(double &value) const {
+	const Value & Variant::get(double &value) const {
 		if(type == String) {
 			value = atof((const char *) content.ptr);
 			return *this;
@@ -296,7 +297,7 @@
 		return Getter{*this}.get(value);
 	}
 
-	size_t Value::size() const {
+	size_t Variant::size() const {
 		if(type == Array) {
 			return ((vector<Value> *) content.ptr)->size();
 		} else if(type == Object) {
@@ -307,7 +308,7 @@
 		return 1;
 	}
 
-	Value & Value::operator[](int ix) {
+	Value & Variant::operator[](int ix) {
 		
 		if(type == Undefined) {
 			clear(Array);
@@ -343,7 +344,7 @@
 
 	}
 
-	const Value & Value::operator[](int ix) const {
+	const Value & Variant::operator[](int ix) const {
 
 		if(type == Array) {
 
@@ -373,7 +374,7 @@
 		throw out_of_range("The value is not an array");
 	}
 
-	Value & Value::append(const char *name, Value::Type type) {
+	Value & Variant::append(const char *name, Variant::Type type) {
 		
 		if(type == Undefined) {
 			clear(Object);
@@ -387,7 +388,7 @@
 
 	}
 
-	bool Value::contains(const char *name) const noexcept {
+	bool Variant::contains(const char *name) const noexcept {
 
 		if(type != Object) {
 			return false;
@@ -398,7 +399,7 @@
 
 	}
 
-	Value & Value::operator[](const char *name) {
+	Value & Variant::operator[](const char *name) {
 
 		if(type == Undefined) {
 			clear(Object);
@@ -411,7 +412,7 @@
 		throw logic_error(Logger::String{"Unable to get children from a value type '",std::to_string(type),"'"});
 	}
 
-	bool Value::get_property(const char *key, Udjat::Value &value) const {
+	bool Variant::get_property(const char *key, Udjat::Value &value) const {
 		if(type == Object && content.ptr) {
 			const map<std::string,Value> &children = *((map<std::string,Value> *) content.ptr);
 			auto it = children.find(key);
@@ -424,7 +425,7 @@
 		return Object::get_property(key,value);
 	}
 
-	const Value & Value::operator[](const char *name) const {
+	const Value & Variant::operator[](const char *name) const {
 
 		if(type != Object) {
 			throw runtime_error(Logger::String{"Cant get child '",name,"': Value is not an object"});
@@ -434,7 +435,7 @@
 		
 	}
 
-	bool Value::for_each(const std::function<bool(const char *name, const Value &value)> &call) const {
+	bool Variant::for_each(const std::function<bool(const char *name, const Value &value)> &call) const {
 
 		if(type == Array) {
 			if(!content.ptr) {
@@ -467,7 +468,7 @@
 
 	}
 
-	bool Value::for_each(const std::function<bool(const Value &value)> &call) const {
+	bool Variant::for_each(const std::function<bool(const Value &value)> &call) const {
 
 		if(type == Array) {
 			if(!content.ptr) {
@@ -502,13 +503,13 @@
 
 	}
 
-	std::string Value::serialize(const MimeType mimetype) const {
+	std::string Variant::serialize(const MimeType mimetype) const {
 		stringstream stream;
 		serialize(stream,mimetype);
 		return stream.str();
 	}
 
-	void Value::serialize(std::ostream &out, const MimeType mimetype) const {
+	void Variant::serialize(std::ostream &out, const MimeType mimetype) const {
 
 		debug("Serializing value");
 
@@ -543,13 +544,13 @@
 
 	}
 
-	std::string Value::to_string(const MimeType mimetype) const {
+	std::string Variant::to_string(const MimeType mimetype) const {
 		stringstream stream;
 		serialize(stream,mimetype);
 		return stream.str();
 	}
 
-	std::string Value::to_string() const noexcept {
+	std::string Variant::to_string() const noexcept {
 		string value;
 		try {
 			get(value);
@@ -561,7 +562,7 @@
 		return value;
 	}
 
-	std::string Value::to_string(const char *def) const {
+	std::string Variant::to_string(const char *def) const {
 		if(type == Undefined || type == Array || type == Object) {
 			return def;
 		}

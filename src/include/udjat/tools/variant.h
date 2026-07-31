@@ -24,18 +24,6 @@
  #include <udjat/tools/object.h>
  #include <udjat/tools/http/mimetype.h>
 
-//  #include <string.h>
-//  #include <udjat/tools/timestamp.h>
-//  #include <udjat/tools/object.h>
-//  #include <ostream>
-//  #include <udjat/tools/properties.h>
-//  #include <functional>
-//  #include <memory>
-//  #include <cstdint>
-//  #include <vector>
-//  #include <list>
-//  #include <string>
-
  namespace Udjat {
 
 	/// @brief Abstract value holding multiple types of data.

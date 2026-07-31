@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <map>
  #include <vector>
  #include <string.h>
@@ -28,7 +28,7 @@
 
  namespace Udjat {
  
-	Value::Value(const Value &src) : Value{} {
+	Variant::Variant(const Value &src) : Value{} {
 
 		type = src.type;
 
@@ -85,27 +85,27 @@
 
 	}
 
-	Value::Value(Type type) : Value{} {
+	Variant::Variant(Type type) : Value{} {
 		clear(type);
 	}
 
-	Value::~Value() {
+	Variant::~Variant() {
 		clear();
 	}
 
-	bool Value::operator==(const char *str) const {
+	bool Variant::operator==(const char *str) const {
 		return isString() && strcasecmp((const char *) content.ptr,str) == 0;
 	}
 
-	Value & Value::clear(const Type new_type) {
+	Variant & Variant::clear(const Type new_type) {
 
 		if(content.ptr) {
 			if(type == String || type == Url || type == Icon) {
 				free(content.ptr);
 			} else if(type == Array) {
-				delete ((vector<Value> *) content.ptr);
+				delete ((vector<Variant> *) content.ptr);
 			} else if(type == Object) {
-				delete ((map<std::string,Value> *) content.ptr);
+				delete ((map<std::string,Variant> *) content.ptr);
 			}
 			content.ptr = nullptr;
 		}

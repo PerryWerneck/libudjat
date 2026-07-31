@@ -18,7 +18,7 @@
  */
 
  #include <udjat/tools/system.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <iostream>
  #include <cstring>
 
@@ -60,7 +60,7 @@
 		type = String;
 	}
 
-	Udjat::Value & System::Config::File::Value::get(Udjat::Value &value) const {
+	Udjat::Value & System::Config::File::Value::get(Udjat::Variant &value) const {
 
 		switch(type) {
 		case Value::Boolean:

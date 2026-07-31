@@ -23,31 +23,31 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <udjat/tools/logger.h>
  #include <iostream>
 
  namespace Udjat {
 
-	void Value::to_xml(std::ostream &ss) const {
+	void Variant::to_xml(std::ostream &ss) const {
 
-		switch((Value::Type) *this) {
-		case Udjat::Value::Undefined:
+		switch((Variant::Type) *this) {
+		case Udjat::Variant::Undefined:
 			break;
 
-		case Udjat::Value::Array:
+		case Udjat::Variant::Array:
 			for_each([&ss](const char *key, const Value &value){
-				ss << "<item name='" << key << "' type='" << std::to_string((Udjat::Value::Type) value) << "'"<< ">";
+				ss << "<item name='" << key << "' type='" << std::to_string((Udjat::Variant::Type) value) << "'"<< ">";
 				value.to_xml(ss);
 				ss << "</item>";
 				return false;
 			});
 			break;
 
-		case Udjat::Value::Object:
+		case Udjat::Variant::Object:
 			for_each([&ss](const char *key, const Value &value){
 				ss << "<" << key << " type='"; 
-				ss << std::to_string((Udjat::Value::Type) value);
+				ss << std::to_string((Udjat::Variant::Type) value);
 				ss << "'"<< ">";
 				value.to_xml(ss);
 				ss << "</" << key << ">";

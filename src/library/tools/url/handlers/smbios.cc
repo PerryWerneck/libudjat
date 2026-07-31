@@ -21,7 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <errno.h>
  #include <private/url.h>
 
@@ -51,7 +51,7 @@
 		case 1: // Only node, enumerate all entries
 			{
 				debug("Enumerating SMBios node: ", elements[0].c_str());
-				response.clear(Value::Array);
+				response.clear(Variant::Array);
 
 				SMBios::Node::for_each([&response,&elements](const SMBios::Node &node) {
 
@@ -61,7 +61,7 @@
 
 					debug("Found SMBios node: ", node.name(), " (", node.type(), ")");
 
-					auto &item = response.append(Value::Object);
+					auto &item = response.append(Variant::Object);
 					node.for_each([&item](const SMBios::Value &v) -> bool {
 						auto &row = item[v.name()];
 						row["description"] = v.description();

@@ -25,6 +25,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/timestamp.h>
  #include <list>
  #include <stdexcept>
  #include <memory>
@@ -137,13 +138,13 @@
 				auto &state = value["state"];
 		
 				// Set contents based on pre-defined response type.
-				switch((Value::Type) state) {
-				case Value::String:
+				switch((Variant::Type) state) {
+				case Variant::String:
 					state = std::to_string(this->current_state.selected->level());
 					break;
 
-				case Value::Signed:
-				case Value::Unsigned:
+				case Variant::Signed:
+				case Variant::Unsigned:
 					state = (int) this->current_state.selected->level();
 					break;
 

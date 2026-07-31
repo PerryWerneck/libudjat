@@ -22,7 +22,7 @@
  #include <udjat/tools/response.h>
  #include <udjat/tools/exception.h>
  #include <udjat/tools/intl.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <ctime>
  #include <stdexcept>
  #include <sstream>
@@ -63,13 +63,13 @@
 
 	HTTP::Status & Response::assign(const HTTP::StatusCode code) noexcept {
 		debug("Request set to HTTP status ",code);
-		clear(Value::Object);
+		clear(Variant::Object);
 		return status.assign(code);
 	}
 
 	HTTP::Status & Response::failed(int syscode) noexcept {
 		debug("Request failed with syscode ",syscode);
-		clear(Value::Object);
+		clear(Variant::Object);
 		return status.failed(syscode);
 	}
 
@@ -78,7 +78,7 @@
 	}
 
 	HTTP::Status & Response::failed(const char *title,  const char *message, const char *body) noexcept {
-		clear(Value::Object);
+		clear(Variant::Object);
 		return status.failed(title,message,body);
 	}
 
@@ -107,7 +107,7 @@
 		string value{(status.code >= 200 && status.code <= 299) ? "success" : "failed"};
 
 		switch(status.mimetype) {
-		case Udjat::Value::Undefined:
+		case Udjat::Variant::Undefined:
 			{
 				debug("Undefined value, error");
 				HTTP::Status st{HTTP::SystemError,MimeType::html};
@@ -169,7 +169,7 @@
 			break;
 
 		default:
-			Value::serialize(stream,status.mimetype);
+			Variant::serialize(stream,status.mimetype);
 		}
 
 	}

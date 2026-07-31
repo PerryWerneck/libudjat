@@ -21,7 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/schema.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <udjat/tools/intl.h>
  #include <memory>
  
@@ -61,7 +61,7 @@
 		value["summary"] = summary();
 		value["label"] = label();
 		value["url"] = url();
-		value["icon"].set(icon(),Value::Icon);
+		value["icon"].set(icon(),Variant::Icon);
 
 		return value;
 	}

@@ -24,7 +24,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/string.h>
@@ -37,12 +37,12 @@
 
  namespace Udjat {
 
-	void Value::to_html(std::ostream &ss) const {
+	void Variant::to_html(std::ostream &ss) const {
 
 		#pragma GCC diagnostic push
 		#pragma GCC diagnostic ignored "-Wswitch"
-		switch((Value::Type) *this) {
-		case Udjat::Value::Object:
+		switch((Variant::Type) *this) {
+		case Udjat::Variant::Object:
 
 			if(!empty()) {
 
@@ -59,7 +59,7 @@
 			}
 			break;
 
-		case Udjat::Value::Array:
+		case Udjat::Variant::Array:
 
 			if(!empty()) {
 
@@ -91,10 +91,10 @@
 			}
 			break;
 
-		case Udjat::Value::Signed:
-		case Udjat::Value::Unsigned:
-		case Udjat::Value::Real:
-		case Udjat::Value::Fraction:
+		case Udjat::Variant::Signed:
+		case Udjat::Variant::Unsigned:
+		case Udjat::Variant::Real:
+		case Udjat::Variant::Fraction:
 			try {
 				Udjat::String tmpl{Config::Value<string>{"html","numeric-template","<strong class='numeric-value'>${value}</strong>"}.c_str()};
 
@@ -114,7 +114,7 @@
 			}
 			break;
 
-		case Udjat::Value::Boolean:
+		case Udjat::Variant::Boolean:
 			try {
 				Udjat::String tmpl{Config::Value<string>{"html","boolean-template","<strong class='${type}-value'>${symbol}</strong>"}.c_str()};
 
@@ -158,7 +158,7 @@
 			}
 			break;
 
-		case Udjat::Value::Url:
+		case Udjat::Variant::Url:
 			try {
 				if(!empty()) {
 
@@ -185,7 +185,7 @@
 			}
 			break;
 
-		case Udjat::Value::Icon:
+		case Udjat::Variant::Icon:
 			try {
 				Udjat::String tmpl{Config::Value<string>{"html","icon-template","<strong class='icon-name'>${icon-name}</strong>"}.c_str()};
 

@@ -20,7 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/net/interface.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
 
  using namespace std;
 

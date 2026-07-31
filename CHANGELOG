@@ -206,7 +206,7 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
   * Adding method to get handler name.
   * Allowing customization of Interface::Handler name, adding 'errno' based failure on response.
   * Allowing script with multiple actions.
-  * Fixing segfault on Value::merge.
+  * Fixing segfault on Variant::merge.
   * Adding 'struct tm' constructor and parser for TimeStamp().
   * Debugging value merge().
   * Allowing merge on undefined values.
@@ -393,7 +393,7 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
   * Adding more mime types.
   * Managing operator[] on const values.
   * Replacing operator [] from method child on Value class.
-  * Implementing dummy Value::Empty().
+  * Implementing dummy Variant::Empty().
   * Fixing Response::Value type.
   * Refactoring response.
   * Adding URL data type.
@@ -418,7 +418,7 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
   * Adding compatility header.
   * Restoring version.
   * Small refactor in worker engine.
-  * Adding Value::isNumber() method.
+  * Adding Variant::isNumber() method.
   * Implementing generic object.
   * Fixing String::split().
   * Fixing package build.

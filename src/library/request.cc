@@ -151,7 +151,7 @@
 	}
 
 	bool Request::for_each(const std::function<bool(const char *name, const char *value)> &call) const {
-		return Value::for_each([call](const char *name, const Value &value){
+		return Variant::for_each([call](const char *name, const Value &value){
 			if(value.isString()) {
 				return call(name,value.c_str());
 			}
@@ -176,7 +176,7 @@
 			return true;
 		}
 
-		return Value::get_property(key,value);
+		return Variant::get_property(key,value);
 	}
 
 	const char * Request::header(const char *name) const noexcept {

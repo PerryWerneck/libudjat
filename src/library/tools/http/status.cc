@@ -23,7 +23,7 @@
  #include <udjat/tools/exception.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/http/statuscodes.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <udjat/tools/logger.h>
  #include <stdexcept>
  #include <sstream>
@@ -163,7 +163,7 @@
 
 	void HTTP::Status::serialize(std::ostream &out) const noexcept {
 
-		Value response{Value::Object};
+		Value response{Variant::Object};
 		response["code"] = (int) code;
 		response["title"] = title;
 		response["message"] = message;
@@ -175,7 +175,7 @@
 		string value{ success() ? "success" : "failed" };
 
 		switch(mimetype) {
-		case Udjat::Value::Undefined:
+		case Udjat::Variant::Undefined:
 			{
 				Logger::String{"Unable to serialize undefined value"}.error("http");
 				Status st{HTTP::SystemError,MimeType::html};
