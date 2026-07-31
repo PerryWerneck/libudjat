@@ -439,7 +439,7 @@
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property is valid.
-			bool get_property(const char *key, Udjat::Value &value) const override;
+			bool get_property(const char *key, Udjat::Variant &value) const override;
 
 			/// @brief get time of the last modification on this agent.
 			/// @return Timestamp of last modification.

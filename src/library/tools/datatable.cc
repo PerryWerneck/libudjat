@@ -30,90 +30,28 @@
 
  namespace Udjat {
 
-	DataTable & DataTable::open(std::vector<std::string> &column_names) {
-		columns = column_names;
-		return *this;
-	}
-
-	DataTable & DataTable::open(const char *column_name, ...) {
-		va_list args;
-		va_start(args, column_name);
-		while(column_name) {
-			columns.emplace_back(column_name);
-			column_name = va_arg(args, const char *);
-		}
-		va_end(args);	
-		return *this;	
+	DataTable::DataTable(const OutputSchema &s) : schema{s} {
 	}
 
 	DataTable::~DataTable() {
 	}
 
-	DataTable & DataTable::next() noexcept {
-		if(++col > columns.size()) {
-			col = 0;
-			row++;
+	bool DataTable::caption(const char *text) {
+		return false;
+	}
+
+	bool DataTable::foot(const char *text) {
+		return false;
+	}
+
+	/// @brief Add object with columns.
+	/// @param value Object with column data to extract based on schema.
+	DataTable & DataTable::add(const Value &value) {
+		for(const auto &item : schema) {
+			push_back(item,value[item.name()]);
 		}
+		range.count++;
 		return *this;
-	}
-
-	DataTable & DataTable::push_back(const Value &value) {
-		push_back(row,col,columns[col].c_str(),value);
-		return next();
-	}
-
-	DataTable & DataTable::push_back(const char * value) {
-		Value v;
-		v = value;
-		return push_back(v);
-	}
-
-	DataTable & DataTable::push_back(const short value) {
-		Value v;
-		v = value;
-		return push_back(v);
-	}
-
-	DataTable & DataTable::push_back(const unsigned short value) {
-		Value v;
-		v = value;
-		return push_back(v);
-	}
-
-	DataTable & DataTable::push_back(const int value) {
-		Value v;
-		v = value;
-		return push_back(v);
-	}
-
-	DataTable & DataTable::push_back(const unsigned int value) {
-		Value v;
-		v = value;
-		return push_back(v);
-	}
-
-	DataTable & DataTable::push_back(const TimeStamp &value) {
-		Value v;
-		v = value;
-		return push_back(v);
-	}
-
-	DataTable & DataTable::push_back(const bool value) {
-		Value v;
-		v = value;
-		return push_back(v);
-	}
-
-	DataTable & DataTable::push_back(const float value) {
-		Value v;
-		v = value;
-		return push_back(v);
-	}
-
-	DataTable & DataTable::push_back(const double value) {
-		Value v;
-		v = value;
-		return push_back(v);
 	}
 
  }

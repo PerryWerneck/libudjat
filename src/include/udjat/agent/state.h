@@ -184,12 +184,12 @@
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property is valid.
-			bool get_property(const char *key, Udjat::Value &value) const override;
+			bool get_property(const char *key, Udjat::Variant &value) const override;
 
 			/// @brief Get the state properties.
 			/// @brief Value to receive the properties.
 			/// @return Pointer to value.
-			Value & get_properties(Value &value) const override;
+			Variant & get_properties(Variant &value) const override;
 
 			/// @brief Create an state from exception.
 			/// @param except The exception.

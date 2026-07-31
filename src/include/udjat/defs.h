@@ -138,7 +138,7 @@ namespace Udjat {
 
 	class String;
 	class Alert;
-	class Value;
+	class Variant;
 	class TimeStamp;
 	class Request;
 	class Response;
@@ -147,6 +147,8 @@ namespace Udjat {
 	class OutputSchema;
 	class HTTPSchema;
 	class Template;
+
+	using Value = Variant;
 
 }
 #endif // __cplusplus

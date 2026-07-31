@@ -183,7 +183,7 @@
 			/// @param key The property name.
 			/// @param value Object to receive the value.
 			/// @return true if the property is valid and value was updated.
-			virtual bool get_property(const char *key, Udjat::Value &value) const;
+			virtual bool get_property(const char *key, Udjat::Variant &value) const;
 
 			/// @brief Get property value.
 			/// @param key The property name.
@@ -199,7 +199,7 @@
 			}
 
 			/// @brief Add object properties to the value.
-			virtual Value & get_properties(Value &value) const;
+			virtual Variant & get_properties(Variant &value) const;
 
 			virtual int process(const Request &request, Response &response);
 

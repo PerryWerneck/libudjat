@@ -137,11 +137,8 @@
 			columns.emplace_back(item.name());
 		}
 
-		response.open(columns);
-		for_each([&response,&columns](const Udjat::Value &value){
-			for(const auto &column : columns) {
-				response.push_back(value[column.c_str()]);
-			}
+		for_each([&response](const Udjat::Value &value){
+			response.add(value);
 			return false;
 		});
 

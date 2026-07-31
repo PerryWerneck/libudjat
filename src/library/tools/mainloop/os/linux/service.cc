@@ -89,6 +89,7 @@
 			Value value;
 			value["name"] = service->name();
 			value["description"] = service->description();
+			value["active"] = service->active();
 			if(func(value)) {
 				return true;
 			}
