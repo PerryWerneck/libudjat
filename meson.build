@@ -532,7 +532,7 @@ lib_src += [
   'src/library/tools/logger/console.cc',
   'src/library/tools/logger/stream.cc',
   'src/library/tools/logger/argparser.cc',
-  'src/library/tools/datatable.cc',
+  'src/library/tools/datatable/object.cc',
   'src/library/tools/interface.cc',
   'src/library/tools/action/abstract.cc',
   'src/library/tools/action/controller.cc',

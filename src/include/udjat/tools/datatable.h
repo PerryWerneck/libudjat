@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/schema.h>
  #include <udjat/tools/http/status.h>
+ #include <functional>
 
  namespace Udjat {
 
@@ -54,6 +55,13 @@
 		/// @brief Add object with columns.
 		/// @param value Object with column data to extract based on schema.
 		virtual DataTable & add(const Value &value);
+
+		/// @brief Format table based on mimetype
+		/// @param stream The output stream to receive the formated output.
+		/// @param mimetype The mimetype for the output.
+		/// @param callback The callback to load table data.
+		/// @return stream.
+		static std::ostream & apply(std::ostream &stream, const MimeType mimetype, const std::function<void(DataTable &table)> &callback);
 
 	};
 

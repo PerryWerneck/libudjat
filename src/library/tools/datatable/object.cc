@@ -54,4 +54,12 @@
 		return *this;
 	}
 
+	std::ostream & DataTable::apply(std::ostream &stream, const MimeType mimetype, const std::function<void(DataTable &table)> &callback) {
+
+
+		
+
+		throw system_error(ENOTSUP,system_category(),"Unsupported MIME type");
+	}
+
  }
