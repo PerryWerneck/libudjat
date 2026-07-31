@@ -77,6 +77,10 @@
 				return item_description;
 			}
 
+			inline bool operator==(const Type type) const noexcept {
+				return item_type == type;
+			}
+
 		protected:
 			friend class Schema;
 			

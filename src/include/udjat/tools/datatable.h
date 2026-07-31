@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	/// @brief Abstract object containing values ordered in rows & columns.
+	/// @brief Abstract object to present values ordered in rows & columns.
 	class UDJAT_API DataTable : public HTTP::Status {
 	protected:
 
