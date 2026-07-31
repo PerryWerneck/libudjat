@@ -223,7 +223,7 @@
 		return *this;
 	}
 
-	bool URL::Handler::get(Udjat::Value &value, const HTTP::Method method, const char *payload) {
+	bool URL::Handler::get(Udjat::Variant &value, const HTTP::Method method, const char *payload) {
 		errno = ENOTSUP;
 		return false;
 	}

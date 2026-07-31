@@ -159,7 +159,7 @@
 		});
 	}
 
-	bool Request::get_property(const char *key, Udjat::Value &value) const {
+	bool Request::get_property(const char *key, Udjat::Variant &value) const {
 
 		if(!strcasecmp(key,"path")) {
 			value = path();

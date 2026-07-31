@@ -168,7 +168,7 @@
 		/// @brief Get value.
 		/// @param Value the response.
 		/// @return true if value was updated.
-		virtual bool get(Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "");
+		virtual bool get(Udjat::Variant &value, const HTTP::Method method = HTTP::Get, const char *payload = "");
 
 		/// @brief Do a 'get' request.
 		/// @param progress progress callback.

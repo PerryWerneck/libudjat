@@ -55,12 +55,12 @@
 		// Get headers.
 		vector<string> colnames;
 		bool first = true;
-		for_each([&ss,&colnames,delimiter,&first](const char *, const Udjat::Value &row){
+		for_each([&ss,&colnames,delimiter,&first](const char *, const Udjat::Variant &row){
 
 			if(first) {
 				// First line, get column names.
 				bool sep = false;
-				row.for_each([&ss,&colnames,&sep,delimiter](const char *name, const Value &){
+				row.for_each([&ss,&colnames,&sep,delimiter](const char *name, const Variant &){
 					if(sep) {
 						ss << delimiter;
 					}

@@ -144,7 +144,7 @@
 		virtual bool process(Request &request, DataTable &response) const noexcept;
 
 		/// @brief Enumerate children.
-		virtual bool for_each(const std::function<bool(const Udjat::Value &value)> &func) const noexcept;
+		virtual bool for_each(const std::function<bool(const Udjat::Variant &value)> &func) const noexcept;
 		
 		/// @brief Enumerate interfaces.
 		static bool for_each(const std::function<bool(const Interface &interface)> &func);

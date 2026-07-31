@@ -86,7 +86,7 @@
 		return child.as_quark();
 	}
 
-	int Activatable::exec(Udjat::Value &value, bool except, const std::function<int()> &func) {
+	int Activatable::exec(Udjat::Variant &value, bool except, const std::function<int()> &func) {
 
 		try {
 

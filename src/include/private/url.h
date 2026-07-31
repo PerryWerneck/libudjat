@@ -80,7 +80,7 @@ namespace Udjat {
 
 		const char *c_str() const noexcept override;
 
-		bool get(Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "") override;
+		bool get(Udjat::Variant &value, const HTTP::Method method = HTTP::Get, const char *payload = "") override;
 
 		int perform(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const void *data, size_t len)> &progress) override;
 

@@ -48,7 +48,7 @@
 		return 0;
 	}
 
-	Udjat::Value & Abstract::Agent::get(Udjat::Value &value) const {
+	Udjat::Variant & Abstract::Agent::get(Udjat::Variant &value) const {
 		value.set(to_string());
 		return value;
 	}

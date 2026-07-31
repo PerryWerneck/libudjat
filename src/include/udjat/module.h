@@ -215,13 +215,13 @@
 		std::string operator[](const char *property_name) const noexcept;
 
 		/// @brief Execute command.
-		static void exec(const char *module_name, Udjat::Value &response, const char *name, ...) __attribute__ ((sentinel));
+		static void exec(const char *module_name, Udjat::Variant &response, const char *name, ...) __attribute__ ((sentinel));
 
 		/// @brief Execute command.
-		void exec(Udjat::Value &response, const char *name,...) const __attribute__ ((sentinel));
+		void exec(Udjat::Variant &response, const char *name,...) const __attribute__ ((sentinel));
 
 		/// @brief Execute command.
-		virtual void exec(Udjat::Value &response, const char *name, va_list args) const;
+		virtual void exec(Udjat::Variant &response, const char *name, va_list args) const;
 
 		/// @brief Set root agent, called every time the root agent changes.
 		/// @param agent The new root agent.

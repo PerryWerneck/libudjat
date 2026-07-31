@@ -29,7 +29,7 @@
  namespace Udjat {
 
 	/// @brief Base API request.
-	class UDJAT_API Request : public Udjat::Value {
+	class UDJAT_API Request : public Udjat::Variant {
 	private:
 
 		/// @brief Current argument.
@@ -174,7 +174,7 @@
 		const char *username() const;
 
 		// bool get_property(const char *key, std::string &value) const override;
-		bool get_property(const char *key, Udjat::Value &value) const override;
+		bool get_property(const char *key, Udjat::Variant &value) const override;
 
 		/// @brief Check the cache state.
 		/// @param timestamp Current response timestamp.

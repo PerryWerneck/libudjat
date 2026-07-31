@@ -78,7 +78,7 @@
 				return value;
 			}
 
-			bool get_property(const char *key, Udjat::Value &value) const override {
+			bool get_property(const char *key, Udjat::Variant &value) const override {
 				for(const auto item : items) {
 					if(item->get_property(key,value)) {
 						return true;
@@ -229,7 +229,7 @@
 
 	}
 
-	bool Abstract::Object::get_property(const char *key, Udjat::Value &value) const {
+	bool Abstract::Object::get_property(const char *key, Udjat::Variant &value) const {
 		return false;
 	}
 

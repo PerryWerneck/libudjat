@@ -85,7 +85,7 @@ namespace Udjat {
 	void Module::trace_paths(const char *) const noexcept {
 	}
 
-	void Module::exec(Udjat::Value &response, const char *name,...) const {
+	void Module::exec(Udjat::Variant &response, const char *name,...) const {
 		va_list args;
 		va_start(args, name);
 		try {
@@ -97,7 +97,7 @@ namespace Udjat {
 		va_end(args);
 	}
 
-	void Module::exec(const char *module_name, Udjat::Value &response, const char *name, ...) {
+	void Module::exec(const char *module_name, Udjat::Variant &response, const char *name, ...) {
 		const Module *module = find(module_name);
 		if(!module) {
 			throw system_error(EINVAL,system_category(),Logger::Message(_("Module '{}' is not loaded"),module_name));
@@ -115,7 +115,7 @@ namespace Udjat {
 
 	}
 
-	void Module::exec(Udjat::Value UDJAT_UNUSED(&response), const char *name, va_list UDJAT_UNUSED(args)) const {
+	void Module::exec(Udjat::Variant &, const char *name, va_list) const {
 		throw system_error(ENOTSUP,system_category(),Logger::Message(_("I dont know how to execute '{}'"),name));
 	}
 

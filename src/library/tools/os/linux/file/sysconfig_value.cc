@@ -60,7 +60,7 @@
 		type = String;
 	}
 
-	Udjat::Value & System::Config::File::Value::get(Udjat::Variant &value) const {
+	Udjat::Variant & System::Config::File::Value::get(Udjat::Variant &value) const {
 
 		switch(type) {
 		case Value::Boolean:

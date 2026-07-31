@@ -96,7 +96,7 @@
 		return false;
 	}
 
-	bool Interface::for_each(const std::function<bool(const Udjat::Value &value)> &) const noexcept {
+	bool Interface::for_each(const std::function<bool(const Udjat::Variant &value)> &) const noexcept {
 		return false;
 	}
 
@@ -137,7 +137,7 @@
 			columns.emplace_back(item.name());
 		}
 
-		for_each([&response](const Udjat::Value &value){
+		for_each([&response](const Udjat::Variant &value){
 			response.add(value);
 			return false;
 		});

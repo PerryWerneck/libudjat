@@ -44,7 +44,7 @@
 		}
 
 		// Get headers.
-		for_each([&stream](const char *key, const Udjat::Value &value){
+		for_each([&stream](const char *key, const Udjat::Variant &value){
 
 			switch((Variant::Type) value) {
 			case Udjat::Variant::Undefined:

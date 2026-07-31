@@ -75,7 +75,7 @@
 				});
 				ss << "</tr></thead><tbody>";
 
-				for_each([&ss,&colnames](const char *, const Udjat::Value &row){
+				for_each([&ss,&colnames](const char *, const Udjat::Variant &row){
 					ss << "<tr>";
 
 					for(const string &name : colnames) {

@@ -495,7 +495,7 @@
 			return Abstract::Agent::computeState();
 		}
 
-		Udjat::Value & get(Udjat::Value &value) const override {
+		Udjat::Variant & get(Udjat::Variant &value) const override {
 			return value.set(this->value);
 		}
 
@@ -594,7 +594,7 @@
 			return Abstract::Agent::computeState();
 		}
 
-		Udjat::Value & get(Udjat::Value &value) const override {
+		Udjat::Variant & get(Udjat::Variant &value) const override {
 			return value.set(this->value);
 		}
 

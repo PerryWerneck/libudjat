@@ -46,7 +46,7 @@
 		static const char * payload(const Properties &props);
 
 		/// @brief Convenience method to capture and translate exceptions.
-		int exec(Udjat::Value &response, bool except, const std::function<int()> &func);
+		int exec(Udjat::Variant &response, bool except, const std::function<int()> &func);
 
 	public:
 

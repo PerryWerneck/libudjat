@@ -78,9 +78,9 @@ namespace Udjat {
 		return true;
 	}
 
-	bool Module::Controller::for_each(const std::function<bool(const Udjat::Value &value)> &func) const noexcept {
+	bool Module::Controller::for_each(const std::function<bool(const Udjat::Variant &value)> &func) const noexcept {
 		for(const auto module : modules) {
-			Value value;
+			Variant value;
 			value["name"] = module->module_name;
 			value["description"] = module->info.description;
 			value["version"] = module->info.version;

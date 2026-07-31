@@ -148,7 +148,7 @@
 		/// @param method The HTTP method to use.
 		/// @param payload The payload to send.
 		/// @return true if value was updated.
-		bool get(Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "") const;
+		bool get(Udjat::Variant &value, const HTTP::Method method = HTTP::Get, const char *payload = "") const;
 
 		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
 		/// @return Test result.

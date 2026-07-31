@@ -444,7 +444,7 @@
 		return String{str.str().c_str()};		
 	}
 
-	bool URL::get(Udjat::Value &value, const HTTP::Method method, const char *payload) const {
+	bool URL::get(Udjat::Variant &value, const HTTP::Method method, const char *payload) const {
 		return handler()->get(value,method,payload);
 	}
 

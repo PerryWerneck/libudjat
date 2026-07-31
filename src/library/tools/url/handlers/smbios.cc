@@ -40,7 +40,7 @@
 		return url.c_str();
 	}
 
-	bool SMBiosURLHandler::get(Udjat::Value &response, const HTTP::Method, const char *) {
+	bool SMBiosURLHandler::get(Udjat::Variant &response, const HTTP::Method, const char *) {
 
 		auto elements = url.path(true).split("/");
 

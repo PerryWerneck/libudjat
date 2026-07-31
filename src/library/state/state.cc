@@ -190,7 +190,7 @@ namespace Udjat {
 		}
 	}
 
-	bool Abstract::State::get_property(const char *key, Udjat::Value &value) const {
+	bool Abstract::State::get_property(const char *key, Udjat::Variant &value) const {
 
 		if(Object::get_property(key,value)) {
 			return true;
