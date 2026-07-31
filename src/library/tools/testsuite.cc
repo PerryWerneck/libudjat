@@ -275,7 +275,11 @@
 		});
 
 		// Run menu.
-		if(groups.size() == 1) {
+		if(groups.size() == 0) {
+
+			Logger::String{"The testcase list is empty"}.info();
+
+		} else if(groups.size() == 1) {
 
 			// Just one group, run single mode.
 			groups.begin()->interactive();
