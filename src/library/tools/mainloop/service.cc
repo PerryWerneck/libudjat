@@ -111,7 +111,8 @@
 		}
 
 		schema.add(
-			Schema::Item{ "name", 			Schema::String,		_("The Service name")			},
+			Schema::Enumerable,
+			Schema::Item{ "name", 			Schema::ObjectPath,	_("The Service name")			},
 			Schema::Item{ "description", 	Schema::String,		_("The Service description")	},
 			Schema::Item{ "active", 		Schema::Boolean,	_("Service state")				}			
 		);

@@ -87,7 +87,6 @@
 	bool Request::pop(const char *prefix, const char * &path) noexcept {
 
 		if(path[0] != '/' || path[1] == 0) {
-			debug("Rejecting invalid or empty path");
 			return false;
 		}
 
