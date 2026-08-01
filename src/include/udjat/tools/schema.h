@@ -38,7 +38,7 @@
 		Capabilities caps = Schema::NoCapabilities;
 
 		enum Type : uint8_t {
-			Path		= Variant::ObjectPath,		///< @brief Object path as string.
+			ObjectPath	= Variant::ObjectPath,		///< @brief Object path as string.
 			String		= Variant::String,			///< @brief UTF-8 string value.
 			Timestamp	= Variant::Timestamp,		///< @brief Timestamp value.
 			Signed		= Variant::Signed,			///< @brief Signed integer value.

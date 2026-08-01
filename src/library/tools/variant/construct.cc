@@ -103,6 +103,7 @@
 		if(content.ptr) {
 			if(isString()) {
 				free(content.ptr);
+				content.ptr = nullptr;
 			} else if(type == Array) {
 				delete ((vector<Variant> *) content.ptr);
 			} else if(type == Object) {
@@ -118,6 +119,7 @@
 		case String:
 		case Icon:
 		case Url:
+		case ObjectPath:
 			content.ptr = nullptr;
 			break;
 
