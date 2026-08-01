@@ -54,6 +54,7 @@
 		case String:
 		case Icon:
 		case Url:
+		case ObjectPath:
 			if(content.ptr) {
 				free(content.ptr);
 			}

@@ -187,7 +187,7 @@
 
 		case Udjat::Variant::Icon:
 			try {
-				Udjat::String tmpl{Config::Value<string>{"html","icon-template","<strong class='icon-name'>${icon-name}</strong>"}.c_str()};
+				Udjat::String tmpl{Config::Value<string>{"html","icon-template","<img class='icon-name' src='/icons/${icon-name}</img>"}.c_str()};
 
 				tmpl.expand([this](const char *key, std::string &value){
 
@@ -220,6 +220,26 @@
 			}
 			break;
 
+		case Udjat::Variant::ObjectPath:
+			try {
+				Udjat::String tmpl{Config::Value<string>{"html","object-path-template","<a href='${value}' class='object-path'>${value}</a>"}.c_str()};
+
+				ss << tmpl.expand([this](const char *key, std::string &value){
+
+					if(!strcasecmp(key,"value")) {
+						value = to_string();
+						return true;
+					}
+
+					return false;
+
+				},true,false);
+
+			} catch(const std::exception &e) {
+				Logger::String(to_string(),": ",e.what()).error("OPath");
+			}	
+			break;
+
 		default:
 			try {
 				Udjat::String tmpl{Config::Value<string>{"html","string-template","<strong class='string-value'>${value}</strong>"}.c_str()};
@@ -238,7 +258,6 @@
 			} catch(const std::exception &e) {
 				Logger::String(to_string(),": ",e.what()).error("icon");
 			}
-
 
 		}
 		#pragma GCC diagnostic pop

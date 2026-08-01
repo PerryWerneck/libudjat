@@ -52,7 +52,7 @@
 			}
 			return (((map<std::string,Value> *) content.ptr))->empty();
 
-		} else if(type == String) {
+		} else if(type == String || type == Icon || type == Url || type == ObjectPath) {
 
 			return !(content.ptr && *((char *) content.ptr)); 
 
@@ -67,11 +67,11 @@
 	}
 
 	bool Variant::isNull() const noexcept {
-		return (type == Undefined) || ((type == String || type == Icon || type == Url) && !content.ptr);
+		return (type == Undefined) || ((type == String || type == Icon || type == Url || type == ObjectPath) && !content.ptr);
 	}
 
 	bool Variant::isString() const noexcept {
-		return (type == String || type == Icon || type == Url) && content.ptr;
+		return (type == String || type == Icon || type == Url || type == ObjectPath) && content.ptr;
 	}
 
 	const char * Variant::c_str() const noexcept {
@@ -97,7 +97,8 @@
 		case String:
 		case Icon:
 		case Url:
-			if(content.ptr) {
+		case ObjectPath:
+			if(content.ptr && *((const char *) content.ptr)) {
 				value = (const char *) content.ptr;
 			} else {
 				value.clear();
@@ -178,6 +179,7 @@
 			case Variant::Icon:
 			case Variant::Url:
 			case Variant::String:
+			case Variant::ObjectPath:
 				dst = (T) stoi((const char *) src.content.ptr);
 				break;
 

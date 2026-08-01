@@ -38,17 +38,18 @@
 		Capabilities caps = Schema::NoCapabilities;
 
 		enum Type : uint8_t {
+			Path		= Variant::ObjectPath,		///< @brief Object path as string.
 			String		= Variant::String,			///< @brief UTF-8 string value.
-			Timestamp	= Variant::Timestamp,			///< @brief Timestamp value.
+			Timestamp	= Variant::Timestamp,		///< @brief Timestamp value.
 			Signed		= Variant::Signed,			///< @brief Signed integer value.
-			Unsigned	= Variant::Unsigned,			///< @brief Unsigned integer value.
-			Double		= Variant::Real,				///< @brief Double value.
-			Float		= Variant::Real,				///< @brief Float value.
+			Unsigned	= Variant::Unsigned,		///< @brief Unsigned integer value.
+			Double		= Variant::Real,			///< @brief Double value.
+			Float		= Variant::Real,			///< @brief Float value.
 			Boolean		= Variant::Boolean,			///< @brief Boolean value.
-			Icon		= Variant::Icon,				///< @brief Icon name.
+			Icon		= Variant::Icon,			///< @brief Icon name.
 			Url			= Variant::Url,				///< @brief URL.
-			State		= Variant::State,				///< @brief Agent state (Ready=✓, Warning=⚠, error=✘, etc.)
-			Percent		= Variant::Fraction,			///< @brief Percent value (Float from 0.0 to 1.0).
+			State		= Variant::State,			///< @brief Agent state (Ready=✓, Warning=⚠, error=✘, etc.)
+			Percent		= Variant::Fraction,		///< @brief Percent value (Float from 0.0 to 1.0).
 		};
 
 		template <typename T>

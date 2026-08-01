@@ -39,6 +39,7 @@
 		case String:
 		case Icon:
 		case Url:
+		case ObjectPath:
 			if(src.content.ptr) {
 				content.ptr = strdup((const char *) src.content.ptr);
 			} else {
@@ -100,7 +101,7 @@
 	Variant & Variant::clear(const Type new_type) {
 
 		if(content.ptr) {
-			if(type == String || type == Url || type == Icon) {
+			if(isString()) {
 				free(content.ptr);
 			} else if(type == Array) {
 				delete ((vector<Variant> *) content.ptr);

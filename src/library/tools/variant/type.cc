@@ -28,23 +28,24 @@
 	Udjat::Variant::Type type;
 	const char *name;
  } typenames[] = {
-	{ Udjat::Variant::Type::Undefined,	N_("undefined") },	// Allways the first one
-	{ Udjat::Variant::Type::Array,		N_("array") 	},
-	{ Udjat::Variant::Type::Object,		N_("object") 	},
-	{ Udjat::Variant::Type::String,		N_("string") 	},
-	{ Udjat::Variant::Type::Timestamp,	N_("timestamp") },
-	{ Udjat::Variant::Type::Signed,		N_("signed") 	},
-	{ Udjat::Variant::Type::Unsigned,		N_("unsigned") 	},
-	{ Udjat::Variant::Type::Real,			N_("real") 		},
-	{ Udjat::Variant::Type::Boolean,		N_("boolean") 	},
-	{ Udjat::Variant::Type::Fraction,		N_("fraction") 	},
-	{ Udjat::Variant::Type::Icon,			N_("icon") 		},
-	{ Udjat::Variant::Type::Url,			N_("url") 		},
-	{ Udjat::Variant::Type::State,		N_("state") 	},
+	{ Udjat::Variant::Type::Undefined,		N_("undefined")		},	// Allways the first one
+	{ Udjat::Variant::Type::ObjectPath,		N_("objectpath") 	},
+	{ Udjat::Variant::Type::Array,			N_("array") 		},
+	{ Udjat::Variant::Type::Object,			N_("object") 		},
+	{ Udjat::Variant::Type::String,			N_("string") 		},
+	{ Udjat::Variant::Type::Timestamp,		N_("timestamp") 	},
+	{ Udjat::Variant::Type::Signed,			N_("signed") 		},
+	{ Udjat::Variant::Type::Unsigned,		N_("unsigned") 		},
+	{ Udjat::Variant::Type::Real,			N_("real") 			},
+	{ Udjat::Variant::Type::Boolean,		N_("boolean") 		},
+	{ Udjat::Variant::Type::Fraction,		N_("fraction") 		},
+	{ Udjat::Variant::Type::Icon,			N_("icon") 			},
+	{ Udjat::Variant::Type::Url,			N_("url") 			},
+	{ Udjat::Variant::Type::State,			N_("state") 		},
 
-	{ Udjat::Variant::Type::Signed,		N_("int") 		},
-	{ Udjat::Variant::Type::Signed,		N_("integer") 	},
-	{ Udjat::Variant::Type::Signed,		N_("number") 	},
+	{ Udjat::Variant::Type::Signed,			N_("int") 			},
+	{ Udjat::Variant::Type::Signed,			N_("integer") 		},
+	{ Udjat::Variant::Type::Signed,			N_("number") 		},
  };
 
  namespace Udjat {

@@ -33,6 +33,7 @@
 		/// @brief Variant types.
 		enum Type : uint8_t {
 			Undefined	= '\0',			///< @brief 'null' value.
+			ObjectPath	= 'p',			///< @brief Object path (string).
 			Array		= 'a',			///< @brief Array value (ordered list).
 			Object		= 'O',			///< @brief Object value (collection of name/value pairs).
 			String		= 's',			///< @brief UTF-8 string value.
