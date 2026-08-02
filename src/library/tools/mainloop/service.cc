@@ -120,4 +120,21 @@
 		return true;
 	}
 
+	bool Service::Controller::for_each(const std::function<bool(const Udjat::Variant &value)> &func) const noexcept {
+
+		debug("Enumerating ",objects.size()," services");
+		for(const auto service : objects) {
+			Variant value;
+			value["name"] = service->name();
+			value["description"] = service->description();
+			value["active"] = service->active();
+			if(func(value)) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
  }

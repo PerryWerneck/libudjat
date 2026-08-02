@@ -36,8 +36,6 @@
 
 		DataTable & next() noexcept;
 
-		virtual void push_back(const Schema::Item &schema, const Value &value) = 0;
-
 	public:
 		DataTable(const OutputSchema &s);
 		virtual ~DataTable();
@@ -52,9 +50,9 @@
 		/// @return true if the table can handle foot.
 		virtual bool foot(const char *text);
 	
-		/// @brief Add object with columns.
+		/// @brief Add one row to the table.
 		/// @param value Object with column data to extract based on schema.
-		virtual DataTable & add(const Value &value);
+		virtual DataTable & push_back(const Value &row) = 0;
 
 		/// @brief Format table based on mimetype
 		/// @param stream The output stream to receive the formated output.

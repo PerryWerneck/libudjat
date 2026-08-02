@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #define LOG_DOMAIN "mainloop"
+ 
  #include <config.h>
  #include <cstring>
  #include <sys/eventfd.h>
@@ -43,9 +45,9 @@
 	Linux::MainLoop::~MainLoop() {
 
 		if(!handlers.empty()) {
-			cerr << "MainLoop\tDestroying mainloop with " << handlers.size() << " pending handler(s)" << endl;
+			Logger::String{"Destroying mainloop with ",handlers.size()," pending handler(s)"}.error();
 		} else {
-			Logger::String{"Destroying clean service loop"}.trace("MainLoop");
+			Logger::String{"Destroying clean service loop"}.trace();
 		}
 
 		running = false;

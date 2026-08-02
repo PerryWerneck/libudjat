@@ -44,16 +44,6 @@
 		return false;
 	}
 
-	/// @brief Add object with columns.
-	/// @param value Object with column data to extract based on schema.
-	DataTable & DataTable::add(const Value &value) {
-		for(const auto &item : schema) {
-			push_back(item,value[item.name()]);
-		}
-		range.count++;
-		return *this;
-	}
-
 	std::ostream & DataTable::apply(std::ostream &stream, const MimeType mimetype, const std::function<void(DataTable &table)> &callback) {
 
 

@@ -97,6 +97,7 @@
 	}
 
 	bool Interface::for_each(const std::function<bool(const Udjat::Variant &value)> &) const noexcept {
+		Logger::String{"Interface doesnt support enumeration"}.error(name());
 		return false;
 	}
 
@@ -122,23 +123,26 @@
 	bool Interface::process(Request &request, DataTable &response) const noexcept {
 
 		if(!allow(request.role())) {
+			debug("Access denied");
 			response.assign(HTTP::Forbidden);
 			return true;
 		}
 
-		OutputSchema schema;
-		if(!this->schema(schema)) {
-			response.assign(HTTP::NotFound);
-			return true;
-		}
+		// OutputSchema schema;
+		// if(!this->schema(schema)) {
+		// 	response.assign(HTTP::NotFound);
+		// 	return true;
+		// }
 
-		std::vector<string> columns;
-		for(const auto &item : schema) {
-			columns.emplace_back(item.name());
-		}
+		// std::vector<string> columns;
+		// for(const auto &item : schema) {
+		// 	columns.emplace_back(item.name());
+		// }
 
-		for_each([&response](const Udjat::Variant &value){
-			response.add(value);
+		debug("Enumerating itens on interface '",name(),"'");
+		for_each([&response](const Udjat::Variant &row){
+			debug("Got item '",row["name"].c_str(),"'");
+			response.push_back(row);
 			return false;
 		});
 

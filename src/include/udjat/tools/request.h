@@ -120,7 +120,7 @@
 		/// @brief Get the user authentication level.
 		/// @return The authentication level for current user.
 		/// @retval Authentication::None if not authenticated.
-		Authentication::Role role() const noexcept;
+		virtual Authentication::Role role() const noexcept;
 
 		/// @brief Test if the request can handle the path.
 		/// @param prefix The path being searched.
