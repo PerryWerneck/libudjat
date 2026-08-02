@@ -110,6 +110,10 @@
 			status.message = message;
 		}
 
+		inline const char * c_str() const noexcept {
+			return status.c_str();
+		}
+
 		/// @brief Get response message.
 		/// @return The response message (Ok if empty).
 		const char *message() const noexcept;

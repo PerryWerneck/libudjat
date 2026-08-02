@@ -81,6 +81,10 @@
 			Status(const MimeType mimetype) : Status{Ok, mimetype} {				
 			}
 
+			inline const char * c_str() const noexcept {
+				return body.empty() ? message.c_str() : body.c_str();
+			}
+
 			/// @brief Build status from exception.
 			/// @param e The exception for status.
 			Status(const std::exception &e, const MimeType mimetype = MimeType::none);
