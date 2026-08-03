@@ -39,6 +39,10 @@
 		debug("Build request for '",reqpath,"'");
 	}
 
+	Request::Request(const char *path, const char *username, const Authentication::Role role) : Request{path} {
+		auth = make_shared<Authentication>(username,role);
+	}
+
 	Request::~Request() {
 	}
 

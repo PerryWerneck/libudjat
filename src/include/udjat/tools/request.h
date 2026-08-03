@@ -58,6 +58,8 @@
 		/// @return true if the request begin with /api/ 
 		static bool pop(const char * &path, unsigned int &apiver);
 
+		Request(const char *path, const char *username, const Authentication::Role role);
+
 	public:
 
 		Request(const char *path = "");

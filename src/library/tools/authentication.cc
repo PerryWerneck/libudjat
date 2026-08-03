@@ -315,7 +315,9 @@
 
 	Authentication::Authentication(const char *name, Role role) {
 		user.role = role;
-		user.name = name;
+		if(name && *name) {
+			user.name = name;
+		}
 	}
 
 	Authentication::Role Authentication::login(const char *email) noexcept {

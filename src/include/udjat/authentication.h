@@ -54,8 +54,8 @@
 				static Role RoleFactory(const Properties &props);
 				static Role RoleFactory(const Properties &props, Role level);
 			
-				Authentication(Role role = None);
-				Authentication(const char *username, Role role = Guest);
+				Authentication(Role role);
+				Authentication(const char *username = nullptr, Role role = None);
 
 				/// @brief Encrypt token, return base64.
 				/// @param token The token to encrypt.
@@ -146,7 +146,7 @@
 					return user.email.c_str();
 				}
 
-				protected:
+			protected:
 				inline void name(const char *name) noexcept {
 					user.name = name;
 				}
