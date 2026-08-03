@@ -33,19 +33,19 @@
 
  namespace Udjat {
 
-	bool Abstract::Agent::schema(const char *path, HTTPSchema &schema) const noexcept {
+	bool Abstract::Agent::schema(const char *path, Schema::Method &schema) const noexcept {
 		Object::schema(path,schema);
 		schema.add(
-			HTTPSchema::Item{HTTP::Head, Authentication::None}	// Allow 'head' requests for agents.
+			Schema::Method::Item{HTTP::Head, Authentication::None}	// Allow 'head' requests for agents.
 		);
 		return true;
 	}
 
-	bool Abstract::Agent::schema(const HTTP::Method method, const char *path, InputSchema &schema) const noexcept {
+	bool Abstract::Agent::schema(const HTTP::Method method, const char *path, Schema::Input &schema) const noexcept {
 		return Object::schema(method,path,schema);
 	}
 
-	bool Abstract::Agent::schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept {
+	bool Abstract::Agent::schema(const HTTP::Method method, const char *path, Schema::Output &schema) const noexcept {
 
 		auto rc = Object::schema(method,path,schema);
 

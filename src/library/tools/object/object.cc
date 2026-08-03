@@ -66,15 +66,15 @@
 		return value;
 	}
 
-	bool Object::schema(const char *path, HTTPSchema &schema) const noexcept {
+	bool Object::schema(const char *path, Schema::Method &schema) const noexcept {
 		return NamedObject::schema(path,schema);
 	}
 
-	bool Object::schema(const HTTP::Method method, const char *path, InputSchema &schema) const noexcept {
+	bool Object::schema(const HTTP::Method method, const char *path, Schema::Input &schema) const noexcept {
 		return NamedObject::schema(method,path,schema);
 	}
 
-	bool Object::schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept {
+	bool Object::schema(const HTTP::Method method, const char *path, Schema::Output &schema) const noexcept {
 
 		auto rc = NamedObject::schema(method,path,schema);
 

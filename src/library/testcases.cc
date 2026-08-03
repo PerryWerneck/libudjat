@@ -104,7 +104,7 @@
 				{
 					// Test agent properties.
 					Agent<int> agent{};
-					OutputSchema schema;
+					Schema::Output schema;
 
 					if(!agent.schema(HTTP::Get,"",schema)) {
 						throw runtime_error("Agent should have output schema");
@@ -170,7 +170,7 @@
 							throw runtime_error(String{"Cant find interface for '",request.path(),"'"});
 						}
 
-						OutputSchema schema;
+						Schema::Output schema;
 						if(!intf->schema(request.path(),schema)) {
 							throw runtime_error("Interface doesnt provides an output-schema");
 						}

@@ -143,10 +143,13 @@ namespace Udjat {
 	class Request;
 	class Response;
 	class DataTable;
-	class InputSchema;
-	class OutputSchema;
-	class HTTPSchema;
 	class Template;
+
+	namespace Schema {
+		class Input;
+		class Output;
+		class Method;
+	}
 
 	using Value = Variant;
 

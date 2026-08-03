@@ -164,7 +164,7 @@ namespace Udjat {
 		return value;
 	}
 
-	bool Abstract::State::schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept {
+	bool Abstract::State::schema(const HTTP::Method method, const char *path, Schema::Output &schema) const noexcept {
 		auto rc = Object::schema(method,path,schema);
 		if(method == HTTP::Get) {
 			schema.add(

@@ -42,7 +42,7 @@ namespace Udjat {
 			return modules.size();
 		}
 
-		bool schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept override;
+		bool schema(const HTTP::Method method, const char *path, Schema::Output &schema) const noexcept override;
 
 #ifdef _WIN32
 		static void * get_symbol(HMODULE hModule, const char *name, bool required = true);

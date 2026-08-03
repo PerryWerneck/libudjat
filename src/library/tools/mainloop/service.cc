@@ -118,14 +118,14 @@
 		return true;
 	}
 
-	bool Service::Controller::schema(const HTTP::Method method, const char *, OutputSchema &schema) const noexcept {
+	bool Service::Controller::schema(const HTTP::Method method, const char *, Schema::Output &schema) const noexcept {
 
 		if(method != HTTP::Get) {
 			return false;
 		}
 
 		schema.add(
-			Schema::Enumerable,
+			schema.Enumerable,
 			Schema::Item{ "name", 			Schema::ObjectPath,	_("The Service name")			},
 			Schema::Item{ "description", 	Schema::String,		_("The Service description")	},
 			Schema::Item{ "active", 		Schema::Boolean,	_("Service state")				}			

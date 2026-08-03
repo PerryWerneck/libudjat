@@ -27,7 +27,7 @@
 
  namespace Udjat {
 
-	void Schema::add(const Item &item) {
+	void Schema::Properties::add(const Item &item) {
 
 		for(auto &itn : itens) {
 
@@ -44,6 +44,7 @@
 			// Type mismatch, change value type to string.
 			Logger::String{"Duplicate item '",item.name(),"'"}.warning();
 			itn.item_type = Schema::String;
+			return;
 
 		}
 

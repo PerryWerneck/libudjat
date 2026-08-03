@@ -30,7 +30,7 @@
 
  namespace Udjat {
 
-	DataTable::DataTable(const OutputSchema &s) : schema{s} {
+	DataTable::DataTable(const Schema::Output &s) : schema{s} {
 	}
 
 	DataTable::~DataTable() {

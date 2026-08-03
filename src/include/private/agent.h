@@ -46,8 +46,8 @@ namespace Udjat {
 
 		void update_agents();
 
-		bool schema(const HTTP::Method method, const char *path, OutputSchema &s) const noexcept override;
-		bool schema(const HTTP::Method method, const char *path, InputSchema &s) const noexcept override;
+		bool schema(const HTTP::Method method, const char *path, Schema::Output &s) const noexcept override;
+		bool schema(const HTTP::Method method, const char *path, Schema::Input &s) const noexcept override;
 
 	public:
 		~Controller();

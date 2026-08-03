@@ -27,7 +27,7 @@
  namespace Udjat {
 
 	/// @brief Encapsulates the structural layout and validation rules used to parse, verify, and serialize structured data formats.
-	class UDJAT_API HTTPSchema {
+	class UDJAT_API Schema::Method {
 	public:
 
 		class UDJAT_API Item {
@@ -57,16 +57,16 @@
 				return item_description;
 			}
 
-		protected:
-			friend class HTTPSchema;
-			
+		protected:		
+			friend class Method;
+				
 			HTTP::Method item_method = HTTP::Get;					///< @brief The item method.
 			Authentication::Role item_role = Authentication::None;	///< @brief The required role.
 			const char *item_description = "";						///< @brief The item description.
 
 		};
 
-		HTTPSchema() = default;
+		Method() = default;
 
 		void add(const Item &item);
 

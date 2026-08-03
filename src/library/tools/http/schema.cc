@@ -28,7 +28,7 @@
 
  namespace Udjat {
 
-	void HTTPSchema::add(const Item &item) {
+	void Schema::Method::add(const Item &item) {
 
 		for(auto &itn : itens) {
 			if(itn.item_method == item.item_method) {

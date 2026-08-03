@@ -94,14 +94,14 @@ namespace Udjat {
 
 	}
 
-	bool Module::Controller::schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept {
+	bool Module::Controller::schema(const HTTP::Method method, const char *path, Schema::Output &schema) const noexcept {
 
 		if(method != HTTP::Get) {
 			return false;
 		}
 
 		schema.add(
-			Schema::Enumerable,
+			schema.Enumerable,
 			Schema::Item{ "name", 			Schema::ObjectPath,	_("The module name")			},
 			Schema::Item{ "description", 	Schema::String,		_("The module description")		},
 			Schema::Item{ "version", 		Schema::String,		_("The module version")			},

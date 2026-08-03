@@ -32,12 +32,12 @@
 
 		typedef DataTable super;
 
-		const OutputSchema &schema;
+		const Schema::Output &schema;
 
 		DataTable & next() noexcept;
 
 	public:
-		DataTable(const OutputSchema &s);
+		DataTable(const Schema::Output &s);
 		virtual ~DataTable();
 
 		inline HTTP::Status & operator=(const HTTP::StatusCode status) noexcept {

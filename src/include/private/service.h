@@ -48,7 +48,7 @@
 			return Singleton::Container<Service>::for_each(method);
 		}
 
-		bool schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept override;
+		bool schema(const HTTP::Method method, const char *path, Schema::Output &schema) const noexcept override;
 
 		bool process(Request &request, Response &response) const noexcept override;
 

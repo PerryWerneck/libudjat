@@ -101,16 +101,16 @@
 		return false;
 	}
 
-	bool Interface::schema(const char *, HTTPSchema &schema) const noexcept {
+	bool Interface::schema(const char *, Schema::Method &schema) const noexcept {
 		schema.add({ HTTP::Get, Authentication::None });
 		return true;
 	}
 
-	bool Interface::schema(const HTTP::Method, const char *, InputSchema &) const noexcept {
+	bool Interface::schema(const HTTP::Method, const char *, Schema::Input &) const noexcept {
 		return false;
 	}
 
-	bool Interface::schema(const HTTP::Method, const char *, OutputSchema &) const noexcept {
+	bool Interface::schema(const HTTP::Method, const char *, Schema::Output &) const noexcept {
 		return false;
 	}
 
@@ -154,7 +154,7 @@
 		}
 
 		// Check the HTTP actions & roles.
-		HTTPSchema scm;
+		Schema::Method scm;
 		if(schema(path,scm)) {
 			bool rc = false;
 			HTTP::Method method = request.method();
@@ -206,7 +206,7 @@
 
 					debug("Process returned OK");
 
-					OutputSchema schema;
+					Schema::Output schema;
 					if(request.apicall() || status.mimetype != MimeType::html || !this->schema(request.path(),schema)) {
 
 						// It's an API call, dont have schema or not an html request, just serialize.

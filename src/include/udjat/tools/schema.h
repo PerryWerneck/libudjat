@@ -26,16 +26,10 @@
  namespace Udjat {
 
 	/// @brief Encapsulates the structural layout and validation rules used to parse, verify, and serialize structured data formats.
-	class UDJAT_API Schema {
-	public:
+	namespace Schema {
 
-		/// @brief Schema capabilites.
-		enum Capabilities : uint8_t {
-			NoCapabilities		= 0x0,
-			Enumerable			= 0x1,				///< @brief Get on '/' enumerate objects.
-		};
-
-		Capabilities caps = Schema::NoCapabilities;
+		class Method;
+		class Properties;
 
 		enum Type : uint8_t {
 			ObjectPath	= Variant::ObjectPath,		///< @brief Object path as string.
@@ -83,6 +77,8 @@
 			}
 
 		protected:
+			friend class Properties;
+
 			friend class Schema;
 			
 			const char *item_name;			//< @brief The item name.
@@ -91,82 +87,158 @@
 
 		};
 
-		Schema() = default;
+		/// @brief Schema Input/Output properties.
+		class UDJAT_API Properties {
+		protected:
+			std::vector<Item> itens;
 
-		void add(const Item &item);
+		public:
+			Properties() = default;
 
-		inline void add(const Schema::Capabilities cap) noexcept {
-			caps = (Schema::Capabilities) (caps|cap);	
-		}
+			void add(const Item &item);
 
-		template<typename... Targs>
-		inline void add(const Item &item, Targs... Fargs) {
-			add(item);
-			add(Fargs...);
-		}
+	#if __cplusplus >= 201703L
+			inline auto begin() const noexcept {
+				return itens.begin();
+			}
 
-		template<typename... Targs>
-		inline void add(const Capabilities cap, Targs... Fargs) {
-			add(cap);
-			add(Fargs...);
-		}
+			inline auto end() const noexcept {
+				return itens.end();
+			}
+	#else
+			inline std::vector<Item>::const_iterator begin() const noexcept {
+				return itens.begin();
+			}
+
+			inline std::vector<Item>::const_iterator end() const noexcept {
+				return itens.end();
+			}
+	#endif
+
+			inline void clear() {
+				itens.clear();
+			}
+
+		};
+
+		/// @brief Schema inputs
+		class UDJAT_API Input : public Properties {
+		public:
+
+			enum Options : uint8_t {
+				NoOptions 	= 0,		///< @brief Input has no options.
+				AllowRoot	= 1			///< @brief Input allow '/' as path.
+			} options = NoOptions;
+
+			Input() = default;
+
+			inline void add(const Item &item) {
+				Properties::add(item);
+			}
+
+			inline void add(const Options opt) noexcept {
+				options = (Options) (options|opt);	
+			}
+
+			template<typename... Targs>
+			inline void add(const Item &item, Targs... Fargs) {
+				add(item);
+				add(Fargs...);
+			}
+
+			template<typename... Targs>
+			inline void add(const Options opt, Targs... Fargs) {
+				add(opt);
+				add(Fargs...);
+			}
+
+		};
+
+		/// @brief Schema outputs
+		class UDJAT_API Output : public Properties {
+		public:
+			const char *template_name = nullptr;
+
+			enum Options : uint8_t {
+				NoOptions 	= 0,		///< @brief Input has no options.
+				Enumerable	= 1			///< @brief Get on '/' enumerate the object itens.
+			} options = NoOptions;
+
+			Output() = default;
+
+			inline void add(const Item &item) {
+				Properties::add(item);
+			}
+
+			inline void add(const Options opt) noexcept {
+				options = (Options) (options|opt);	
+			}
+
+			template<typename... Targs>
+			inline void add(const Item &item, Targs... Fargs) {
+				add(item);
+				add(Fargs...);
+			}
+
+			template<typename... Targs>
+			inline void add(const Options opt, Targs... Fargs) {
+				add(opt);
+				add(Fargs...);
+			}
 
 
-#if __cplusplus >= 201703L
-		inline auto begin() const noexcept {
-			return itens.begin();
-		}
+		};
 
-		inline auto end() const noexcept {
-			return itens.end();
-		}
-#else
-		inline std::vector<Item>::const_iterator begin() const noexcept {
-			return itens.begin();
-		}
-
-		inline std::vector<Item>::const_iterator end() const noexcept {
-			return itens.end();
-		}
-#endif
-
-		inline void clear() {
-			itens.clear();
-		}
-
-	private:
-		std::vector<Item> itens;
-
-	};
-
-	class UDJAT_API InputSchema : public Schema {
-	public:
-		InputSchema() = default;
-
-		template<typename... Targs>
-		InputSchema(Targs... Fargs) {
-			add(Fargs...);
-		}
+	}
 
 
-	};
 
-	class UDJAT_API OutputSchema : public Schema {
-	public:
+// 	class UDJAT_API Schema {
+// 	public:
 
-		/// @brief Template name, for http outputs.
-		const char *template_name = nullptr;
+// 		/// @brief Schema capabilites.
+// 		enum Capabilities : uint8_t {
+// 			NoCapabilities		= 0x0,
+// 			Enumerable			= 0x1,				///< @brief Get on '/' enumerate objects.
+// 		};
 
-		OutputSchema() = default;
+// 		Capabilities caps = Schema::NoCapabilities;
 
-		template<typename... Targs>
-		OutputSchema(Targs... Fargs) {
-			add(Fargs...);
-		}
 
-	};
 
-	class HTTPSchema;
+// 		Schema() = default;
+
+
+// 	};
+
+// 	class UDJAT_API Schema::Input : public Schema {
+// 	public:
+// 		Schema::Input() = default;
+
+// 		template<typename... Targs>
+// 		Schema::Input(Targs... Fargs) {
+// 			add(Fargs...);
+// 		}
+
+
+// 	};
+
+// 	class UDJAT_API Schema::Output : public Schema {
+// 	public:
+
+// 		/// @brief Template name, for http outputs.
+// 		const char *template_name = nullptr;
+
+// 		Schema::Output() = default;
+
+// 		template<typename... Targs>
+// 		Schema::Output(Targs... Fargs) {
+// 			add(Fargs...);
+// 		}
+
+// 	};
+
+// 	class Schema::Method;
 
 	template <>
 	constexpr Schema::Type Schema::TypeFactory<std::string>() {

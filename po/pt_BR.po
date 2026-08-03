@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-29 17:35-0300\n"
+"POT-Creation-Date: 2026-08-03 14:06-0300\n"
 "PO-Revision-Date: 2026-07-29 17:40-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -49,44 +49,58 @@ msgstr "Normal"
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/library/agent/controller.cc:143
+#: src/library/agent/controller.cc:145
 msgid "Root agent is not available"
 msgstr "Agente raiz não está disponível"
 
-#: src/library/agent/properties.cc:53
+#: src/library/agent/properties.cc:54
 msgid "The agent path"
 msgstr ""
 
-#: src/library/agent/properties.cc:54
+#: src/library/agent/properties.cc:55
 msgid "The Current state text"
 msgstr ""
 
-#: src/library/agent/properties.cc:55
+#: src/library/agent/properties.cc:56
 msgid "The current state value"
 msgstr ""
 
-#: src/library/agent/properties.cc:56
+#: src/library/agent/properties.cc:57
 msgid "The current state name"
 msgstr ""
 
-#: src/library/agent/properties.cc:57
+#: src/library/agent/properties.cc:58
 msgid "The current state icon"
 msgstr ""
 
-#: src/library/agent/properties.cc:58
+#: src/library/agent/properties.cc:59
 msgid "Timestamp of the last state change"
 msgstr "Data/hora da última mudança de estado"
 
-#: src/library/module/controller.cc:85
-msgid "Available modules"
-msgstr "Módulos disponíveis"
+#: src/library/module/controller.cc:105
+msgid "The module name"
+msgstr ""
 
-#: src/library/module/module.cc:103
+#: src/library/module/controller.cc:106
+#, fuzzy
+msgid "The module description"
+msgstr "descrição"
+
+#: src/library/module/controller.cc:107
+msgid "The module version"
+msgstr ""
+
+#: src/library/module/controller.cc:108
+#, fuzzy
+msgid "The module filename"
+msgstr "Carrega arquivo de módulo"
+
+#: src/library/module/module.cc:105
 #, c++-format
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/library/module/module.cc:119
+#: src/library/module/module.cc:121
 #, c++-format
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
@@ -404,7 +418,7 @@ msgstr "Erro HTTP {}"
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
 
-#: src/library/tools/http/status.cc:182 src/library/response/response.cc:111
+#: src/library/tools/http/status.cc:182
 msgid "Unable to serialize undefined value"
 msgstr "Não é possível serializar valor indefinido"
 
@@ -503,6 +517,21 @@ msgstr " {} segundos"
 msgid " {} milliseconds"
 msgstr " {} millisegundos"
 
+#: src/library/tools/mainloop/service.cc:129
+#, fuzzy
+msgid "The Service name"
+msgstr "Serviço indisponível"
+
+#: src/library/tools/mainloop/service.cc:130
+#, fuzzy
+msgid "The Service description"
+msgstr "Opções do serviço"
+
+#: src/library/tools/mainloop/service.cc:131
+#, fuzzy
+msgid "Service state"
+msgstr "Opções do serviço"
+
 #: src/library/tools/message.cc:48
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
@@ -589,87 +618,6 @@ msgid ""
 msgstr ""
 "Endereço desconhecido. O nome não é um endereço ou apelido oficial, ou não "
 "pôde ser encontrado nas bases de dados consultadas."
-
-#: src/library/tools/report.cc:221 src/library/tools/value/text.cc:78
-msgid "Yes"
-msgstr "Sim"
-
-#: src/library/tools/report.cc:221 src/library/tools/value/text.cc:78
-msgid "No"
-msgstr "Não"
-
-#: src/library/tools/value/text.cc:48
-msgid "Item "
-msgstr ""
-
-#: src/library/tools/value/type.cc:31
-msgid "undefined"
-msgstr "indefinido"
-
-#. Allways the first one
-#: src/library/tools/value/type.cc:32
-msgid "array"
-msgstr ""
-
-#: src/library/tools/value/type.cc:33
-msgid "object"
-msgstr "objeto"
-
-#: src/library/tools/value/type.cc:34
-msgid "string"
-msgstr "texto"
-
-#: src/library/tools/value/type.cc:35
-msgid "timestamp"
-msgstr ""
-
-#: src/library/tools/value/type.cc:36
-msgid "signed"
-msgstr "com sinal"
-
-#: src/library/tools/value/type.cc:37
-msgid "unsigned"
-msgstr "sem sinal"
-
-#: src/library/tools/value/type.cc:38
-msgid "real"
-msgstr "ponto flutuante"
-
-#: src/library/tools/value/type.cc:39
-msgid "boolean"
-msgstr "condicional"
-
-#: src/library/tools/value/type.cc:40
-msgid "fraction"
-msgstr "fração"
-
-#: src/library/tools/value/type.cc:41
-msgid "icon"
-msgstr "ícone"
-
-#: src/library/tools/value/type.cc:42
-msgid "url"
-msgstr ""
-
-#: src/library/tools/value/type.cc:43
-msgid "state"
-msgstr "estado"
-
-#: src/library/tools/value/type.cc:45
-msgid "int"
-msgstr "inteiro"
-
-#: src/library/tools/value/type.cc:46
-msgid "integer"
-msgstr "inteiro"
-
-#: src/library/tools/value/type.cc:47
-msgid "number"
-msgstr "numero"
-
-#: src/library/tools/value/type.cc:93
-msgid "Unknown"
-msgstr "Desconhecido"
 
 #: src/library/tools/script.cc:56
 msgid "The required attribute 'cmdline' is missing"
@@ -865,6 +813,92 @@ msgstr ""
 msgid "Unable to resolve '{}' on template '{}'"
 msgstr "Não foi possível resolver '{}' no template '{}'"
 
+#: src/library/tools/variant/text.cc:47
+msgid "Item "
+msgstr ""
+
+#: src/library/tools/variant/text.cc:77
+msgid "Yes"
+msgstr "Sim"
+
+#: src/library/tools/variant/text.cc:77
+msgid "No"
+msgstr "Não"
+
+#: src/library/tools/variant/type.cc:31
+msgid "undefined"
+msgstr "indefinido"
+
+#. Allways the first one
+#: src/library/tools/variant/type.cc:32
+#, fuzzy
+msgid "objectpath"
+msgstr "objeto"
+
+#: src/library/tools/variant/type.cc:33
+msgid "array"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:34
+msgid "object"
+msgstr "objeto"
+
+#: src/library/tools/variant/type.cc:35
+msgid "string"
+msgstr "texto"
+
+#: src/library/tools/variant/type.cc:36
+msgid "timestamp"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:37
+msgid "signed"
+msgstr "com sinal"
+
+#: src/library/tools/variant/type.cc:38
+msgid "unsigned"
+msgstr "sem sinal"
+
+#: src/library/tools/variant/type.cc:39
+msgid "real"
+msgstr "ponto flutuante"
+
+#: src/library/tools/variant/type.cc:40
+msgid "boolean"
+msgstr "condicional"
+
+#: src/library/tools/variant/type.cc:41
+msgid "fraction"
+msgstr "fração"
+
+#: src/library/tools/variant/type.cc:42
+msgid "icon"
+msgstr "ícone"
+
+#: src/library/tools/variant/type.cc:43
+msgid "url"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:44
+msgid "state"
+msgstr "estado"
+
+#: src/library/tools/variant/type.cc:46
+msgid "int"
+msgstr "inteiro"
+
+#: src/library/tools/variant/type.cc:47
+msgid "integer"
+msgstr "inteiro"
+
+#: src/library/tools/variant/type.cc:48
+msgid "number"
+msgstr "numero"
+
+#: src/library/tools/variant/type.cc:94
+msgid "Unknown"
+msgstr "Desconhecido"
+
 #: src/library/tools/timestamp.cc:104
 msgid "Less than one minute"
 msgstr "Menos de um minuto"
@@ -972,13 +1006,21 @@ msgstr "Página seguinte"
 msgid "Select option (Enter to quit): "
 msgstr "Selecione opção (Enter para sair): "
 
-#: src/library/request.cc:127
+#: src/library/response/response.cc:114
+#, fuzzy
+msgid "Unable to serialize response with undefined mimetype"
+msgstr "Não é possível serializar valor indefinido"
+
+#: src/library/response/response.cc:149
+msgid "Operation failed"
+msgstr "Operação falhou"
+
+#: src/library/request.cc:130
 msgid "Invalid or unexpected API version"
 msgstr "Versão de API inválida ou não esperada"
 
-#: src/library/response/response.cc:146
-msgid "Operation failed"
-msgstr "Operação falhou"
+#~ msgid "Available modules"
+#~ msgstr "Módulos disponíveis"
 
 #~ msgid "Get agent properties"
 #~ msgstr "Obtém propriedades do agente"

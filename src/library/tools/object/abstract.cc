@@ -47,18 +47,18 @@
 		Factories().remove(this);
 	}
 
-	bool Abstract::Object::schema(const char *, HTTPSchema &schema) const noexcept {
+	bool Abstract::Object::schema(const char *, Schema::Method &schema) const noexcept {
 		schema.add(
-			HTTPSchema::Item{HTTP::Get, Authentication::None}
+			Schema::Method::Item{HTTP::Get, Authentication::None}
 		);
 		return true;
 	}
 
-	bool Abstract::Object::schema(const HTTP::Method, const char *, InputSchema &) const noexcept {
+	bool Abstract::Object::schema(const HTTP::Method, const char *, Schema::Input &) const noexcept {
 		return false;
 	}
 
-	bool Abstract::Object::schema(const HTTP::Method, const char *, OutputSchema &) const noexcept {
+	bool Abstract::Object::schema(const HTTP::Method, const char *, Schema::Output &) const noexcept {
 		return false;
 	}
 
@@ -158,7 +158,7 @@
 	}
 
 	Value & Abstract::Object::get_properties(Value &value) const {
-		OutputSchema schema;
+		Schema::Output schema;
 		if(this->schema(HTTP::Get,"",schema)) {
 			for(const auto &item : schema) {
 				get_property(item.name(),value);
@@ -171,7 +171,7 @@
 
 		response.set(this);
 
-		OutputSchema schema;
+		Schema::Output schema;
 		if(this->schema(request.method(),request.path(),schema)) {
 
 			// Has schema, use it

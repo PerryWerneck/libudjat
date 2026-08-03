@@ -63,7 +63,7 @@
 		Logger::String{"Deinitializing controller"}.trace();
 	}
 
-	bool Abstract::Agent::Controller::schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept {
+	bool Abstract::Agent::Controller::schema(const HTTP::Method method, const char *path, Schema::Output &schema) const noexcept {
 
 		debug("Getting output schema for '",Interface::name(),"' at '",path,"'");
 
@@ -86,7 +86,7 @@
 		return agent->schema(method,"",schema);
 	}
 
-	bool Abstract::Agent::Controller::schema(const HTTP::Method method, const char *path, InputSchema &schema) const noexcept {
+	bool Abstract::Agent::Controller::schema(const HTTP::Method method, const char *path, Schema::Input &schema) const noexcept {
 
 		if(!(root && (path && *path))) {
 			// No root or no path, return the default 'No-schema'.
@@ -453,7 +453,7 @@
 			return true;
 		}
 
-		OutputSchema out;
+		Schema::Output out;
 		if(schema(request.method(),request.path(),out)) {
 			for(const auto &item : out) {
 				debug("Getting value for '",agent->name(),".",item.name(),"'");
@@ -466,7 +466,7 @@
 				}
 			}
 
-			debug("Got agent '",agent->name(),"' properties using outputschema");
+			debug("Got agent '",agent->name(),"' properties using Schema::Output");
 			return true;
 		}
 
@@ -486,7 +486,7 @@
 	// 		AgentProperties() : Udjat::Action{"agent",_("Get agent properties")} {
 	// 		} 
 
-	// 		bool schema(OutputSchema &schema) const noexcept override {
+	// 		bool schema(Schema::Output &schema) const noexcept override {
 
 	// 			schema.append(
 	// 				Schema::Item{ "icon",		Schema::Icon	},
