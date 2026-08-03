@@ -42,6 +42,11 @@
 	protected:
 		typedef Interface super;
 
+	public:
+		Interface(const char *name, const Authentication::Role = Authentication::Admin);
+		
+		virtual ~Interface();
+
 		/// @brief Check if the request can be processed.
 		/// @param[in] path The path for required object on interface.
 		/// @param request The request to be validated.
@@ -49,10 +54,18 @@
 		/// @return true if the request can bem processed.
 		bool allow(const char *path, const Request &request, HTTP::Status &response) const noexcept;
 
-	public:
-		Interface(const char *name, const Authentication::Role = Authentication::Admin);
-		
-		virtual ~Interface();
+		/// @brief Check if the request can be processed.
+		/// @param request The request to be validated.
+		/// @param response The response to receive the status code and error message.
+		/// @return true if the request can bem processed.
+		bool allow(const Request &request, HTTP::Status &response) const noexcept;
+
+		/// @brief Check the required role for this interface.
+		/// @param role The current user role.
+		/// @return true if the user has access to this interface.
+		inline bool allow(const Authentication::Role role = Authentication::None) const noexcept {
+			return role >= this->role;
+		}
 
 		inline const char *name() const noexcept {
 			return interface_name;
@@ -71,13 +84,6 @@
 			return strcasecmp(name,interface_name) == 0;
 		}
 #endif
-
-		/// @brief Check the required role for this interface.
-		/// @param role The current user role.
-		/// @return true if the user has access to this interface.
-		inline bool allow(const Authentication::Role role = Authentication::None) const noexcept {
-			return role >= this->role;
-		}
 
 		/// @brief Retrieves the schema definition for the interface inputs.
 		/// @param[in] path The path for required object on interface.

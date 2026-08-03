@@ -142,6 +142,10 @@
 		return true;
 	}
 
+	bool Interface::allow(const Request &request, HTTP::Status &response) const noexcept {
+		return allow(request.path(),request,response);
+	}
+
 	bool Interface::allow(const char *path, const Request &request, HTTP::Status &response) const noexcept {
 
 		auto role = request.role();
