@@ -85,6 +85,10 @@
 		/// @return True if the interface defines an input schema; false otherwise (schema remains unmodified).
 		virtual bool schema(const char *path, HTTPSchema &schema) const noexcept;
 
+		inline bool schema(HTTPSchema &schema) const noexcept {
+			return this->schema("",schema);
+		}
+
 		/// @brief Retrieves the schema definition for the interface inputs.
 		/// @param[in] method The requested method.
 		/// @param[in] path The path for required object on interface.
