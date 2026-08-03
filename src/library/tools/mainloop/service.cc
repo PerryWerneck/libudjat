@@ -77,30 +77,44 @@
 
 	bool Service::get_property(const char *key, Value &value) const {
 
-		return false;
+		if(strcasecmp(key,"name") == 0) {
+			value = service_name;
+		} else if(strcasecmp(key,"description") == 0) {
+			value = service_description;
+		} else if(strcasecmp(key,"active") == 0) {
+			value = state.active;
+		} else {
+			return false;
+		}
+
+		return true;
 	}
 
 	bool Service::Controller::process(Request &request, Response &response) const noexcept {
 
-		if(request.root()) {
-			response.failed(ENOENT);
+		if(request != HTTP::Get) {
+			response = HTTP::MethodNotAllowed;
 			return true;
 		}
 
-		for(const auto service : *this) {
-
-			if(request.pop(service->name())) {
-
-				response["name"] = service->service_name;
-				response["description"] = service->service_description;
-				response["active"] = service->state.active;
-				return true;
-
-			}
-
+		if(!request.allow(Authentication::Admin)) {
+			response = HTTP::Forbidden;
+			return true;
 		}
 
-		response.failed(ENOENT);
+		if(request.root()) {
+			response = HTTP::BadRequest;
+			return true;	
+		}
+
+		for(const auto service : *this) {
+			if(request.pop(service->name()) && request.root()) {
+				service->get_properties(response);
+				return true;
+			}
+		}
+
+		response = HTTP::NotFound;
 		return true;
 	}
 

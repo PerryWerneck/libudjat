@@ -218,6 +218,10 @@
 		return argptr ? argptr : reqpath;
 	}
 
+	bool Request::root() const noexcept {
+		return argptr[0] == 0 || (argptr[0] == '/' && argptr[1] == 0);
+	}
+
 	int Request::select(const char *value, ...) noexcept {
 
 		if(argptr[0] == 0 || argptr[1] == 0) {

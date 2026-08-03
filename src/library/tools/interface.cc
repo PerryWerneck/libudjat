@@ -122,22 +122,15 @@
 
 	bool Interface::process(Request &request, DataTable &response) const noexcept {
 
-		if(!allow(request.role())) {
-			debug("Access denied");
-			response.assign(HTTP::Forbidden);
+		if(request != HTTP::Get) {
+			response = HTTP::MethodNotAllowed;
 			return true;
 		}
 
-		// OutputSchema schema;
-		// if(!this->schema(schema)) {
-		// 	response.assign(HTTP::NotFound);
-		// 	return true;
-		// }
-
-		// std::vector<string> columns;
-		// for(const auto &item : schema) {
-		// 	columns.emplace_back(item.name());
-		// }
+		if(!allow(request.role())) {
+			response = HTTP::Forbidden;
+			return true;
+		}
 
 		debug("Enumerating itens on interface '",name(),"'");
 		for_each([&response](const Udjat::Variant &row){

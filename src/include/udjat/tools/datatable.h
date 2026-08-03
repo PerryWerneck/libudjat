@@ -40,6 +40,10 @@
 		DataTable(const OutputSchema &s);
 		virtual ~DataTable();
 
+		inline HTTP::Status & operator=(const HTTP::StatusCode status) noexcept {
+			return assign(status);
+		} 
+
 		/// @brief Add caption for table.
 		/// @param text The caption.
 		/// @return true if the table can handle captions.

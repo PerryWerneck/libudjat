@@ -30,6 +30,7 @@
 #include <udjat/tools/request.h>
 #include <udjat/tools/response.h>
 #include <udjat/tools/intl.h>
+#include <udjat/tools/schema.h>
 
 using namespace std;
 
@@ -65,15 +66,47 @@ namespace Udjat {
 
 	bool Module::Controller::process(Request &request, Response &response) const noexcept {
 
+		if(request != HTTP::Get) {
+			response = HTTP::MethodNotAllowed;
+			return true;
+		}
+
+		if(!request.allow(Authentication::Admin)) {
+			response = HTTP::Forbidden;
+			return true;
+		}
+
 		if(request.root()) {
 			response = HTTP::BadRequest;
 			return true;	
 		}
 
-		// TODO: Get info about the module on path.
+		for(const auto module : modules) {
+			debug("Checking '",module->module_name,"' path=",request.path());
+			if(request.pop(module->module_name) && request.root()) {
+				module->get_properties(response);
+				return true;
+			}
+		}
 
-		Logger::String{"Module information is incomplete"}.error();
-		response = HTTP::SystemError;
+		response = HTTP::NotFound;
+		return true;
+
+	}
+
+	bool Module::Controller::schema(const HTTP::Method method, const char *path, OutputSchema &schema) const noexcept {
+
+		if(method != HTTP::Get) {
+			return false;
+		}
+
+		schema.add(
+			Schema::Enumerable,
+			Schema::Item{ "name", 			Schema::ObjectPath,	_("The module name")			},
+			Schema::Item{ "description", 	Schema::String,		_("The module description")		},
+			Schema::Item{ "version", 		Schema::String,		_("The module version")			},
+			Schema::Item{ "filename", 		Schema::String,		_("The module filename")		}
+		);
 
 		return true;
 	}

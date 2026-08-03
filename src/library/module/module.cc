@@ -56,6 +56,8 @@ namespace Udjat {
 	Value & Module::get_properties(Value &properties) const {
 		properties["name"] = module_name;
 		properties["filename"] = filename();
+		properties["description"] = info.description;
+		properties["version"] = info.version;
 		return properties;
 	}
 

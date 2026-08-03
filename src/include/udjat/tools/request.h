@@ -76,9 +76,7 @@
 
 		/// @bref Check if request is for root page.
 		/// @return true if the path is "/"
-		inline bool root() const noexcept {
-			return reqpath[0] == '/' && reqpath[1] == 0;
-		}
+		bool root() const noexcept;
 
 		virtual MimeType mimetype() const noexcept;
 
@@ -128,6 +126,14 @@
 		/// @param prefix The path being searched.
 		/// @return true if the request path starts with prefix.
 		bool operator ==(const char *prefix) const noexcept;
+
+		bool operator ==(const HTTP::Method method) const noexcept {
+			return this->method() == method;
+		}
+
+		bool operator !=(const HTTP::Method method) const noexcept {
+			return this->method() != method;
+		}
 
 #if __cplusplus >= 202002L
 
