@@ -60,6 +60,19 @@
 		/// @return true if the request can bem processed.
 		bool allow(const Request &request, HTTP::Status &response) const noexcept;
 
+		/// @brief Check if the request can be processed.
+		/// @param[in] path The path for required object on interface.
+		/// @param request The request to be validated.
+		/// @param response The response to receive the status code and error message.
+		/// @return true if the request can bem processed.
+		bool allow(const char *path, const Request &request, Response &response) const noexcept;
+
+		/// @brief Check if the request can be processed.
+		/// @param request The request to be validated.
+		/// @param response The response to receive the status code and error message.
+		/// @return true if the request can bem processed.
+		bool allow(const Request &request, Response &response) const noexcept;
+
 		/// @brief Check the required role for this interface.
 		/// @param role The current user role.
 		/// @return true if the user has access to this interface.

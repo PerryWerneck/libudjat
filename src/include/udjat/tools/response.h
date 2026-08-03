@@ -76,9 +76,10 @@
 			return this->status.mimetype;
 		}
 
-		inline operator HTTP::Status() const noexcept {
+		inline operator HTTP::Status() noexcept {
 			return this->status;
 		}
+
 		inline bool operator ==(const MimeType mimetype) const noexcept {
 			return this->status.mimetype == mimetype;
 		}

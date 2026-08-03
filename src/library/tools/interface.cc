@@ -142,8 +142,20 @@
 		return true;
 	}
 
+	bool Interface::allow(const Request &request, Response &response) const noexcept {
+		return allow(request.path(),request,response);
+	}
+
 	bool Interface::allow(const Request &request, HTTP::Status &response) const noexcept {
 		return allow(request.path(),request,response);
+	}
+
+	bool Interface::allow(const char *path, const Request &request, Response &response) const noexcept {
+		if(allow(path,request,(HTTP::Status &) response)) {
+			return true;
+		}
+		response.clear(Variant::Object);
+		return false;
 	}
 
 	bool Interface::allow(const char *path, const Request &request, HTTP::Status &response) const noexcept {
