@@ -88,20 +88,21 @@
 
 	bool Abstract::Agent::Controller::schema(const HTTP::Method method, const char *path, Schema::Input &schema) const noexcept {
 
+		schema.add(Schema::Input::AllowRoot);
+
 		if(!(root && (path && *path))) {
-			// No root or no path, return the default 'No-schema'.
-			return false;
+			return true;
 		}
 
 		auto agent = root;
 		if(path && *path) {
 			agent = root->find(path,false,false);
-			if(!agent) {
-				return false;
+			if(agent) {
+				return agent->schema(method,path,schema);
 			}
 		}
 
-		return agent->schema(method,"",schema);
+		return false;
 
 	}
 
@@ -407,7 +408,14 @@
 		}
 
 		debug("Searching for agent '",request.path(),"'");
-		auto agent = Abstract::Agent::Controller::getInstance().find(request.path(),false);
+
+		std::shared_ptr<Abstract::Agent> agent;
+		if(request.root()) {
+			agent = Abstract::Agent::Controller::getInstance().get();
+		} else {
+			agent = Abstract::Agent::Controller::getInstance().find(request.path(),false);
+		}
+
 		if(!agent) {
 			response = HTTP::NotFound;
 			return true;
@@ -475,74 +483,6 @@
 
 		return true;
 	}
-
-	// std::shared_ptr<Action> Abstract::Agent::Controller::ActionFactory(const Properties &) const {
-
-	// 	debug("Build agent action");
-
-	// 	/// @brief Action to get agent properties.
-	// 	class AgentProperties : public Udjat::Action {
-	// 	public:
-	// 		AgentProperties() : Udjat::Action{"agent",_("Get agent properties")} {
-	// 		} 
-
-	// 		bool schema(Schema::Output &schema) const noexcept override {
-
-	// 			schema.append(
-	// 				Schema::Item{ "icon",		Schema::Icon	},
-	// 				Schema::Item{ "label",		Schema::String	},
-	// 				Schema::Item{ "name",		Schema::String	},
-	// 				Schema::Item{ "state",		Schema::String	},
-	// 				Schema::Item{ "summary",	Schema::String	},
-	// 				Schema::Item{ "system", 	Schema::String	},
-	// 				Schema::Item{ "url", 		Schema::Url		},
-	// 				Schema::Item{ "value",		Schema::String	}
-	// 			);
-
-	// 			return true;
-	// 		}
-
-	// 		int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
-
-	// 			return exec(response, except, [&]() {
-
-	// 				auto agent = Abstract::Agent::Controller::getInstance().find(request.path(),true);
-
-	// 				time_t timestamp = agent->last_modified();
-	// 				if(timestamp) {
-	// 					debug("last-modified: ",TimeStamp{timestamp}.to_string().c_str());
-	// 					response.last_modified(timestamp);
-	// 					if(request.cached(timestamp)) {
-	// 						response.failed(HTTP::NotModified);
-	// 						return 0;
-	// 					}
-	// 				}
-
-	// 				agent->get_properties(response);
-
-	// 				if(agent->update.next) {
-	// 					response.expires(agent->update.next);
-	// 				}
-
-	// 				response.message(agent->state()->to_string().c_str());
-
-	// 				return 0;
-	// 			});
-
-
-	// 		}
-
-	// 	};
-
-	// 	static std::shared_ptr<Action> instance;
-	// 	if(!instance) {
-	// 		Logger::String{"Building singleton for agent actions"}.trace();
-	// 		instance = make_shared<AgentProperties>();
-	// 	}
-
-	// 	return instance;
-
-	// }
 
 }
 

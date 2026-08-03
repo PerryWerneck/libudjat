@@ -35,27 +35,27 @@
 	}
 
 	time_t Response::expires(const time_t tm) noexcept {
-		if(tm && (!status.expires || status.expires > tm)) {
-			status.expires = tm;
+		if(tm && (!http_status.expires || http_status.expires > tm)) {
+			http_status.expires = tm;
 		}
-		return status.expires;
+		return http_status.expires;
 	}
 
 	void Response::state(const char *,const char *, const char *) {		
 	}
 
 	time_t Response::last_modified(const time_t tm) noexcept {
-		if(tm && (!status.last_modified || status.last_modified < tm)) {
-			status.last_modified = tm;
+		if(tm && (!http_status.last_modified || http_status.last_modified < tm)) {
+			http_status.last_modified = tm;
 		}
-		return status.last_modified;
+		return http_status.last_modified;
 	}
 
 	const char * Response::message() const noexcept {
-		if(status.message.empty()) {
+		if(http_status.message.empty()) {
 			return "Ok";
 		}
-		return status.message.c_str();
+		return http_status.message.c_str();
 	}
 
 	void Response::header(const char *, const char *) noexcept {
@@ -64,49 +64,44 @@
 	HTTP::Status & Response::assign(const HTTP::StatusCode code) noexcept {
 		debug("Request set to HTTP status ",code);
 		clear(Variant::Object);
-		return status.assign(code);
+		return http_status.assign(code);
 	}
 
 	HTTP::Status & Response::failed(int syscode) noexcept {
 		debug("Request failed with syscode ",syscode);
 		clear(Variant::Object);
-		return status.failed(syscode);
+		return http_status.failed(syscode);
 	}
 
 	HTTP::Status & Response::failed(const char *message, const char *details) noexcept {
-		return status.failed(message,details);
+		return http_status.failed(message,details);
 	}
 
 	HTTP::Status & Response::failed(const char *title,  const char *message, const char *body) noexcept {
 		clear(Variant::Object);
-		return status.failed(title,message,body);
+		return http_status.failed(title,message,body);
 	}
 
 	HTTP::Status & Response::failed(const std::exception &e) noexcept {
-		status.assign(e);
-		return status;
+		http_status.assign(e);
+		return http_status;
 	}
 
 	void Response::serialize(std::ostream &stream) const noexcept {
 
 		debug(
 			"Serializing response with mimetype ", 
-			std::to_string(status.mimetype)
+			std::to_string(http_status.mimetype)
 		);
 
-		if(status.code == HTTP::NoContent || status.code == HTTP::NotModified) {
+		if(http_status.code == HTTP::NoContent || http_status.code == HTTP::NotModified) {
 			// No Content or not-modified status, the response should be empty.
 			return;
 		}
 
-		if(status.code != HTTP::Ok) {
-			status.serialize(stream);
-			return;
-		}
+		string value{(http_status.code >= 200 && http_status.code <= 299) ? "success" : "failed"};
 
-		string value{(status.code >= 200 && status.code <= 299) ? "success" : "failed"};
-
-		switch(status.mimetype) {
+		switch(http_status.mimetype) {
 		case Udjat::Variant::Undefined:
 			{
 				debug("Undefined value, error");
@@ -119,9 +114,9 @@
 		case Udjat::MimeType::xml:
 			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><response><status type='String'>";
 			stream << value << "</status>";
-			stream << "<code>" << status.code << "</code>";
-			if(!status.message.empty()) {
-				stream << "<message>" << status.message << "</message>";
+			stream << "<code>" << http_status.code << "</code>";
+			if(!http_status.message.empty()) {
+				stream << "<message>" << http_status.message << "</message>";
 			}
 			stream << "<data>";
 			to_xml(stream);
@@ -142,17 +137,17 @@
 			break;
 
 		case Udjat::MimeType::html:
-			if(status.code == HTTP::Ok) {
+			if(http_status.code == HTTP::Ok) {
 				// Show values
 				to_html(stream);
 			} else {
-				stream << "<section id='error-box'><h1 id='error-title'>" << (status.title.empty() ? _("Operation failed") : status.title.c_str()) << "</h1>";
-				if(!status.message.empty()) {
-					stream << "<p id='error-message'>" << status.message << "</p>";
+				stream << "<section id='error-box'><h1 id='error-title'>" << (http_status.title.empty() ? _("Operation failed") : http_status.title.c_str()) << "</h1>";
+				if(!http_status.message.empty()) {
+					stream << "<p id='error-message'>" << http_status.message << "</p>";
 				} 
-				stream << "<p id='error-code'>" << "Error " << status.code << "</p>";
-				if(!status.body.empty()) {
-					stream << "<small id='error-details'>" << status.body << "</small>";
+				stream << "<p id='error-code'>" << "Error " << http_status.code << "</p>";
+				if(!http_status.body.empty()) {
+					stream << "<small id='error-details'>" << http_status.body << "</small>";
 				}
 				if(!empty()) {
 					stream << "<div id='error-extra'>";
@@ -169,7 +164,7 @@
 			break;
 
 		default:
-			Variant::serialize(stream,status.mimetype);
+			Variant::serialize(stream,http_status.mimetype);
 		}
 
 	}

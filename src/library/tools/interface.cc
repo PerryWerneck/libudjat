@@ -201,7 +201,7 @@
 		class Adapter : public Udjat::Response {
 		public:
 			Adapter(HTTP::Status &status) : Udjat::Response{status.mimetype} {
-				this->status = status;
+				this->http_status = status;
 			}
 
 			~Adapter() override {
