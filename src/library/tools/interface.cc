@@ -142,14 +142,14 @@
 		return true;
 	}
 
-	bool Interface::allow(const char *path, const Request &request, Response &response) const noexcept {
+	bool Interface::allow(const char *path, const Request &request, HTTP::Status &response) const noexcept {
 
 		auto role = request.role();
 
 		// Check the interface default role.
 		if(!allow(role)) {
 			request.info(name(),strerror(EPERM));
-			response.failed(HTTP::Forbidden);
+			response = HTTP::Forbidden;
 			return false;
 		}
 
@@ -166,7 +166,7 @@
 			}
 			if(!rc) {
 				request.info(name(),"Rejected by method rules");
-				response.failed(HTTP::MethodNotAllowed);
+				response = HTTP::MethodNotAllowed;
 				return false;
 			}
 		}
@@ -175,7 +175,6 @@
 		if(Logger::enabled(Logger::Debug)) {
 			request.info(name(),"Accepted");
 		}
-
 
 		return true;
 	}

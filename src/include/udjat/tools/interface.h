@@ -47,7 +47,7 @@
 		/// @param request The request to be validated.
 		/// @param response The response to receive the status code and error message.
 		/// @return true if the request can bem processed.
-		bool allow(const char *path, const Request &request, Response &response) const noexcept;
+		bool allow(const char *path, const Request &request, HTTP::Status &response) const noexcept;
 
 	public:
 		Interface(const char *name, const Authentication::Role = Authentication::Admin);
