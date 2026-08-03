@@ -44,6 +44,7 @@
  #include <udjat/tools/response.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/http/exception.h>
+ #include <udjat/tools/http/schema.h>
  #include <unistd.h>
 
  #include <udjat/tools/logger.h>
@@ -69,8 +70,16 @@
 	}
 
 	bool Abstract::Agent::Controller::schema(const HTTP::Method method, const char *path, Schema::Input &schema) const noexcept {
-		schema.add(Schema::Input::AllowRoot);
+		if(method == HTTP::Get) {
+			schema.add(Schema::Input::AllowRoot);
+		}
 		return find(path,false)->schema(method,"",schema);
+	}
+
+	bool Abstract::Agent::Controller::schema(const char *path, Schema::Method &schema) const noexcept {
+		Interface::schema(path,schema);
+		schema.add({ HTTP::Head, Authentication::None });
+		return true;
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {

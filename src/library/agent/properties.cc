@@ -47,9 +47,9 @@
 
 	bool Abstract::Agent::schema(const HTTP::Method method, const char *path, Schema::Output &schema) const noexcept {
 
-		auto rc = Object::schema(method,path,schema);
-
 		if(method == HTTP::Get) {
+
+			Object::schema(method,path,schema);
 			schema.add(
 				Schema::Item{ "path",			Schema::String,		_("The agent path")	},
 				Schema::Item{ "message",		Schema::String,		_("The Current state text") },
@@ -59,9 +59,18 @@
 				Schema::Item{ "timestamp",		Schema::Timestamp,	_("Timestamp of the last state change")	}
 			);
 			return true;
+
+		} else if(method == HTTP::Head) {
+
+			schema.add(
+				Schema::Item{ "statevalue",		Schema::String,		_("The state value") },
+				Schema::Item{ "statemessage",	Schema::String,		_("The state message") }
+			);
+
+			return true;
 		}
 
-		return rc;
+		return false;
 	}
 
 	bool Abstract::Agent::get_property(const char *key, Value &value) const {
@@ -103,6 +112,16 @@
 
 		if(!strcasecmp(key,"message")) {
 			return state()->get_property("body",value);
+		}
+
+		if(!strcasecmp(key,"statevalue")) {
+			value = state()->level();
+			return true;
+		}
+
+		if(!strcasecmp(key,"statemessage")) {
+			value = state()->summary();
+			return true;
 		}
 
 		for(const char *prop : { "level", "levelname" }) {

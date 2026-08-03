@@ -119,6 +119,10 @@
 			return this->schema(HTTP::Get,path,schema);
 		}
 
+		inline bool schema(const HTTP::Method method, Schema::Input &schema) const noexcept {
+			return this->schema(method,"",schema);
+		}
+
 		inline bool schema(Schema::Input &s) const noexcept {
 			return schema(HTTP::Get,"",s);
 		}
@@ -136,6 +140,10 @@
 		/// @return True if the interface defines an output schema; false otherwise (schema remains unmodified).
 		inline bool schema(const char *path, Schema::Output &schema) const noexcept {
 			return this->schema(HTTP::Get,path,schema);
+		}
+
+		inline bool schema(const HTTP::Method method, Schema::Output &schema) const noexcept {
+			return this->schema(method,"",schema);
 		}
 
 		/// @brief Retrieves the schema definition for default 'get' requests.

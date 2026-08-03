@@ -48,6 +48,7 @@ namespace Udjat {
 
 		bool schema(const HTTP::Method method, const char *path, Schema::Output &s) const noexcept override;
 		bool schema(const HTTP::Method method, const char *path, Schema::Input &s) const noexcept override;
+		bool schema(const char *path, Schema::Method &schema) const noexcept override;
 
 	public:
 		~Controller();
