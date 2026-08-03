@@ -119,6 +119,14 @@
 				itens.clear();
 			}
 
+			inline bool empty() {
+				return itens.empty();
+			}
+
+			inline size_t size() {
+				return itens.size();
+			}
+
 		};
 
 		/// @brief Schema inputs
