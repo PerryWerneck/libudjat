@@ -64,52 +64,19 @@
 	}
 
 	bool Abstract::Agent::Controller::schema(const HTTP::Method method, const char *path, Schema::Output &schema) const noexcept {
-
 		debug("Getting output schema for '",Interface::name(),"' at '",path,"'");
-
-		if(!(root && (path && *path))) {
-			// Return default output schema.
-			debug("Returning default output schema for '",Interface::name(),"'");
-			return Abstract::Agent{}.schema(method,"",schema);
-		}
-
-		auto agent = root;
-		if(path && *path) {
-			agent = root->find(path,false,false);
-			if(!agent) {
-				debug("Cant find agent '",path,"' searching for output schema for '",Interface::name(),"'");
-				return false;
-			}
-		}
-
-		debug("Returning agent output schema for '",Interface::name(),"'");
-		return agent->schema(method,"",schema);
+		return find(path,false)->schema(method,"",schema);
 	}
 
 	bool Abstract::Agent::Controller::schema(const HTTP::Method method, const char *path, Schema::Input &schema) const noexcept {
-
 		schema.add(Schema::Input::AllowRoot);
-
-		if(!(root && (path && *path))) {
-			return true;
-		}
-
-		auto agent = root;
-		if(path && *path) {
-			agent = root->find(path,false,false);
-			if(agent) {
-				return agent->schema(method,path,schema);
-			}
-		}
-
-		return false;
-
+		return find(path,false)->schema(method,"",schema);
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
 
 		if(root && root->parent) {
-			throw logic_error("Child agent cant be promoted to root");
+			throw logic_error(String{"Child agent '",root->name(),"' cant be promoted to root"});
 		}
 
 		if(this->root) {
@@ -150,10 +117,12 @@
 
 		auto root = get();
 
-		if(path && *path)
-			return root->find(path,required);
+		if(path[0] == 0 || (path[0] == '/' && path[1] == 0)) {
+			// Its root agent
+			return root;
+		}
 
-		return root;
+		return root->find(path,required);
 
 	}
 
@@ -409,12 +378,7 @@
 
 		debug("Searching for agent '",request.path(),"'");
 
-		std::shared_ptr<Abstract::Agent> agent;
-		if(request.root()) {
-			agent = Abstract::Agent::Controller::getInstance().get();
-		} else {
-			agent = Abstract::Agent::Controller::getInstance().find(request.path(),false);
-		}
+		auto agent = find(request.path(),false);
 
 		if(!agent) {
 			response = HTTP::NotFound;
@@ -449,37 +413,41 @@
 			}
 		}
 
-		auto method = request.method();
-		if(method == HTTP::Head) {
+		if(request == HTTP::Head) {
 			// Header was already set, just return.
+			debug("HEAD request, skipping payload");
 			response = HTTP::NoContent;
 			return true;
 		}
 
-		if(method != HTTP::Get) {
+		if(request != HTTP::Get) {
 			response = HTTP::MethodNotAllowed;
 			return true;
 		}
 
 		Schema::Output out;
+		
 		if(schema(request.method(),request.path(),out)) {
+
+			debug("Got schema");
 			for(const auto &item : out) {
 				debug("Getting value for '",agent->name(),".",item.name(),"'");
 				if(!agent->get_property(item.name(),response[item.name()])) {
-					response = HTTP::SystemError;
 					response.failed(
 						String{"Unable to get value for '",item.name(),"'"}.c_str()
 					);
 					return true;
 				}
 			}
+			
+		} else {
 
-			debug("Got agent '",agent->name(),"' properties using Schema::Output");
-			return true;
+			debug("Cant get backend");
+			response.failed(
+				"The back end doesnt provides an output schema"
+			);
+
 		}
-
-		// No schema, get all properties.
-		agent->get_properties(response);
 
 		return true;
 	}

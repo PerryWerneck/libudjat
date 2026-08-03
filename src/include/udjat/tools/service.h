@@ -100,7 +100,7 @@
 		virtual void start();
 		virtual void stop();
 
-		static bool for_each(const std::function<bool(const Service &service)> &method);
+		static bool for_each(const std::function<bool(Service &service)> &method);
 
 	};
 

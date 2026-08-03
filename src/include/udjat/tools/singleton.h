@@ -128,6 +128,16 @@
 				return false;
 			}
 
+			inline bool for_each(const std::function<bool(T &object)> &method) const {
+				std::lock_guard<std::mutex> lock(guard);
+				for(auto object : objects) {
+					if(method(*object)) {
+						return true;
+					}
+				}
+				return false;
+			}
+
 			inline typename L::iterator begin() {
 				return objects.begin();
 			}

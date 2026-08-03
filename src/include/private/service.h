@@ -44,7 +44,7 @@
 			return Singleton::Container<Service>::find(name);
 		}
 
-		inline bool for_each(const std::function<bool(const Service &service)> &method) {
+		inline bool for_each(const std::function<bool(Service &service)> &method) {
 			return Singleton::Container<Service>::for_each(method);
 		}
 
