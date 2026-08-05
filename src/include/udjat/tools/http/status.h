@@ -89,8 +89,20 @@
 			/// @param e The exception for status.
 			Status(const std::exception &e, const MimeType mimetype = MimeType::none);
 
+			/// @brief Is this response ok?
+			/// @return The current status.
+			/// @retval true The response is ok.
+			/// @retval false The response is an error code.
 			inline operator bool() const noexcept {
-				return code != HTTP::Ok;
+				return code >= 200 && code <= 299;
+			}
+
+			inline bool success() const noexcept {
+				return code >= 200 && code <= 299;
+			}
+
+			inline bool failed() const noexcept {
+				return code < 200 || code > 299;
 			}
 
 			Status & clear() noexcept;
@@ -122,10 +134,6 @@
 			inline Status & operator=(const std::exception &e) noexcept {
 				return assign(e);
 			} 
-
-			inline bool success() const noexcept {
-				return code == HTTP::Ok || code == HTTP::NoContent;
-			}
 
 			/// @brief Serialize according to the mimetype.
 			/// Uses jsend format (https://github.com/omniti-labs/jsend) for xml, yaml & json.

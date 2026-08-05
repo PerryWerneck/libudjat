@@ -70,7 +70,7 @@
 	}
 
 	bool Abstract::Agent::Controller::schema(const HTTP::Method method, const char *path, Schema::Input &schema) const noexcept {
-		if(method == HTTP::Get) {
+		if(method == HTTP::Get || method == HTTP::Head) {
 			schema.add(Schema::Input::AllowRoot);
 		}
 		return find(path,false)->schema(method,"",schema);

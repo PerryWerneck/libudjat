@@ -69,19 +69,35 @@ namespace Udjat {
 		return Controller::getInstance().for_each(method);
 	}
 
-	bool Module::getProperty(const char *key, std::string &value) const {
+	bool Module::get_property(const char *key, Variant &value) const {
+
+		if(!strcasecmp(key,"name")) {
+			value = module_name;
+			return true;
+		}
 
 		if(!strcasecmp(key,"filename")) {
 			value = filename();
 			return true;
 		}
+
+		if(!strcasecmp(key,"description")) {
+			value = info.description;
+			return true;
+		}
+
+		if(!strcasecmp(key,"version")) {
+			value = info.version;
+			return true;
+		}
+
 		return false;
 	}
 
 	std::string Module::operator[](const char *property_name) const noexcept {
-		std::string value;
-		getProperty(property_name,value);
-		return value;
+		Variant value;
+		get_property(property_name,value);
+		return value.to_string();
 	}
 
 	void Module::trace_paths(const char *) const noexcept {

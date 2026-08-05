@@ -47,9 +47,9 @@
 
 	bool Abstract::Agent::schema(const HTTP::Method method, const char *path, Schema::Output &schema) const noexcept {
 
+		auto rc = Object::schema(method,path,schema);
 		if(method == HTTP::Get) {
 
-			Object::schema(method,path,schema);
 			schema.add(
 				Schema::Item{ "path",			Schema::String,		_("The agent path")	},
 				Schema::Item{ "message",		Schema::String,		_("The Current state text") },
@@ -60,34 +60,28 @@
 			);
 			return true;
 
-		} else if(method == HTTP::Head) {
-
-			schema.add(
-				Schema::Item{ "statevalue",		Schema::String,		_("The state value") },
-				Schema::Item{ "statemessage",	Schema::String,		_("The state message") }
-			);
-
-			return true;
 		}
 
-		return false;
+		return rc;
 	}
 
 	bool Abstract::Agent::get_property(const char *key, Value &value) const {
 
+		debug("Agent::get_property(",key,")");
+
 		// Agent name
-		if( !strcasecmp(key,"agent.name") ) {
+		if( !strcasecmp(key,"agentname") ) {
 			value = name();
 			return true;
 		}
 
 		// Agent value
-		if( !(strcasecmp(key,"value") && strcasecmp(key,"agent.value")) ) {
+		if( !(strcasecmp(key,"value") && strcasecmp(key,"agentvalue")) ) {
 			get(value);
 			return true;
 		}
 
-		if( !(strcasecmp(key,"path") && strcasecmp(key,"agent.path")) ) {
+		if( !(strcasecmp(key,"path") && strcasecmp(key,"agentpath")) ) {
 			value = path();
 			debug("path='",value.c_str(),"'");
 			return true;
@@ -105,6 +99,11 @@
 			return state()->get_property("icon",value);
 		}
 
+		if(!strcasecmp(key,"statevalue")) {
+			value = state()->level();
+			return true;
+		}
+
 		if(!strcasecmp(key,"timestamp")) {
 			value = TimeStamp{current_state.timestamp};
 			return true;
@@ -112,11 +111,6 @@
 
 		if(!strcasecmp(key,"message")) {
 			return state()->get_property("body",value);
-		}
-
-		if(!strcasecmp(key,"statevalue")) {
-			value = state()->level();
-			return true;
 		}
 
 		if(!strcasecmp(key,"statemessage")) {

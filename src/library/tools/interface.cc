@@ -195,6 +195,19 @@
 		return true;
 	}
 
+	bool Interface::get_properties(const char *path, Variant &value) const {
+		return false;
+	}
+
+	bool Interface::get_property(const char *path, const char *name, Variant &value) const {
+		Variant props;
+		if(get_properties(path,props) && props.contains(name)) {
+			value = props[name];
+			return true;
+		}
+		return false;
+	}
+
 	bool Interface::process(Request &request, HTTP::Status &status, std::ostream &stream) const noexcept {
 
 		/// @brief Adapter.

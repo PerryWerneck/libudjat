@@ -63,13 +63,17 @@
 
 	HTTP::Status & Response::assign(const HTTP::StatusCode code) noexcept {
 		debug("Request set to HTTP status ",code);
-		clear(Variant::Object);
+
+		// Reminder: DO NOT CLEAR the contents, the dbus engine use it to keep states.
+
 		return http_status.assign(code);
 	}
 
 	HTTP::Status & Response::failed(int syscode) noexcept {
 		debug("Request failed with syscode ",syscode);
-		clear(Variant::Object);
+
+		// Reminder: DO NOT CLEAR the contents, the dbus engine use it to keep states.
+
 		return http_status.failed(syscode);
 	}
 

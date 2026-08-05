@@ -118,6 +118,8 @@ namespace Udjat {
 		/// @brief Enumerate children.
 		bool for_each(const std::function<bool(const Udjat::Variant &value)> &func) const noexcept override;
 
+		bool get_properties(const char *path, Variant &value) const override;
+		bool get_property(const char *path, const char *name, Variant &value) const override;
 
 	};
 

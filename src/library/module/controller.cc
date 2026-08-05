@@ -66,6 +66,11 @@ namespace Udjat {
 
 	bool Module::Controller::process(Request &request, Response &response) const noexcept {
 
+		if(request.root()) {
+			response = HTTP::BadRequest;
+			return true;	
+		}
+
 		if(request != HTTP::Get) {
 			response = HTTP::MethodNotAllowed;
 			return true;
@@ -74,11 +79,6 @@ namespace Udjat {
 		if(!request.allow(Authentication::Admin)) {
 			response = HTTP::Forbidden;
 			return true;
-		}
-
-		if(request.root()) {
-			response = HTTP::BadRequest;
-			return true;	
 		}
 
 		for(const auto module : modules) {
@@ -109,6 +109,38 @@ namespace Udjat {
 		);
 
 		return true;
+	}
+
+	bool Module::Controller::get_properties(const char *path, Variant &value) const {
+
+		if(*path == '/') {
+			path++;
+		}
+
+		for(const auto module : modules) {
+			if(!strcasecmp(path,module->module_name)) {
+				return module->get_properties(value);
+			}
+		}
+
+		return false;
+
+	}
+
+	bool Module::Controller::get_property(const char *path, const char *name, Variant &value) const {
+
+		if(*path == '/') {
+			path++;
+		}
+
+		for(const auto module : modules) {
+			if(!strcasecmp(path,module->module_name)) {
+				return module->get_property(name,value);
+			}
+		}
+
+		return false;
+
 	}
 
 	bool Module::Controller::for_each(const std::function<bool(const Udjat::Variant &value)> &func) const noexcept {

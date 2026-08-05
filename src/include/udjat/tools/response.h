@@ -44,6 +44,14 @@
 
 		virtual ~Response();
 
+		inline bool success() const noexcept {
+			return http_status.success();
+		}
+
+		inline bool failed() const noexcept {
+			return http_status.failed();
+		}
+
 		inline void set(const Abstract::Object *object) noexcept {
 			this->object = object;
 		}
@@ -99,7 +107,7 @@
 
 		/// @brief Set response state.
 		/// On HTTP responses set the header X-${object_name}-state=${value};${message}
-		virtual void state(const char *object_name,const char *value, const char *message);
+		virtual void state(const char *object_name, const char *value, const char *message);
 
 		inline size_t count() const noexcept {
 			return http_status.range.count;

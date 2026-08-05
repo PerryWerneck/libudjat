@@ -205,7 +205,7 @@
 		/// @param key The property name.
 		/// @param value String to update with the property value.
 		/// @return true if the property is valid.
-		virtual bool getProperty(const char *key, std::string &value) const;
+		virtual bool get_property(const char *key, Variant &value) const;
 
 		virtual Value & get_properties(Value &properties) const;
 

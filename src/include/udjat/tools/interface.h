@@ -88,6 +88,9 @@
 			return interface_name;
 		}
 
+		virtual bool get_properties(const char *path, Variant &value) const;
+		virtual bool get_property(const char *path, const char *name, Variant &value) const;
+
 #if __cplusplus >= 202002L
 		inline auto operator <=>(const char *name) const noexcept {
 			return strcasecmp(name,this->_name);
