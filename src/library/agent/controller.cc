@@ -375,6 +375,16 @@
 		return child;
 	}
 
+	bool Abstract::Agent::Controller::get_property(const char *path, const char *name, Variant &value) const {
+
+		auto agent = find(path,false);
+		if(agent) {
+			return agent->get_property(name,value);
+		}
+		return false;
+		
+	}
+
 	bool Abstract::Agent::Controller::process(Request &request, Response &response) const noexcept {
 
 		debug("Response type is ",std::to_string(response.mimetype()));
