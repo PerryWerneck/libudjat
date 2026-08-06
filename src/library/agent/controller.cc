@@ -442,7 +442,8 @@
 			for(const auto &item : out) {
 				debug("Getting value for '",agent->name(),".",item.name(),"'");
 				if(!agent->get_property(item.name(),response[item.name()])) {
-					response.failed(
+					response.assign(
+						HTTP::SystemError,
 						String{"Unable to get value for '",item.name(),"'"}.c_str()
 					);
 					return true;
@@ -452,7 +453,8 @@
 		} else {
 
 			debug("Cant get backend");
-			response.failed(
+			response.assign(
+				HTTP::SystemError,
 				"The back end doesnt provides an output schema"
 			);
 

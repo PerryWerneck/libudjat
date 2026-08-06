@@ -60,20 +60,24 @@
 			return http_status.code;
 		}
 
-		HTTP::Status & assign(const HTTP::StatusCode code) noexcept;
-
-		inline HTTP::Status & operator=(const HTTP::StatusCode status) noexcept {
+		Response & assign(const HTTP::StatusCode code, const char *body = nullptr) noexcept;
+		inline Response & operator=(const HTTP::StatusCode status) noexcept {
 			return assign(status);
 		} 
 
-		HTTP::Status & failed(const int syscode) noexcept;
-		HTTP::Status & failed(const std::exception &e) noexcept;
-		HTTP::Status & failed(const char *message, const char *details = nullptr) noexcept;
-		HTTP::Status & failed(const char *title,  const char *message, const char *details) noexcept;
+		Response & assign(const std::exception &e) noexcept;
+		inline Response & operator=(const std::exception &e) noexcept {
+			return assign(e);
+		} 
 
-		inline HTTP::Status & failed(const std::string &string) noexcept {
-			return failed(string.c_str());
-		}
+		// inline Response & assign(const char *body) noexcept {
+		// 	return assign(HTTP::SystemError,body);
+		// }
+
+		// HTTP::Status & failed(const int syscode) noexcept;
+		// HTTP::Status & failed(const std::exception &e) noexcept;
+		// HTTP::Status & failed(const char *message, const char *details = nullptr) noexcept;
+		// HTTP::Status & failed(const char *title,  const char *message, const char *details) noexcept;
 
 		inline const MimeType mimetype() const noexcept {
 			return http_status.mimetype;
@@ -83,7 +87,7 @@
 			return http_status.mimetype;
 		}
 
-		inline HTTP::Status status() noexcept {
+		inline const HTTP::Status & status() const noexcept {
 			return http_status;
 		}
 
@@ -96,7 +100,7 @@
 		}
 
 		inline operator bool() const noexcept {
-			return http_status.code == HTTP::Ok;
+			return http_status.code >= 200 && http_status.code <= 299;
 		}
 
 		/// @brief Set item count for this response.
@@ -107,7 +111,9 @@
 
 		/// @brief Set response state.
 		/// On HTTP responses set the header X-${object_name}-state=${value};${message}
-		virtual void state(const char *object_name, const char *value, const char *message);
+		inline void state(const char *object_name, const char *value, const char *message) {
+			http_status.state(object_name,value,message);
+		}
 
 		inline size_t count() const noexcept {
 			return http_status.range.count;

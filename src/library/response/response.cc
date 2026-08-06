@@ -23,6 +23,7 @@
  #include <udjat/tools/exception.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/variant.h>
+ #include <udjat/tools/http/status.h>
  #include <ctime>
  #include <stdexcept>
  #include <sstream>
@@ -39,9 +40,6 @@
 			http_status.expires = tm;
 		}
 		return http_status.expires;
-	}
-
-	void Response::state(const char *,const char *, const char *) {		
 	}
 
 	time_t Response::last_modified(const time_t tm) noexcept {
@@ -61,34 +59,35 @@
 	void Response::header(const char *, const char *) noexcept {
 	}
 
-	HTTP::Status & Response::assign(const HTTP::StatusCode code) noexcept {
+	Response & Response::assign(const HTTP::StatusCode code, const char *body) noexcept {
 		debug("Request set to HTTP status ",code);
 
 		// Reminder: DO NOT CLEAR the contents, the dbus engine use it to keep states.
 
-		return http_status.assign(code);
+		http_status.assign(code,body);
+		return *this;
 	}
 
-	HTTP::Status & Response::failed(int syscode) noexcept {
-		debug("Request failed with syscode ",syscode);
+	// HTTP::Status & Response::failed(int syscode) noexcept {
+	// 	debug("Request failed with syscode ",syscode);
 
-		// Reminder: DO NOT CLEAR the contents, the dbus engine use it to keep states.
+	// 	// Reminder: DO NOT CLEAR the contents, the dbus engine use it to keep states.
 
-		return http_status.failed(syscode);
-	}
+	// 	return http_status.failed(syscode);
+	// }
 
-	HTTP::Status & Response::failed(const char *message, const char *details) noexcept {
-		return http_status.failed(message,details);
-	}
+	// HTTP::Status & Response::failed(const char *message, const char *details) noexcept {
+	// 	return http_status.failed(message,details);
+	// }
 
-	HTTP::Status & Response::failed(const char *title,  const char *message, const char *body) noexcept {
-		clear(Variant::Object);
-		return http_status.failed(title,message,body);
-	}
+	// HTTP::Status & Response::failed(const char *title,  const char *message, const char *body) noexcept {
+	// 	clear(Variant::Object);
+	// 	return http_status.failed(title,message,body);
+	// }
 
-	HTTP::Status & Response::failed(const std::exception &e) noexcept {
+	Response & Response::assign(const std::exception &e) noexcept {
 		http_status.assign(e);
-		return http_status;
+		return *this;
 	}
 
 	void Response::serialize(std::ostream &stream) const noexcept {
@@ -103,8 +102,16 @@
 			return;
 		}
 
-		string value{(http_status.code >= 200 && http_status.code <= 299) ? "success" : "failed"};
 
+		// If failed send only the status.
+		if(http_status.failed()) {
+			http_status.serialize(stream);
+			return;
+		}
+
+		static const char *value = "success";
+
+		// Not failed, serialize values.
 		switch(http_status.mimetype) {
 		case Udjat::Variant::Undefined:
 			{
@@ -122,7 +129,7 @@
 			if(!http_status.message.empty()) {
 				stream << "<message>" << http_status.message << "</message>";
 			}
-			stream << "<data>";
+			stream << "<data>";	
 			to_xml(stream);
 			stream << "</data></response>";
 			break;

@@ -78,6 +78,10 @@
 		range.to = 0;
 		range.total = 0;
 
+		appstate.name.clear();
+		appstate.value.clear();
+		appstate.message.clear();
+
 		title.clear();
 		title.clear();
 		body.clear();
@@ -139,6 +143,13 @@
 			callback(
 				"Content-Range",
 				Udjat::String{"items ",range.from,"-",range.to,"/",range.total}.c_str()
+			);
+		}
+
+		if(!appstate.name.empty()) {
+			callback(
+				String{"X-",appstate.name.c_str(),"-state"}.c_str(),
+				String{appstate.value.c_str(),";",appstate.message.c_str()}.c_str()
 			);
 		}
 
@@ -256,7 +267,10 @@
 
 		clear();
 
+		debug("HTTP Status failed: ",e.what());
+
 		code = HTTP::SystemError;
+		category = "exception";
 		title = _("Unable to Complete Request");
 		message = _("We're sorry, but we encountered an error while processing your request.");
 		body = e.what();
@@ -264,7 +278,6 @@
 		{
 			const Udjat::Exception *except = dynamic_cast<const Udjat::Exception *>(&e);
 			if(except) {
-				assign(except->syscode());
 				title = except->title();
 				body = except->body();
 				domain = except->domain();
@@ -276,16 +289,14 @@
 		{
 			const std::system_error *except = dynamic_cast<const std::system_error *>(&e);
 			if(except) {
-				assign(except->code().value());
-				body = Logger::Message{
-					_("The system error was '{}'"),
-					except->code().message()
-				};
 				category = except->code().category().name();
 				return *this;
 			}
 		}
 
+		debug("c");
+		serialize(cout);
+		
 		return *this;
 	}
 

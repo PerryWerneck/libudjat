@@ -73,6 +73,19 @@
 
 			} range;
 
+			/// @brief HTTP header X-${name}-state=${value};${message}
+			struct {
+				std::string name;
+				std::string value;
+				std::string message;
+			} appstate;
+
+			inline void state(const char *object_name, const char *value, const char *message) {
+				appstate.name = object_name;
+				appstate.value = value;
+				appstate.message = message;
+			}
+
 			/// @brief Build empty status.
 			Status(StatusCode c = Ok, const char *message = nullptr);
 
@@ -106,12 +119,18 @@
 			}
 
 			Status & clear() noexcept;
+
+			/// @brief Set status based on exception.
+			/// @param e The exception.
+			/// @param body The message details.
+			/// @return *this
 			Status & assign(const std::exception &e) noexcept;
 
 			/// @brief Set contents from HTTP status code.
 			/// @param code The status code to set.
+			/// @param body The message details.
 			/// @return *this
-			Status & assign(HTTP::StatusCode code, const char *message = nullptr) noexcept;
+			Status & assign(HTTP::StatusCode code, const char *body = nullptr) noexcept;
 
 			inline Status & operator=(const HTTP::StatusCode code) noexcept {
 				return assign(code);
