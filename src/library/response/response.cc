@@ -68,29 +68,12 @@
 		return *this;
 	}
 
-	// HTTP::Status & Response::failed(int syscode) noexcept {
-	// 	debug("Request failed with syscode ",syscode);
-
-	// 	// Reminder: DO NOT CLEAR the contents, the dbus engine use it to keep states.
-
-	// 	return http_status.failed(syscode);
-	// }
-
-	// HTTP::Status & Response::failed(const char *message, const char *details) noexcept {
-	// 	return http_status.failed(message,details);
-	// }
-
-	// HTTP::Status & Response::failed(const char *title,  const char *message, const char *body) noexcept {
-	// 	clear(Variant::Object);
-	// 	return http_status.failed(title,message,body);
-	// }
-
 	Response & Response::assign(const std::exception &e) noexcept {
 		http_status.assign(e);
 		return *this;
 	}
 
-	void Response::serialize(std::ostream &stream) const noexcept {
+	void Response::serialize(std::ostream &stream) const {
 
 		debug(
 			"Serializing response with mimetype ", 

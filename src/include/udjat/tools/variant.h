@@ -173,6 +173,11 @@
 		/// @brief Clear contents, set value type.
 		Variant & clear(const Type type = Undefined);
 
+		inline Variant & operator = (const Type type) {
+			clear(type);
+			return *this;
+		}
+
 		/// @brief For legacy use only.
 		inline Variant & reset(const Type type = Undefined) {
 			return clear(type);

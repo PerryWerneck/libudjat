@@ -177,7 +177,7 @@
 
 		/// @brief Serialize according to the mimetype.
 		/// Uses jsend format (https://github.com/omniti-labs/jsend) for xml, yaml & json.
-		void serialize(std::ostream &stream) const noexcept;
+		void serialize(std::ostream &stream) const;
 
 		/// @brief Set 'not-modified' status.
 		inline void not_modified() noexcept {
