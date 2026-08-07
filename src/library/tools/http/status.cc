@@ -172,6 +172,13 @@
 		return out.str();
 	}
 
+	void HTTP::Status::state(const char *object_name, const char *value, const char *message) {
+		appstate.name = object_name;
+		appstate.value = value;
+		appstate.message = message;
+		debug("Status of '",appstate.name.c_str(),"' is '",appstate.value.c_str(),"' (",appstate.message.c_str(),")");
+	}
+
 	void HTTP::Status::serialize(std::ostream &out) const noexcept {
 
 		Value response{Variant::Object};
@@ -302,10 +309,12 @@
 
 	HTTP::Status & HTTP::Status::assign(HTTP::StatusCode code, const char *msg) noexcept {
 
-		clear();
-		this->code = code;
-
 		if(code >= (HTTP::StatusCode) 500 && code <= (HTTP::StatusCode) 599) {
+
+			// Failed, clear contents and set error messages.
+			clear();
+			this->code = code;
+
 			message = _("We're sorry, but we encountered an error while processing your request.");
 			if(msg) {
 				detail = msg;
@@ -315,7 +324,9 @@
 			return *this;
 		}
 
+		this->code = code;
 		message = std::to_string(code);
+
 		if(msg) {
 			detail = msg;
 		}

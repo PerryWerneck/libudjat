@@ -98,11 +98,7 @@
 			}
 
 			/// @brief Set HTTP header X-${object_name}-state=${value};${message}
-			inline void state(const char *object_name, const char *value, const char *message) {
-				appstate.name = object_name;
-				appstate.value = value;
-				appstate.message = message;
-			}
+			void state(const char *object_name, const char *value, const char *message);
 
 			/// @brief Build status from exception.
 			/// @param e The exception for status.
@@ -170,7 +166,7 @@
 			virtual void serialize(std::ostream &stream) const noexcept;
 
 			std::string to_string() const;
-			
+
 			Status & failed(int syscode) noexcept;
 			Status & failed(const std::exception &e) noexcept;
 			Status & failed(const char *message, const char *details = nullptr) noexcept;
