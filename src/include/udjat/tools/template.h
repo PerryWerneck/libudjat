@@ -68,7 +68,7 @@
 		/// @brief Apply value on template.
 		/// @param stream Output stream.
 		/// @param value Values for template.
-		void apply(std::ostream &stream, const Value &value);
+		void apply(std::ostream &stream, const Variant &value);
 
 		/// @brief Apply value on template.
 		/// @param stream Output stream.

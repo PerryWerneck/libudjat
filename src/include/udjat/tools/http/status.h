@@ -24,6 +24,8 @@
  #include <udjat/tools/http/mimetype.h>
  #include <string>
  #include <functional>
+ #include <stdexcept>
+ #include <ostream>
 
  namespace Udjat {
 
@@ -43,18 +45,21 @@
 			/// @brief Mimetype for responses.
 			MimeType mimetype = MimeType::none;
 
-			/// @brief The body for status dialog.
-			std::string body;
+			/// @brief The detail text.
+			std::string detail;
 
 			std::string domain;
 			std::string url;
 			std::string category;
 
-			/// @brief The expiration time (0 to disable caching).
-			time_t expires = (time_t) -1;
+			struct {
+				/// @brief The expiration time (0 to disable caching).
+				time_t expiration = (time_t) -1;
 
-			/// @brief The last update time (for caching information).
-			time_t last_modified = 0;
+				/// @brief The modification time (for last-modified header).
+				time_t modification = 0;
+
+			} timestamp;
 
 			/// @brief Values for content-range & X-Total-Count headers.
 			struct {
@@ -80,12 +85,6 @@
 				std::string message;
 			} appstate;
 
-			inline void state(const char *object_name, const char *value, const char *message) {
-				appstate.name = object_name;
-				appstate.value = value;
-				appstate.message = message;
-			}
-
 			/// @brief Build empty status.
 			Status(StatusCode c = Ok, const char *message = nullptr);
 
@@ -95,12 +94,23 @@
 			}
 
 			inline const char * c_str() const noexcept {
-				return body.empty() ? message.c_str() : body.c_str();
+				return detail.empty() ? message.c_str() : detail.c_str();
+			}
+
+			/// @brief Set HTTP header X-${object_name}-state=${value};${message}
+			inline void state(const char *object_name, const char *value, const char *message) {
+				appstate.name = object_name;
+				appstate.value = value;
+				appstate.message = message;
 			}
 
 			/// @brief Build status from exception.
 			/// @param e The exception for status.
 			Status(const std::exception &e, const MimeType mimetype = MimeType::none);
+
+			inline bool operator ==(const MimeType mimetype) const noexcept {
+				return mimetype == this->mimetype;
+			}
 
 			/// @brief Is this response ok?
 			/// @return The current status.
@@ -118,7 +128,7 @@
 				return code < 200 || code > 299;
 			}
 
-			Status & clear() noexcept;
+			virtual void clear() noexcept;
 
 			/// @brief Set status based on exception.
 			/// @param e The exception.
@@ -156,9 +166,8 @@
 
 			/// @brief Serialize according to the mimetype.
 			/// Uses jsend format (https://github.com/omniti-labs/jsend) for xml, yaml & json.
-			/// @param mimetype The requested mimetype.
-			/// @param stream Stream to serialize.
-			void serialize(std::ostream &stream) const noexcept;
+			/// @param stream Stream to receive the output.
+			virtual void serialize(std::ostream &stream) const noexcept;
 
 			std::string to_string() const;
 			
@@ -168,7 +177,7 @@
 			Status & failed(const char *title,  const char *message, const char *details) noexcept;
 
 			/// @brief Translate http error to system error.
-			/// @param http_code http error code.
+			/// @param code http error code.
 			/// @return The corresponding system error code (or -1 if there's no one).
 			static int syscode(const StatusCode code) noexcept;
 
@@ -177,7 +186,6 @@
 			void http_headers(const std::function<void(const char *name, const char *value)> &callback) const noexcept;
 
 		};
-
 
 	}
 

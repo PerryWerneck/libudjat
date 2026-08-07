@@ -387,8 +387,6 @@
 
 	bool Abstract::Agent::Controller::process(Request &request, Response &response) const noexcept {
 
-		debug("Response type is ",std::to_string(response.mimetype()));
-		
 		if(!this->root) {
 			request.error(Interface::name(),"Root agent is not available");
 			response = HTTP::Unavailable;

@@ -67,11 +67,12 @@
 		assign(e);
 	}
 
-	HTTP::Status & HTTP::Status::clear() noexcept {
+	void HTTP::Status::clear() noexcept {
+
 		code = HTTP::Ok;
 
-		expires = (time_t) -1;
-		last_modified = (time_t) -1;
+		timestamp.expiration = (time_t) -1;
+		timestamp.modification = (time_t) -1;
 
 		range.count = 0;
 		range.from = 0;
@@ -84,11 +85,10 @@
 
 		title.clear();
 		title.clear();
-		body.clear();
+		detail.clear();
 		domain.clear();
 		url.clear();
 		category.clear();
-		return *this;
 
 	}
 
@@ -101,10 +101,10 @@
 		}
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
-		if(expires != (time_t) -1 && expires > now) {
+		if(timestamp.expiration != (time_t) -1 && timestamp.expiration > now) {
 			
 			// Setup expiration time.
-			unsigned int max_age = (now - expires);
+			unsigned int max_age = (now - timestamp.expiration);
 			callback(
 				"Cache-Control",
 				Udjat::String{"max-age=",max_age,", private"}.c_str()
@@ -112,10 +112,10 @@
 
 			callback(
 				"Expires",
-				HTTP::TimeStamp{expires}.to_string().c_str()
+				HTTP::TimeStamp{timestamp.expiration}.to_string().c_str()
 			);
 	
-		} else if(expires == 0) {
+		} else if(timestamp.expiration == 0) {
 
 			// No cache
 			callback("Cache-Control","no-cache, no-store, must-revalidate, private, max-age=0");
@@ -124,10 +124,10 @@
 		}
 
 		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Last-Modified
-		if(last_modified) {
+		if(timestamp.modification) {
 			callback(
 				"last-modified",
-				HTTP::TimeStamp{last_modified}.to_string().c_str()
+				HTTP::TimeStamp{timestamp.modification}.to_string().c_str()
 			);
 		}
 
@@ -178,7 +178,7 @@
 		response["code"] = (int) code;
 		response["title"] = title;
 		response["message"] = message;
-		response["body"] = body;
+		response["detail"] = detail;
 		response["domain"] = domain;
 		response["url"] = url;
 		response["category"] = category;	
@@ -226,8 +226,8 @@
 					out << "<p id='error-message'>" << message << "</p>";
 				}
 				out << "<p id='error-code'>" << "Error " << ((int) code) << "</p>";
-				if(!body.empty()) {
-					out << "<small id='error-body'>" << body << "</small>";
+				if(!detail.empty()) {
+					out << "<small id='error-body'>" << detail << "</small>";
 				}
 				out << "<div id='error-extra'>";
 				response.erase("title");
@@ -273,13 +273,13 @@
 		category = "exception";
 		title = _("Unable to Complete Request");
 		message = _("We're sorry, but we encountered an error while processing your request.");
-		body = e.what();
+		detail = e.what();
 		
 		{
 			const Udjat::Exception *except = dynamic_cast<const Udjat::Exception *>(&e);
 			if(except) {
 				title = except->title();
-				body = except->body();
+				detail = except->body();
 				domain = except->domain();
 				url = except->url();
 				return *this;
@@ -308,16 +308,16 @@
 		if(code >= (HTTP::StatusCode) 500 && code <= (HTTP::StatusCode) 599) {
 			message = _("We're sorry, but we encountered an error while processing your request.");
 			if(msg) {
-				body = msg;
+				detail = msg;
 			} else {
-				body = std::to_string(code);
+				detail = std::to_string(code);
 			}
 			return *this;
 		}
 
 		message = std::to_string(code);
 		if(msg) {
-			body = msg;
+			detail = msg;
 		}
 
 		return *this;
@@ -333,17 +333,14 @@
 		code = HTTP::SystemError;
 
 		if(msg) {
-			body = msg;
-
-			body += " (";
-			body += Logger::Message{
-				_("The system error was '{}'"),
+			detail = Logger::Message{
+				_("{} (The system error was '{}')"),
+				msg,
 				strerror(syscode)
 			};
-			body += ")";
 
 		} else {
-			body = Logger::Message{
+			detail = Logger::Message{
 				_("The system error was '{}'"),
 				strerror(syscode)
 			};
@@ -382,16 +379,16 @@
 
 		if(has_message && has_body) {
 			this->message = message;
-			this->body = body;
+			this->detail = body;
 		} else if(has_message) {
 			this->message = _("We're sorry, but we encountered an error while processing your request.");
-			this->body = message;
+			this->detail = message;
 		} else if(has_body) {
 			this->message = _("We're sorry, but we encountered an error while processing your request.");
-			this->body = body;
+			this->detail = body;
 		} else {
 			this->message = _("We're sorry, but we encountered an error while processing your request.");
-			this->body = _("Unexpected error processing request");
+			this->detail = _("Unexpected error processing request");
 		}
 
 		return *this;

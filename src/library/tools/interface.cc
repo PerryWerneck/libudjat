@@ -157,7 +157,8 @@
 		if(allow(path,request,(HTTP::Status &) response)) {
 			return true;
 		}
-		response.clear(Variant::Object);
+		response.clear();
+		response = HTTP::Forbidden;
 		return false;
 	}
 
@@ -217,7 +218,7 @@
 		class Adapter : public Udjat::Response {
 		public:
 			Adapter(HTTP::Status &status) : Udjat::Response{status.mimetype} {
-				this->http_status = status;
+				*((HTTP::Status *) this) = status;
 			}
 
 			~Adapter() override {
@@ -233,7 +234,7 @@
 				// copy response;
 				status = (HTTP::Status) response;
 
-				if(status.code >= 200 && status.code <= 299) {
+				if(response.success()) {
 
 					debug("Process returned OK");
 
@@ -248,7 +249,8 @@
 
 						// Have template, use it.
 						debug("Trying template");
-						Template{schema.template_name}.apply(stream,response);
+						Template{schema.template_name}.apply(stream,(Variant &) response);
+	
 		
 					} else {
 

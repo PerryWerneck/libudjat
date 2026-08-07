@@ -447,7 +447,7 @@ lib_src += [
   'src/library/module/module.cc',
   'src/library/module/unload.cc',
   'src/library/module/load.cc',
-  'src/library/response/response.cc',
+  'src/library/response.cc',
   'src/library/tools/http/status.cc',
   'src/library/tools/http/schema.cc',
   'src/library/request.cc',

@@ -169,8 +169,6 @@
 
 	int Abstract::Object::process(const Request &request, Response &response) {
 
-		response.set(this);
-
 		Schema::Output schema;
 		if(this->schema(request.method(),request.path(),schema)) {
 

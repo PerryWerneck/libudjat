@@ -198,8 +198,8 @@
 				return true;
 			}
 
-			if(!strcasecmp(key,"status-body")) {
-				stream << status.body;
+			if(!(strcasecmp(key,"detail") && strcasecmp(key,"status-detail") && strcasecmp(key,"status-body"))) {
+				stream << status.detail;
 				return true;
 			}
 
