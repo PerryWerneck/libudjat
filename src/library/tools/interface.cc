@@ -116,8 +116,11 @@
 
 	bool Interface::process(Request &, Response &response) const noexcept {
 		Logger::String{"Unable to process requests, the method 'process' was not overrided by interface code"}.warning(name());
-		response.assign(HTTP::NotFound);
-		return true;
+		response.assign(
+			HTTP::NotFound,
+			Logger::Message(_("The backend '{}' does not supply a request handler."),name()).c_str()
+		);
+		return false;
 	}
 
 	bool Interface::process(Request &request, DataTable &response) const noexcept {
@@ -272,10 +275,12 @@
 			}
 
 		} catch(const std::exception &e) {
+
 			status.assign(e);
+
 		}
 
-		return true;
+		return status.success();
 
 	}
 

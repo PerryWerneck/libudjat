@@ -87,6 +87,10 @@
 			return http_status.mimetype;
 		}
 
+		inline HTTP::Status & status() noexcept {
+			return http_status;
+		}
+
 		inline const HTTP::Status & status() const noexcept {
 			return http_status;
 		}

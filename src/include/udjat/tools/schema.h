@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/variant.h>
+ #include <udjat/tools/http/status.h>
  #include <vector>
 
  namespace Udjat {
@@ -160,6 +161,13 @@
 				add(Fargs...);
 			}
 
+			/// @brief Validate if variant has all the required fields.
+			/// @param request The variant with the values.
+			/// @param response Status to receive the response messages and error code.
+			/// @return true if the variant contains all required inputs.
+			// bool validate(const Variant &request, HTTP::Status &response) const noexcept;
+			bool validate(const Variant &request, HTTP::Status &response) const noexcept;
+
 		};
 
 		/// @brief Schema outputs
@@ -198,55 +206,6 @@
 		};
 
 	}
-
-
-
-// 	class UDJAT_API Schema {
-// 	public:
-
-// 		/// @brief Schema capabilites.
-// 		enum Capabilities : uint8_t {
-// 			NoCapabilities		= 0x0,
-// 			Enumerable			= 0x1,				///< @brief Get on '/' enumerate objects.
-// 		};
-
-// 		Capabilities caps = Schema::NoCapabilities;
-
-
-
-// 		Schema() = default;
-
-
-// 	};
-
-// 	class UDJAT_API Schema::Input : public Schema {
-// 	public:
-// 		Schema::Input() = default;
-
-// 		template<typename... Targs>
-// 		Schema::Input(Targs... Fargs) {
-// 			add(Fargs...);
-// 		}
-
-
-// 	};
-
-// 	class UDJAT_API Schema::Output : public Schema {
-// 	public:
-
-// 		/// @brief Template name, for http outputs.
-// 		const char *template_name = nullptr;
-
-// 		Schema::Output() = default;
-
-// 		template<typename... Targs>
-// 		Schema::Output(Targs... Fargs) {
-// 			add(Fargs...);
-// 		}
-
-// 	};
-
-// 	class Schema::Method;
 
 	template <>
 	constexpr Schema::Type Schema::TypeFactory<std::string>() {

@@ -23,6 +23,8 @@
  #include <udjat/defs.h>
  #include <udjat/tools/schema.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/http/status.h>
+ #include <udjat/tools/intl.h>
  #include <cstring>
 
  namespace Udjat {
@@ -49,6 +51,21 @@
 		}
 
 		itens.push_back(item);
+	}
+
+	bool Schema::Input::validate(const Variant &request, HTTP::Status &response) const noexcept {
+
+		for(const auto &item : *this) {
+			if( !(item.type() == ObjectPath || request.contains(item.name())) ) {
+				response.assign(
+					HTTP::BadRequest,
+					Logger::Message(_("Required argument '{}' is missing"),item.name()).c_str()
+				);
+				return false;
+			}
+		}
+
+		return true;
 	}
 
  }
