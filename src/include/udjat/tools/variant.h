@@ -23,6 +23,7 @@
  #include <cstdint>
  #include <udjat/tools/object.h>
  #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/timestamp.h>
 
  namespace Udjat {
 
@@ -46,7 +47,8 @@
 			Icon		= 'I',			///< @brief Icon name.
 			Url			= '@',			///< @brief URL.
 			State		= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error', etc)
-	
+			DataTable	= 'T',			///< @brief Table with all columns with the same type.
+
 			Object	[[deprecated("Use ValueMap instead.")]] = 'm'
 		};
 
@@ -73,6 +75,8 @@
 			}
 
 		} content;
+
+		Variant::Content & Variant::append_type(const Variant::Type type);
 
 	public:
 
@@ -135,13 +139,13 @@
 		/// @brief Remove item from object.
 		Variant & erase(const char *name);
 
-		/// @brief Append item to array.
-		/// @return The item.
-		Variant & append(Variant::Type type = Undefined);
+		// /// @brief Append item to array.
+		// /// @return The item.
+		// Variant & append(Variant::Type type = Undefined);
 
-		/// @brief Append item to object.
-		/// @return The item.
-		Variant & append(const char *name, Variant::Type type = Undefined);
+		// /// @brief Append item to object.
+		// /// @return The item.
+		// Variant & append(const char *name, Variant::Type type = Undefined);
 
 		/// @brief Merge another value.
 		Variant & merge(const Variant &src);
@@ -185,42 +189,41 @@
 			return clear(type);
 		}
 
-		/// @brief Set value and type.
-		Variant & set(const char *value, const Type type = String);
-
-		inline Variant & set(char *value, const Type type = String) {
-			return set((const char *) value, type);
-		}
-
-		inline Variant & set(const std::string &value, const Type type = String) {
-			return set(value.c_str(),type);
-		}
-
-		Variant & set(const Variant &value);
+		Variant & assign(const Variant &value);
 
 		/// @brief Set a percentual from 0.0 to 1.0
 		Variant & setFraction(const float fraction);
-		Variant & set(const short value);
-		Variant & set(const unsigned short value);
-		Variant & set(const int value);
-		Variant & set(const unsigned int value);
-		Variant & set(const TimeStamp &value);
-		Variant & set(const bool value);
-		Variant & set(const float value);
-		Variant & set(const double value);
-		Variant & set(const Abstract::Object &value);
+
+		/// @brief Set value and type.
+		Variant & assign(const char *value, const Type type);
+
+		inline Variant & assign(const std::string &value, const Type type) {
+			return assign(value.c_str(),type);
+		}
 
 		/// @brief Load tags <value name='name' value='value' type='type' /> into value.
-		Variant & set(const Udjat::Properties &props);
+		Variant & assign(const Udjat::Properties &props);
 
 		template <typename T>
-		inline Variant & set(const T value) {
-			return this->set(std::to_string(value));
+		inline Variant & assign(const T value) {
+			return this->assign(std::to_string(value),String);
 		}
 
 		template <typename T>
 		inline Variant & operator=(const T value) {
-			return set(value);
+			return assign(value);
+		}
+
+		/// @brief Set value and type.
+		Variant & append(const char *value, const Type type);
+
+		inline Variant & append(const std::string &value, const Type type) {
+			return append(value.c_str(),type);
+		}
+
+		template <typename T>
+		inline Variant & append(const T value) {
+			return this->append(std::to_string(value),String);
 		}
 
 		const Variant & get(std::string &value) const;
@@ -301,13 +304,118 @@
 		return Type::Boolean;
 	}
 
+	template <>
+	inline Variant & Variant::assign<const char *>(const char *value) {
+		return assign(value,String);
+	}
+
+	template <>
+	inline Variant & Variant::assign<const std::string &>(const std::string &value) {
+		return assign(value.c_str(),String);
+	}
+
+	template <>
+	inline Variant & Variant::assign<int>(const int value) {
+		clear(Signed);
+		content.sig = value;
+		return *this;
+	}
+
+	template <>
+	Variant & Variant::assign<unsigned int>(const unsigned int value) {
+		clear(Unsigned);
+		content.unsig = value;
+		return *this;
+	}
+
+	template <>
+	Variant & Variant::assign<const TimeStamp &>(const TimeStamp &value) {
+		clear(Timestamp);
+		content.timestamp = (time_t) value;
+		return *this;
+	}
+
+	template <>
+	Variant & Variant::assign<bool>(const bool value) {
+		clear(Boolean);
+		content.sig = value;
+		return *this;
+	}
+
+	template <>
+	Variant & Variant::assign<float>(const float value) {
+		clear(Real);
+		content.dbl = (double) value;
+		return *this;
+	}
+
+	template <>
+	Variant & Variant::assign<double>(const double value) {
+		clear(Real);
+		content.dbl = value;
+		return *this;
+	}
+
+	template <>
+	Variant & Variant::assign(const Abstract::Object &value) {
+		clear(ValueMap);
+		value.get_properties(*this);
+		return *this;
+	}
+
+	template <>
+	inline Variant & Variant::append<const char *>(const char *value) {
+		return append(value,String);
+	}
+
+	template <>
+	inline Variant & Variant::append<const std::string &>(const std::string &value) {
+		return append(value.c_str(),String);
+	}
+
+	template <>
+	inline Variant & Variant::append<int>(const int value) {
+		append_type(Signed).sig = value;
+		return *this;
+	}
+
+	template <>
+	Variant & Variant::append<unsigned int>(const unsigned int value) {
+		append_type(Unsigned).unsig = value;
+		return *this;
+	}
+
+	template <>
+	Variant & Variant::append<const TimeStamp &>(const TimeStamp &value) {
+		append_type(Timestamp).timestamp = (time_t) value;
+		return *this;
+	}
+
+	template <>
+	Variant & Variant::append<bool>(const bool value) {
+		append_type(Boolean).sig = value;
+		return *this;
+	}
+
+	template <>
+	Variant & Variant::append<float>(const float value) {
+		append_type(Real).dbl = (double) value;
+		return *this;
+	}
+
+	template <>
+	Variant & Variant::append<double>(const double value) {
+		append_type(Real).dbl = value;
+		return *this;
+	}
+
  }
 
  namespace std {
 
 	template <typename T>
 	inline Udjat::Variant & operator<<(Udjat::Variant &out, T value) {
-		return out.set(value);
+		return out.append(value);
 	}
 
 	template <typename T>

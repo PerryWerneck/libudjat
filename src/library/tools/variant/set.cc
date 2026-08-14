@@ -32,7 +32,12 @@
 
  namespace Udjat {
 
-	Value & Variant::set(const char *value, const Type type) {
+	// Variant::Content & Variant::set_content_type(const Variant::Type type) {
+	// 	clear(type);
+	// 	return content;
+	// }
+
+	Value & Variant::assign(const char *value, const Type type) {
 
 		clear(type);
 
@@ -107,25 +112,91 @@
 
 	}
 
-	Value & Variant::append(Variant::Type item_type) {
-		if(type == Undefined) {
+	Variant::Content & Variant::append_type(const Variant::Type type) {
+
+		if(this->type == Undefined) {
 			clear(Array);
 		}
 
-		if(type != Array) {
-			throw logic_error("The value is not an array");
-		}
-
 		if(!content.ptr) {
-			throw runtime_error("Invalid object");
+			throw runtime_error("Invalid variant");
 		}
 
-		vector<Value> *children = ((vector<Value> *) content.ptr);
+		if(this->type == Array) {
 
-		children->emplace_back(item_type);
-		return children->back();
+			// It's an array.
+			vector<Value> *children = ((vector<Value> *) content.ptr);
+			children->emplace_back(type);
+			return children->back().content;
+
+		}
+
+		throw logic_error("The variant doesn't contain an array.");
 
 	}
+
+	Variant & Variant::append(const char *value, const Variant::Type type) {
+
+		Content &content = append_type(type);
+
+		switch(type) {
+		case Variant::Undefined:
+			break;
+
+		case Variant::String:
+		case Variant::Icon:
+		case Variant::Url:
+			content.ptr = strdup(value);
+			break;
+
+		case Variant::Timestamp:
+			content.timestamp = (time_t) TimeStamp{value};
+			break;
+
+		case Variant::Signed:
+		case Variant::Boolean:
+			content.sig = atoi(value);
+			break;
+
+		case Variant::Unsigned:
+		case Variant::State:
+			content.unsig = (unsigned int) atoi(value);
+			break;
+
+		case Variant::Real:
+		case Variant::Fraction:
+			content.dbl = (double) atof(value);
+			break;
+
+		default:
+			throw runtime_error("Invalid variant type");
+
+		}
+
+		return *this;
+	}
+
+
+	// Value & Variant::append(Variant::Type item_type) {
+
+	// 	if(type == Undefined) {
+	// 		clear(Array);
+	// 	}
+
+	// 	if(type != Array) {
+	// 		throw logic_error("The variant doesn't contain an array.");
+	// 	}
+
+	// 	if(!content.ptr) {
+	// 		throw runtime_error("Invalid variant");
+	// 	}
+
+	// 	vector<Value> *children = ((vector<Value> *) content.ptr);
+
+	// 	children->emplace_back(item_type);
+	// 	return children->back();
+
+	// }
 
 	Value & Variant::merge(const Value &src) {
 
@@ -149,7 +220,7 @@
 
 #if __cplusplus >= 201703L
         for(const auto & [key, value] : *(( map<std::string,Value> *) src.content.ptr))	{
-			(*this)[key.c_str()].set(value);
+			(*this)[key.c_str()].assign(value);
 		}
 #else
                 throw system_error(ENOTSUP,system_category(),"Unable to merge values");
@@ -158,7 +229,7 @@
 		return *this;
 	}
 
-	Value & Variant::set(const Value &src) {
+	Value & Variant::assign(const Value &src) {
 
 		reset(src.type);
 		switch(src.type) {
@@ -199,7 +270,7 @@
 			break;
 
 		default:
-			throw runtime_error("Invalid value type");
+			throw runtime_error("Invalid variant type");
 		}
 
 		return *this;
@@ -208,60 +279,6 @@
 	Value & Variant::setFraction(const float fraction) {
 		reset(Fraction);
 		content.dbl = fraction;
-		return *this;
-	}
-
-	Value & Variant::set(const short value) {
-		reset(Signed);
-		content.sig = (int) value;
-		return *this;
-	}
-
-	Value & Variant::set(const unsigned short value) {
-		reset(Unsigned);
-		content.unsig = (unsigned int) value;
-		return *this;
-	}
-
-	Value & Variant::set(const int value) {
-		reset(Signed);
-		content.sig = value;
-		return *this;
-	}
-
-	Value & Variant::set(const unsigned int value) {
-		reset(Unsigned);
-		content.unsig = value;
-		return *this;
-	}
-
-	Value & Variant::set(const TimeStamp &value) {
-		reset(Timestamp);
-		content.timestamp = value;
-		return *this;
-	}
-
-	Value & Variant::set(const bool value) {
-		reset(Boolean);
-		content.sig = value;
-		return *this;
-	}
-
-	Value & Variant::set(const float value) {
-		reset(Real);
-		content.dbl = (double) value;
-		return *this;
-	}
-
-	Value & Variant::set(const double value) {
-		reset(Real);
-		content.dbl = value;
-		return *this;
-	}
-
-	Value & Variant::set(const Abstract::Object &value) {
-		reset(Object);
-		value.get_properties(*this);
 		return *this;
 	}
 
