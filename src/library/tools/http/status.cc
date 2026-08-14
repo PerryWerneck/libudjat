@@ -181,7 +181,7 @@
 
 	void HTTP::Status::serialize(std::ostream &out) const noexcept {
 
-		Value response{Variant::Object};
+		Value response{Variant::ValueMap};
 		response["code"] = (int) code;
 		response["title"] = title;
 		response["message"] = message;

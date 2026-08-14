@@ -35,7 +35,7 @@
 			Undefined	= '\0',			///< @brief 'null' value.
 			ObjectPath	= 'p',			///< @brief Object path (string).
 			Array		= 'a',			///< @brief Array value (ordered list).
-			Object		= 'O',			///< @brief Object value (collection of name/value pairs).
+			ValueMap	= 'm',			///< @brief collection of name/value pairs.
 			String		= 's',			///< @brief UTF-8 string value.
 			Timestamp	= 'T',			///< @brief Timestamp value.
 			Signed		= 'S',			///< @brief Signed integer value.
@@ -46,6 +46,8 @@
 			Icon		= 'I',			///< @brief Icon name.
 			Url			= '@',			///< @brief URL.
 			State		= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error', etc)
+	
+			Object	[[deprecated("Use ValueMap instead.")]] = 'm'
 		};
 
 		template <typename T>

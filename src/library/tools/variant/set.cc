@@ -165,7 +165,7 @@
 		case Variant::Undefined:
 			break;
 
-		case Variant::Object:
+		case Variant::ValueMap:
 			merge(src);
 			break;
 

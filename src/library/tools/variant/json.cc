@@ -50,7 +50,7 @@
 			}
 			break;
 
-		case Udjat::Variant::Object:
+		case Udjat::Variant::ValueMap:
 			{
 				output << '{';
 				bool sep = false;

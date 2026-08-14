@@ -39,8 +39,8 @@
 			return;
 		}
 
-		if(*this != Udjat::Variant::Object) {
-			throw runtime_error(Logger::String{"Only objects can be serialized as ",std::to_string(MimeType::csv)});
+		if(*this != Udjat::Variant::ValueMap) {
+			throw runtime_error(Logger::String{"Only value maps can be serialized as ",std::to_string(MimeType::csv)});
 		}
 
 		// Get headers.
@@ -49,7 +49,7 @@
 			switch((Variant::Type) value) {
 			case Udjat::Variant::Undefined:
 			case Udjat::Variant::Array:
-			case Udjat::Variant::Object:
+			case Udjat::Variant::ValueMap:
 				break;
 
 			case Udjat::Variant::Signed:

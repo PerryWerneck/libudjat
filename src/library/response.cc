@@ -33,7 +33,7 @@
 	}
 
 	void Response::clear() noexcept {
-		Variant::clear(Variant::Object);
+		Variant::clear(Variant::ValueMap);
 		HTTP::Status::clear();
 	}
 

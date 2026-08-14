@@ -51,7 +51,7 @@
 			});
 			break;
 
-		case Udjat::Variant::Object:
+		case Udjat::Variant::ValueMap:
 			if(left_margin) {
 				ss << endl;
 			}

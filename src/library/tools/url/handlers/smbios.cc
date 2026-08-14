@@ -61,7 +61,7 @@
 
 					debug("Found SMBios node: ", node.name(), " (", node.type(), ")");
 
-					auto &item = response.append(Variant::Object);
+					auto &item = response.append(Variant::ValueMap);
 					node.for_each([&item](const SMBios::Value &v) -> bool {
 						auto &row = item[v.name()];
 						row["description"] = v.description();

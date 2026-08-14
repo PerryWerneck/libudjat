@@ -42,7 +42,7 @@
 		#pragma GCC diagnostic push
 		#pragma GCC diagnostic ignored "-Wswitch"
 		switch((Variant::Type) *this) {
-		case Udjat::Variant::Object:
+		case Variant::ValueMap:
 
 			if(!empty()) {
 

@@ -46,7 +46,7 @@
 			}
 			return ((vector<Value> *) content.ptr)->empty();
 
-		} else if(type == Object) {
+		} else if(type == ValueMap) {
 			if(!content.ptr) {
 				return true;
 			}
@@ -91,8 +91,8 @@
 		case Array:
 			throw logic_error("Cant copy array to string");
 
-		case Object:
-			throw logic_error("Cant copy object to string");
+		case ValueMap:
+			throw logic_error("Cant copy value map to string");
 
 		case String:
 		case Icon:
@@ -172,7 +172,7 @@
 				break;
 
 			case Variant::Array:
-			case Variant::Object:
+			case Variant::ValueMap:
 				throw logic_error("Unable to convert value");
 				break;
 
@@ -302,7 +302,7 @@
 	size_t Variant::size() const {
 		if(type == Array) {
 			return ((vector<Value> *) content.ptr)->size();
-		} else if(type == Object) {
+		} else if(type == ValueMap) {
 			return (((map<std::string,Value> *) content.ptr))->size();
 		} else if(type == Undefined) {
 			return 0;
@@ -320,7 +320,7 @@
 
 			return ((vector<Value> *) content.ptr)->at(ix);
 
-		} else if(type == Object) {
+		} else if(type == ValueMap) {
 
 #if __cplusplus >= 201703L
 			#pragma GCC diagnostic push
@@ -352,7 +352,7 @@
 
 			return ((const vector<Value> *) content.ptr)->at(ix);
 
-		} else if(type == Object) {
+		} else if(type == ValueMap) {
 #if __cplusplus >= 201703L
 			#pragma GCC diagnostic push
 			#pragma GCC diagnostic ignored "-Wunused-variable"
@@ -379,10 +379,10 @@
 	Value & Variant::append(const char *name, Variant::Type type) {
 		
 		if(type == Undefined) {
-			clear(Object);
+			clear(ValueMap);
 		}
 
-		if(type != Object) {
+		if(type != ValueMap) {
 			throw logic_error(Logger::String{"Unable to append element into a value type '",std::to_string(type),"'"});
 		}
 			
@@ -392,7 +392,7 @@
 
 	bool Variant::contains(const char *name) const noexcept {
 
-		if(type != Object) {
+		if(type != ValueMap) {
 			return false;
 		}
 
@@ -404,10 +404,10 @@
 	Value & Variant::operator[](const char *name) {
 
 		if(type == Undefined) {
-			clear(Object);
+			clear(ValueMap);
 		}
 
-		if(type == Object) {
+		if(type == ValueMap) {
 			return (*((map<std::string,Value> *) content.ptr))[name];
 		}
 
@@ -415,7 +415,7 @@
 	}
 
 	bool Variant::get_property(const char *key, Udjat::Variant &value) const {
-		if(type == Object && content.ptr) {
+		if(type == ValueMap && content.ptr) {
 			const map<std::string,Variant> &children = *((map<std::string,Variant> *) content.ptr);
 			auto it = children.find(key);
 			if(it == children.end()) {
@@ -429,8 +429,8 @@
 
 	const Value & Variant::operator[](const char *name) const {
 
-		if(type != Object) {
-			throw runtime_error(Logger::String{"Cant get child '",name,"': Value is not an object"});
+		if(type != ValueMap) {
+			throw runtime_error(Logger::String{"Cant get child '",name,"': Value is not a value map"});
 		}
 
 		return ((map<std::string,Value> *) content.ptr)->at(name);
@@ -449,7 +449,7 @@
 					return true;
 				}
 			}
-		} else if(type == Object) {
+		} else if(type == ValueMap) {
 			if(!content.ptr) {
 				return *this;
 			}
@@ -481,7 +481,7 @@
 					return true;
 				}
 			}
-		} else if(type == Object) {
+		} else if(type == ValueMap) {
 			if(!content.ptr) {
 				return *this;
 			}
@@ -565,7 +565,7 @@
 	}
 
 	std::string Variant::to_string(const char *def) const {
-		if(type == Undefined || type == Array || type == Object) {
+		if(type == Undefined || type == Array || type == ValueMap) {
 			return def;
 		}
 		return to_string();

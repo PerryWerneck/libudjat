@@ -87,7 +87,7 @@
 		if(!strcasecmp(path,"states")) {
 
 			for_each([this,&value](const Abstract::State &state) {
-				auto &row = value.append(Variant::Object);
+				auto &row = value.append(Variant::ValueMap);
 				state.get_properties(row);
 				row["active"] = (&state == current_state.selected.get());
 			});

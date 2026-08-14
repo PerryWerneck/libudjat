@@ -44,7 +44,7 @@
 			});
 			break;
 
-		case Udjat::Variant::Object:
+		case Udjat::Variant::ValueMap:
 			for_each([&ss](const char *key, const Value &value){
 				ss << "<" << key << " type='"; 
 				ss << std::to_string((Udjat::Variant::Type) value);
