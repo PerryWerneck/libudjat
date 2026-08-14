@@ -53,8 +53,8 @@
 		case Array:
 			throw logic_error("Cant set array from string");
 
-		case Object:
-			throw logic_error("Cant set object from string");
+		case ValueMap:
+			throw logic_error("Cant set value map from string");
 
 		case String:
 		case Icon:
@@ -100,7 +100,7 @@
 
 	Value & Variant::erase(const char *name) {
 
-		if(type != Object) {
+		if(type != ValueMap) {
 			throw logic_error(Logger::String{"Unable to erase element into a value type '",std::to_string(type),"'"});
 		}
 
@@ -176,39 +176,17 @@
 		return *this;
 	}
 
-
-	// Value & Variant::append(Variant::Type item_type) {
-
-	// 	if(type == Undefined) {
-	// 		clear(Array);
-	// 	}
-
-	// 	if(type != Array) {
-	// 		throw logic_error("The variant doesn't contain an array.");
-	// 	}
-
-	// 	if(!content.ptr) {
-	// 		throw runtime_error("Invalid variant");
-	// 	}
-
-	// 	vector<Value> *children = ((vector<Value> *) content.ptr);
-
-	// 	children->emplace_back(item_type);
-	// 	return children->back();
-
-	// }
-
-	Value & Variant::merge(const Value &src) {
+	Variant & Variant::merge(const Variant &src) {
 
 		if(type == Undefined) {
-			clear(Object);
+			clear(ValueMap);
 		}
 
 		if(src.type == Undefined) {
 			return *this;
 		}
 		
-		if(src.type != Object || type != Object) {
+		if(src.type != ValueMap || type != ValueMap) {
 			throw runtime_error(
 				Logger::Message(
 					"Unable to merge '{}' into '{}'",

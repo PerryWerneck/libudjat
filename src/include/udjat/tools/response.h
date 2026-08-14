@@ -41,11 +41,6 @@
 			return mimetype == this->mimetype;
 		}
 
-		inline Response & operator=(const HTTP::StatusCode code) noexcept {
-			HTTP::Status::assign(code);
-			return *this;
-		} 
-
 		void clear() noexcept override;
 
 		/// @brief Set item count for this response.
@@ -53,6 +48,32 @@
 		inline void count(size_t value) noexcept {
 			range.count = value;
 		}
+
+		/// @brief Set status based on exception.
+		/// @param e The exception.
+		/// @param body The message details.
+		/// @return *this
+		inline HTTP::Status & assign(const std::exception &e) noexcept {
+			return HTTP::Status::assign(e);
+		}
+
+		inline Response & operator=(const std::exception &e) noexcept {
+			HTTP::Status::assign(e);
+			return *this;
+		}
+
+		/// @brief Set contents from HTTP status code.
+		/// @param code The status code to set.
+		/// @param body The message details.
+		/// @return *this
+		inline HTTP::Status & assign(HTTP::StatusCode code, const char *body = nullptr) noexcept {
+			return HTTP::Status::assign(code,body);
+		}
+
+		inline Response & operator=(const HTTP::StatusCode code) noexcept {
+			HTTP::Status::assign(code);
+			return *this;
+		} 
 
 		/// @brief Serialize according to the mimetype.
 		/// Uses jsend format (https://github.com/omniti-labs/jsend) for xml, yaml & json.
@@ -79,7 +100,6 @@
 		/// @param timestamp Timestamp of response expiration, should be greater than time(0)
 		/// @return Current expiration time.
 		time_t expires(const time_t timestamp) noexcept;
-
 
 	};	
 

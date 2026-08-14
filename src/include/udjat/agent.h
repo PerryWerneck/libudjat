@@ -496,7 +496,7 @@
 		}
 
 		Udjat::Variant & get(Udjat::Variant &value) const override {
-			return value.set(this->value);
+			return value.assign(this->value);
 		}
 
 		/// @brief Start with value.
@@ -595,7 +595,7 @@
 		}
 
 		Udjat::Variant & get(Udjat::Variant &value) const override {
-			return value.set(this->value);
+			return value.assign(this->value);
 		}
 
 	public:

@@ -463,7 +463,7 @@
 			debug("Cant get backend");
 			response.assign(
 				HTTP::SystemError,
-				"The back end doesnt provides an output schema"
+				_("The back end does not provide an output schema.")
 			);
 
 		}

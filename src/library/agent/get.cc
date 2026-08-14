@@ -49,7 +49,7 @@
 	}
 
 	Udjat::Variant & Abstract::Agent::get(Udjat::Variant &value) const {
-		value.set(to_string());
+		value.assign(to_string());
 		return value;
 	}
 

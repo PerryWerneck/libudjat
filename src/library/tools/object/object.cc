@@ -60,8 +60,8 @@
 
 		value["summary"] = summary();
 		value["label"] = label();
-		value["url"] = url();
-		value["icon"].set(icon(),Variant::Icon);
+		value["url"].assign(url(),Variant::Url);
+		value["icon"].assign(icon(),Variant::Icon);
 
 		return value;
 	}

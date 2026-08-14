@@ -64,8 +64,8 @@
 					auto &item = response.append(Variant::ValueMap);
 					node.for_each([&item](const SMBios::Value &v) -> bool {
 						auto &row = item[v.name()];
-						row["description"] = v.description();
-						row["value"] = v.as_string();
+						row["description"].assign(v.description(),Variant::String);
+						row["value"].assign(v.as_string(),Variant::String);
 						return false;
 					});
 

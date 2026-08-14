@@ -76,7 +76,7 @@
 
 		} content;
 
-		Variant::Content & Variant::append_type(const Variant::Type type);
+		Content & append_type(const Type type);
 
 	public:
 
@@ -138,14 +138,6 @@
 
 		/// @brief Remove item from object.
 		Variant & erase(const char *name);
-
-		// /// @brief Append item to array.
-		// /// @return The item.
-		// Variant & append(Variant::Type type = Undefined);
-
-		// /// @brief Append item to object.
-		// /// @return The item.
-		// Variant & append(const char *name, Variant::Type type = Undefined);
 
 		/// @brief Merge another value.
 		Variant & merge(const Variant &src);
