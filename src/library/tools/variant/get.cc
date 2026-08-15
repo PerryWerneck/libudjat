@@ -376,20 +376,6 @@
 		throw out_of_range("The value is not an array");
 	}
 
-	Value & Variant::append(const char *name, Variant::Type type) {
-		
-		if(type == Undefined) {
-			clear(ValueMap);
-		}
-
-		if(type != ValueMap) {
-			throw logic_error(Logger::String{"Unable to append element into a value type '",std::to_string(type),"'"});
-		}
-			
-		return (*((map<std::string,Value> *) content.ptr))[name].clear(type);
-
-	}
-
 	bool Variant::contains(const char *name) const noexcept {
 
 		if(type != ValueMap) {

@@ -47,7 +47,7 @@
 			Icon		= 'I',			///< @brief Icon name.
 			Url			= '@',			///< @brief URL.
 			State		= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error', etc)
-			DataTable	= 'T',			///< @brief Table with all columns with the same type.
+			DataTable	= 't',			///< @brief Table with all columns with the same type.
 
 			Object	[[deprecated("Use ValueMap instead.")]] = 'm'
 		};
@@ -314,42 +314,42 @@
 	}
 
 	template <>
-	Variant & Variant::assign<unsigned int>(const unsigned int value) {
+	inline Variant & Variant::assign<unsigned int>(const unsigned int value) {
 		clear(Unsigned);
 		content.unsig = value;
 		return *this;
 	}
 
 	template <>
-	Variant & Variant::assign<const TimeStamp &>(const TimeStamp &value) {
+	inline Variant & Variant::assign<const TimeStamp &>(const TimeStamp &value) {
 		clear(Timestamp);
 		content.timestamp = (time_t) value;
 		return *this;
 	}
 
 	template <>
-	Variant & Variant::assign<bool>(const bool value) {
+	inline Variant & Variant::assign<bool>(const bool value) {
 		clear(Boolean);
 		content.sig = value;
 		return *this;
 	}
 
 	template <>
-	Variant & Variant::assign<float>(const float value) {
+	inline Variant & Variant::assign<float>(const float value) {
 		clear(Real);
 		content.dbl = (double) value;
 		return *this;
 	}
 
 	template <>
-	Variant & Variant::assign<double>(const double value) {
+	inline Variant & Variant::assign<double>(const double value) {
 		clear(Real);
 		content.dbl = value;
 		return *this;
 	}
 
 	template <>
-	Variant & Variant::assign(const Abstract::Object &value) {
+	inline Variant & Variant::assign(const Abstract::Object &value) {
 		clear(ValueMap);
 		value.get_properties(*this);
 		return *this;
@@ -372,31 +372,31 @@
 	}
 
 	template <>
-	Variant & Variant::append<unsigned int>(const unsigned int value) {
+	inline Variant & Variant::append<unsigned int>(const unsigned int value) {
 		append_type(Unsigned).unsig = value;
 		return *this;
 	}
 
 	template <>
-	Variant & Variant::append<const TimeStamp &>(const TimeStamp &value) {
+	inline Variant & Variant::append<const TimeStamp &>(const TimeStamp &value) {
 		append_type(Timestamp).timestamp = (time_t) value;
 		return *this;
 	}
 
 	template <>
-	Variant & Variant::append<bool>(const bool value) {
+	inline Variant & Variant::append<bool>(const bool value) {
 		append_type(Boolean).sig = value;
 		return *this;
 	}
 
 	template <>
-	Variant & Variant::append<float>(const float value) {
+	inline Variant & Variant::append<float>(const float value) {
 		append_type(Real).dbl = (double) value;
 		return *this;
 	}
 
 	template <>
-	Variant & Variant::append<double>(const double value) {
+	inline Variant & Variant::append<double>(const double value) {
 		append_type(Real).dbl = value;
 		return *this;
 	}

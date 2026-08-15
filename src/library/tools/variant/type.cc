@@ -31,7 +31,7 @@
 	{ Udjat::Variant::Type::Undefined,		N_("undefined")		},	// Allways the first one
 	{ Udjat::Variant::Type::ObjectPath,		N_("objectpath") 	},
 	{ Udjat::Variant::Type::Array,			N_("array") 		},
-	{ Udjat::Variant::Type::Object,			N_("object") 		},
+	{ Udjat::Variant::Type::ValueMap,		N_("valuemap") 		},
 	{ Udjat::Variant::Type::String,			N_("string") 		},
 	{ Udjat::Variant::Type::Timestamp,		N_("timestamp") 	},
 	{ Udjat::Variant::Type::Signed,			N_("signed") 		},
@@ -46,6 +46,8 @@
 	{ Udjat::Variant::Type::Signed,			N_("int") 			},
 	{ Udjat::Variant::Type::Signed,			N_("integer") 		},
 	{ Udjat::Variant::Type::Signed,			N_("number") 		},
+	{ Udjat::Variant::Type::ValueMap,		N_("object") 		},
+	{ Udjat::Variant::Type::ValueMap,		N_("dictionary") 	},
  };
 
  namespace Udjat {

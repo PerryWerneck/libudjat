@@ -37,6 +37,7 @@
  #include <system_error>
  #include <functional>
  #include <udjat/tools/http/method.h>
+ #include <udjat/tools/http/statuscodes.h>
  #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/file/handler.h>
  #include <memory>

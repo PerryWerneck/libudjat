@@ -28,7 +28,7 @@
 
  namespace Udjat {
  
-	Variant::Variant(const Value &src) : Value{} {
+	Variant::Variant(const Value &src) : Variant{} {
 
 		type = src.type;
 
@@ -55,12 +55,16 @@
 			}
 			break;
 
-		case Object:
+		case ValueMap:
 			if(src.content.ptr) {
 				content.ptr = (void *) new map<std::string,Value>(*(( map<std::string,Value> *) src.content.ptr));
 			} else {
 				content.ptr = (void *) new map<std::string,Value>();
 			}
+			break;
+
+		case DataTable:
+			throw system_error(ENOTSUP,system_category(),"Data table engine is incomplete");
 			break;
 
 		case Timestamp:
@@ -106,7 +110,7 @@
 				content.ptr = nullptr;
 			} else if(type == Array) {
 				delete ((vector<Variant> *) content.ptr);
-			} else if(type == Object) {
+			} else if(type == ValueMap) {
 				delete ((map<std::string,Variant> *) content.ptr);
 			}
 			content.ptr = nullptr;
@@ -119,6 +123,7 @@
 		case String:
 		case Icon:
 		case Url:
+		case DataTable:
 		case ObjectPath:
 			content.ptr = nullptr;
 			break;
@@ -127,7 +132,7 @@
 			content.ptr = (void *) new vector<Value>();
 			break;
 
-		case Object:
+		case ValueMap:
 			content.ptr = (void *) new map<std::string,Value>();
 			break;
 

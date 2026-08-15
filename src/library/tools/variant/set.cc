@@ -27,15 +27,11 @@
  #include <udjat/tools/logger.h>
  #include <udjat/agent/level.h>
  #include <map>
+ #include <udjat/tools/string.h>
 
  using namespace std;
 
  namespace Udjat {
-
-	// Variant::Content & Variant::set_content_type(const Variant::Type type) {
-	// 	clear(type);
-	// 	return content;
-	// }
 
 	Value & Variant::assign(const char *value, const Type type) {
 
@@ -47,7 +43,7 @@
 
 		switch(type) {
 		case Undefined:
-			Logger::String{"Ignoring set('",value,"') on undefined value"}.warning();
+			throw logic_error(Udjat::String{"Unable to set('",value,"') on undefined variant"});
 			break;
 
 		case Array:
@@ -55,6 +51,9 @@
 
 		case ValueMap:
 			throw logic_error("Cant set value map from string");
+
+		case DataTable:
+			throw logic_error("Cant set data table from string");
 
 		case String:
 		case Icon:
@@ -128,6 +127,13 @@
 			vector<Value> *children = ((vector<Value> *) content.ptr);
 			children->emplace_back(type);
 			return children->back().content;
+
+		}
+
+		if(this->type == DataTable) {
+
+			// It's a datatable
+			throw system_error(ENOTSUP,system_category(),"Data table engine is incomplete");
 
 		}
 

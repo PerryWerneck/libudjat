@@ -22,6 +22,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/variant.h>
+ #include <udjat/tools/http/statuscodes.h>
  #include <errno.h>
  #include <private/url.h>
 
@@ -107,7 +108,7 @@
 				return ECANCELED;
 			}
 
-			return 200;
+			return HTTP::Ok;
 
 		} catch(const std::exception &e) {
 
@@ -119,7 +120,7 @@
 
 		}
 
-		return 500;
+		return HTTP::SystemError;
 
 	}
 
@@ -129,7 +130,7 @@
 
 			// TODO: check if the URL is valid and can be accessed.
 
-			return 200;
+			return HTTP::Ok;
 
 		} catch(const std::exception &e) {
 
@@ -141,7 +142,7 @@
 
 		}
 
-		return 500;
+		return HTTP::SystemError;
 
 	}
 
