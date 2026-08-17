@@ -516,6 +516,7 @@ lib_src += [
   'src/library/tools/variant/xml.cc',
   'src/library/tools/variant/yaml.cc',
   'src/library/tools/variant/text.cc',
+  'src/library/tools/variant/table.cc',
   'src/library/tools/pugixml/document.cc',
   'src/library/tools/pugixml/attribute.cc',
   'src/library/tools/pugixml/misc.cc',

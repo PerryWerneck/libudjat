@@ -179,6 +179,10 @@ namespace Udjat {
 				return title;
 			}
 
+			size_t size() const noexcept {
+				return strlen(title);
+			}
+			
 			void interactive() noexcept;
 
 		};

@@ -71,7 +71,11 @@
 	}
 
 	bool Variant::isString() const noexcept {
-		return (type == String || type == Icon || type == Url || type == ObjectPath) && content.ptr;
+		return isString(this->type) && content.ptr;
+	}
+
+	bool Variant::isString(const Variant::Type type) noexcept {
+		return (type == String || type == Icon || type == Url || type == ObjectPath);
 	}
 
 	const char * Variant::c_str() const noexcept {

@@ -28,6 +28,7 @@
  #include <udjat/agent/level.h>
  #include <map>
  #include <udjat/tools/string.h>
+ #include <private/variant.h>
 
  using namespace std;
 
@@ -133,7 +134,7 @@
 		if(this->type == DataTable) {
 
 			// It's a datatable
-			throw system_error(ENOTSUP,system_category(),"Data table engine is incomplete");
+			return ((Variant::Table *) content.ptr)->append_type(type);
 
 		}
 

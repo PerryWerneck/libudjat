@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <private/variant.h>
  #include <udjat/tools/variant.h>
  #include <map>
  #include <vector>
@@ -104,18 +105,7 @@
 
 	Variant & Variant::clear(const Type new_type) {
 
-		if(content.ptr) {
-			if(isString()) {
-				free(content.ptr);
-				content.ptr = nullptr;
-			} else if(type == Array) {
-				delete ((vector<Variant> *) content.ptr);
-			} else if(type == ValueMap) {
-				delete ((map<std::string,Variant> *) content.ptr);
-			}
-			content.ptr = nullptr;
-		}
-
+		clear(this->type,this->content);
 		type = new_type;
 
 		switch(type) {
@@ -123,9 +113,12 @@
 		case String:
 		case Icon:
 		case Url:
-		case DataTable:
 		case ObjectPath:
 			content.ptr = nullptr;
+			break;
+
+		case DataTable:
+			content.ptr = (void *) new Variant::Table();
 			break;
 
 		case Array:
@@ -158,6 +151,24 @@
 		}
 
 		return *this;
+
+	}
+
+	void Variant::clear(const Type type, Content &content) {
+
+		if(content.ptr) {
+			if(isString(type)) {
+				free(content.ptr);
+				content.ptr = nullptr;
+			} else if(type == Array) {
+				delete ((vector<Variant> *) content.ptr);
+			} else if(type == ValueMap) {
+				delete ((map<std::string,Variant> *) content.ptr);
+			} else if(type == DataTable) {
+				delete ((Variant::Table *) content.ptr);
+			}
+			content.ptr = nullptr;
+		}
 
 	}
 

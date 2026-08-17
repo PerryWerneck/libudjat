@@ -61,7 +61,10 @@
 
 		class Getter;
 		friend class Getter;
-	
+
+		class Table;
+		friend class Table;
+
 		Type type = Undefined;
 
 		union Content {
@@ -77,6 +80,7 @@
 		} content;
 
 		Content & append_type(const Type type);
+		static void clear(const Type type, Content &content);
 
 	public:
 
@@ -119,6 +123,8 @@
 		/// @brief Test if value contains a valid string.
 		/// @return true if value is a string type and not null.
 		bool isString() const noexcept;
+
+		static bool isString(const Type type) noexcept;
 
 		/// @brief Convenient method to get string contents.
 		/// @return The contents if value is a string type, empty string if not.
@@ -233,6 +239,8 @@
 		std::string to_string() const noexcept override;
 		std::string to_string(const char *def) const;
 		std::string to_string(const MimeType mimetype) const;
+
+		Variant & add_column(const char *name, const Type type = String);
 
 		/// @brief Get property value.
 		/// @param key The property name.

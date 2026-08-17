@@ -191,6 +191,26 @@
 
 				return "Basic agent tests passed";
 			}
+		},
+		TestSuite::Case{
+			"table", "Test variant as table",
+			[](std::ostream &stream) {
+
+				Variant val{Variant::DataTable};
+				val.add_column("id",Variant::Unsigned);
+				val.add_column("name",Variant::String);
+
+				for(size_t row = 0; row < 5; row++) {
+
+					val.append((unsigned int) row);
+					val.append(String{"Row number ",(int) row}.c_str());
+
+				}
+
+				val.to_json(stream);
+
+				return "Table variant test ok";
+			}
 		}
 	);
 

@@ -35,6 +35,7 @@
  #include <udjat/tools/intl.h>
  #include <algorithm>
  #include <list>
+ #include <iterator>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -254,7 +255,9 @@
 
 			try {
 
-				auto status = testcase.call(std::cout);
+				cout << endl;
+				auto status = testcase.call(cout);
+				cout << endl;
 				Console::status(Logger::Info,testcase.c_str(),status.c_str());
 
 			} catch(const std::exception &e) {
@@ -286,8 +289,35 @@
 
 		} else {
 
-			// TODO: Multiple groups, select one
-			throw runtime_error("Incomplete");
+			// Multiple groups, select one
+			Console::Menu<string> menu{"Test case modules"};
+			{
+				// Get width
+				size_t width = 0;
+				for(const auto &group : groups) {
+					width = max(width,group.size());
+				}
+
+				for(const auto &group : groups) {
+					menu.push_back(group.c_str());	
+				}
+			}
+
+			while(1) {
+				
+				size_t selected = (size_t) -1;
+				try {
+
+					selected = menu.select();
+
+				} catch(const std::exception &e) {
+					Logger::String{e.what()}.error();
+					return;
+				}
+
+				std::next(groups.begin(), selected)->interactive();
+
+			}
 
 		}
 
