@@ -205,13 +205,14 @@
 					val.append(String{"Row number ",(int) row}.c_str());
 				}
 
-				for(const auto mimetype : { MimeType::json, MimeType::yaml, MimeType::xml, MimeType::csv }) {
+				for(const auto mimetype : { MimeType::json, MimeType::yaml, MimeType::xml, MimeType::csv, MimeType::html }) {
 					stream << endl;			
 					stream << val.serialize(mimetype);
 					stream << endl;			
 				}
 
 				return "Table variant test ok";
+				
 			}
 		}
 	);

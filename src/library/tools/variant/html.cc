@@ -32,6 +32,7 @@
  #include <iostream>
  #include <vector>
  #include <udjat/tools/file/text.h>
+ #include <private/variant.h>
 
  using namespace std;
 
@@ -56,6 +57,21 @@
 
 				});
 				ss << "</ul>";
+			}
+			break;
+
+		case Udjat::Variant::DataTable:
+			{
+				Variant::Table &table = *(((Variant::Table *) content.ptr)); 
+				ss << "<table><thead><tr>";
+				table.for_each([&ss](const char *name, const Variant::Type){
+					ss << "<th>" << name << "</th>";
+				});
+				ss << "</tr></thead><tbody>";
+				table.for_each([&ss](size_t column, const char *name, const Variant::Type type, const Variant::Content &content){
+					ss << "<td>" << Variant::to_string(type,content,MimeType::html) << "</td>";
+				});
+				ss << "</tbody></table>";
 			}
 			break;
 
