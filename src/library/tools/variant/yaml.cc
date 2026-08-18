@@ -25,6 +25,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/variant.h>
  #include <udjat/tools/timestamp.h>
+ #include <private/variant.h>
  #include <iostream>
 
  using namespace std;
@@ -48,6 +49,24 @@
 				ss << spaces << "-";
 				value.to_yaml(ss,left_margin+2);
 				return false;
+			});
+			break;
+
+		case Udjat::Variant::DataTable:
+			if(left_margin) {
+				ss << endl;
+			}
+
+			(((Variant::Table *) content.ptr))->for_each([&ss,&left_margin](size_t column, const char *name, const Variant::Type type, const Variant::Content &content){
+				std::string spaces;
+				spaces.resize(left_margin,' ');
+				ss << spaces;
+				if(column == 0) {
+					ss << "- ";
+				} else {
+					ss << "  ";
+				}
+				ss << name << ": " << Variant::to_string(type,content,MimeType::yaml) << endl;
 			});
 			break;
 

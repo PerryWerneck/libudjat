@@ -208,6 +208,10 @@
 				}
 
 				val.to_json(stream);
+				stream << endl;
+				val.to_yaml(stream);
+				stream << endl;
+				val.to_xml(stream);
 
 				return "Table variant test ok";
 			}

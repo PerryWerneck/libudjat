@@ -25,6 +25,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/variant.h>
  #include <udjat/tools/logger.h>
+ #include <private/variant.h>
  #include <iostream>
 
  namespace Udjat {
@@ -55,6 +56,26 @@
 			});
 			break;
 
+		case Udjat::Variant::DataTable:
+			{
+				bool open = false;
+				(((Variant::Table *) content.ptr))->for_each([&ss,&open](size_t column, const char *name, const Variant::Type type, const Variant::Content &content){
+					if(column == 0) {
+						ss << (open ? "</item><item>" : "<item>");
+						open = true;
+					}
+					ss << "<" << name << " type='"; 
+					ss << std::to_string((Udjat::Variant::Type) type);
+					ss << "'"<< ">";
+					ss << Variant::to_string(type,content,MimeType::json);
+					ss << "</" << name << ">";
+				});
+				if(open) {
+					ss << "</item>";
+				}
+			}
+			break;
+		
 		default:
 			ss << to_string();
 		}
