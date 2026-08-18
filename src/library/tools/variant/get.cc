@@ -86,71 +86,7 @@
 	}
 
 	const Value & Variant::get(std::string &value) const {
-
-		switch(type) {
-		case Undefined:
-			value.clear();
-			break;
-
-		case Array:
-			throw logic_error("Cant copy array to string");
-
-		case ValueMap:
-			throw logic_error("Cant copy value map to string");
-
-		case String:
-		case Icon:
-		case Url:
-		case ObjectPath:
-			if(content.ptr && *((const char *) content.ptr)) {
-				value = (const char *) content.ptr;
-			} else {
-				value.clear();
-			}
-			break;
-
-		case Timestamp:
-			value = TimeStamp{content.timestamp}.to_string(TIMESTAMP_FORMAT_JSON);
-			break;
-
-		case Signed:
-			value = std::to_string(content.sig);
-			break;
-
-		case Unsigned:
-			value = std::to_string(content.unsig);
-			break;
-
-		case Real:
-			{
-				std::stringstream out;
-				out.imbue(std::locale("C"));
-				out << std::fixed << std::setprecision(2) << content.dbl;
-				value = out.str();
-			}
-			break;
-
-		case Fraction:
-			{
-				std::stringstream out;
-				out.imbue(std::locale("C"));
-				out << std::fixed << std::setprecision(2) << (content.dbl *100) << "%";
-				value = out.str();
-			}
-			break;
-
-		case Boolean:
-			value = std::to_string(content.sig);
-			break;
-
-		case State:
-			value = std::to_string((Udjat::Level) content.unsig);
-			break;
-
-		default:
-			throw logic_error("The value type to get is unexpected or invalid");
-		}
-
+		value = to_string(type,content,MimeType::text);
 		return *this;
 	}
 
@@ -555,10 +491,104 @@
 	}
 
 	std::string Variant::to_string(const char *def) const {
-		if(type == Undefined || type == Array || type == ValueMap) {
+		if(type == Undefined || type == Array || type == ValueMap || type == DataTable) {
 			return def;
 		}
 		return to_string();
+	}
+
+	std::string Variant::to_string(const Type type, const Content &content, const MimeType mimetype) {
+
+		switch(type) {
+		case Undefined:
+			return "";
+
+		case Array:
+			throw logic_error("Cant copy array to string");
+
+		case ValueMap:
+			throw logic_error("Cant copy value map to string");
+
+		case DataTable:
+			throw logic_error("Cant copy data table to string");
+
+		case String:
+		case Icon:
+		case Url:
+		case ObjectPath:
+			if(content.ptr && *((const char *) content.ptr)) {
+				return (const char *) content.ptr;
+			}
+			return "";
+
+		case Timestamp:
+			if(mimetype == MimeType::json) {
+
+				// Option 1: UTC Time with 'Z' Suffix (Recommended)This is the cleanest and most common JSON format. 
+				// Force your time structure to UTC using std::gmtime, then hardcode the literal 'Z' at 
+				// the end of the format string.
+				time_t now = content.timestamp;
+				std::tm* gmt_time = std::gmtime(&now); // Convert to UTC
+				char buffer[32];
+				// Formats directly to: "2026-07-16T15:42:00Z"
+				std::strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", gmt_time);
+				return buffer;
+
+				// Option 2: Local Time with Manual Colon Insertion
+				// If you must use local time, you have to use %z and manually insert the colon into 
+				// the resulting string to make it compliant with standard JSON parsers.
+				// {
+				// 	string json_time = TimeStamp{content.timestamp}.to_string("%Y-%m-%dT%H:%M:%S%z");
+
+				// 	// Manually fix the timezone format: -0400 -> -04:00
+				// 	if (json_time.length() >= 5) {
+				// 		json_time.insert(json_time.length() - 2, ":");
+				// 	}
+
+				//	return json_time;	
+				// }
+
+			}
+
+			return TimeStamp{content.timestamp}.to_string(TIMESTAMP_FORMAT_JSON);
+
+		case Signed:
+			return std::to_string(content.sig);
+
+		case Unsigned:
+			return std::to_string(content.unsig);
+
+		case Real:
+			{
+				std::stringstream out;
+				out.imbue(std::locale("C"));
+				out << std::fixed << std::setprecision(2) << content.dbl;
+				return out.str();
+			}
+			break;
+
+		case Fraction:
+			{
+				std::stringstream out;
+				out.imbue(std::locale("C"));
+				out << std::fixed << std::setprecision(2) << (content.dbl *100) << "%";
+				return out.str();
+			}
+			break;
+
+		case Boolean:
+			if(mimetype == MimeType::json) {
+				return content.sig ? "true" : "false";
+			}
+			return std::to_string(content.sig);
+
+		case State:
+			return std::to_string((Udjat::Level) content.unsig);
+
+		default:
+			throw logic_error("The value type to get is unexpected or invalid");
+		}
+
 	}
 
  }

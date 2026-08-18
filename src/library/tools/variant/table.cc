@@ -82,14 +82,16 @@
 		
 	}
 
-	void Variant::Table::for_each(const std::function<void(const char *name, const Variant::Type type, const Variant::Content &value)> &callback) {
+	void Variant::Table::for_each(const std::function<void(size_t column, const char *name, const Variant::Type type, const Variant::Content &value)> &callback) {
 
+		size_t ix = 0;
 		auto column = columns.begin();
 		for(const auto &item : itens) {
 			if(column == columns.end()) {
 				column = columns.begin();
+				ix = 0;
 			}
-			callback(column->name.c_str(),column->type,item);
+			callback(ix++,column->name.c_str(),column->type,item);
 			column++;
 		}
 

@@ -81,6 +81,7 @@
 
 		Content & append_type(const Type type);
 		static void clear(const Type type, Content &content);
+		static std::string to_string(const Type type, const Content &content, const MimeType mimetype);
 
 	public:
 

@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/variant.h>
+ #include <private/variant.h>
  #include <iostream>
  #include <cstring>
 
@@ -67,45 +68,45 @@
 			}
 			break;
 
+		case Udjat::Variant::DataTable:
+			{
+				output << '[';
+				bool open = false;
+				(((Variant::Table *) content.ptr))->for_each([&output,&open](size_t column, const char *name, const Variant::Type type, const Variant::Content &content){
+					if(column) {
+						output << ",";
+					} else {
+						output << (open ? "},{" : "{");
+						open = true;
+					}
+					output << '"' << name << "\":";
+					if(Variant::isString(type)) {
+						output << "\"" << Variant::to_string(type,content,MimeType::json) << "\"";
+					} else {
+						output << Variant::to_string(type,content,MimeType::json);
+					}
+				});
+				if(open) {
+					output << "}";
+				}
+				output << ']';
+			}
+			break;
+
 		case Udjat::Variant::Signed:
 		case Udjat::Variant::Unsigned:
 		case Udjat::Variant::Real:
 		case Udjat::Variant::Boolean:
-		case Udjat::Variant::Fraction:
-			output << to_string();
+			output << Variant::to_string(type,content,MimeType::json);
 			break;
 
 		case Udjat::Variant::Timestamp:
-			// Option 1: UTC Time with 'Z' Suffix (Recommended)This is the cleanest and most common JSON format. 
-			// Force your time structure to UTC using std::gmtime, then hardcode the literal 'Z' at 
-			// the end of the format string.
-			{
-				time_t now = content.timestamp;
-				std::tm* gmt_time = std::gmtime(&now); // Convert to UTC
-				char buffer[32];
-				// Formats directly to: "2026-07-16T15:42:00Z"
-				std::strftime(buffer, sizeof(buffer), "%Y-%m-%dT%H:%M:%SZ", gmt_time);
-				output << '"' << buffer << '"';
-			}
-
-			// Option 2: Local Time with Manual Colon Insertion
-			// If you must use local time, you have to use %z and manually insert the colon into 
-			// the resulting string to make it compliant with standard JSON parsers.
-			// {
-			// 	string json_time = TimeStamp{content.timestamp}.to_string("%Y-%m-%dT%H:%M:%S%z");
-
-			// 	// Manually fix the timezone format: -0400 -> -04:00
-			// 	if (json_time.length() >= 5) {
-			// 		json_time.insert(json_time.length() - 2, ":");
-			// 	}
-
-			// 	output << '"' << json_time << '"';	
-			// }
-			break;
+		case Udjat::Variant::Fraction:
+			output << '"' << Variant::to_string(type,content,MimeType::json) << '"';
 
 		default:
 			// TODO: Convert special chars.
-			output << '"' << to_string() << '"';
+			output << '"' << Variant::to_string(type,content,MimeType::json) << '"';
 
 		}
 
