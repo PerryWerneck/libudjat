@@ -466,6 +466,10 @@
 			to_text(out);
 			break;
 
+		case MimeType::csv:
+			to_csv(out);
+			break;
+
 		default:
 			throw runtime_error(Logger::String{"Unable to serialize value to ",std::to_string(mimetype)});
 		}

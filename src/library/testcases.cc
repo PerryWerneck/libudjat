@@ -201,17 +201,15 @@
 				val.add_column("name",Variant::String);
 
 				for(size_t row = 0; row < 5; row++) {
-
 					val.append((unsigned int) row);
 					val.append(String{"Row number ",(int) row}.c_str());
-
 				}
 
-				val.to_json(stream);
-				stream << endl;
-				val.to_yaml(stream);
-				stream << endl;
-				val.to_xml(stream);
+				for(const auto mimetype : { MimeType::json, MimeType::yaml, MimeType::xml, MimeType::csv }) {
+					stream << endl;			
+					stream << val.serialize(mimetype);
+					stream << endl;			
+				}
 
 				return "Table variant test ok";
 			}

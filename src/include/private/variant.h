@@ -67,6 +67,7 @@ namespace Udjat {
 		} 
 
 		void for_each(const std::function<void(size_t column, const char *name, const Variant::Type type, const Variant::Content &value)> &callback);
+		void for_each(const std::function<void(const char *name, const Variant::Type type)> &callback) const;
 
 	};
 

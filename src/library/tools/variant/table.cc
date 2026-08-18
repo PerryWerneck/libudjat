@@ -97,6 +97,14 @@
 
 	}
 
+	void Variant::Table::for_each(const std::function<void(const char *name, const Variant::Type type)> &callback) const {
+
+		for(const auto &column : columns) {
+			callback(column.name.c_str(),column.type);
+		}
+
+	}
+
  }
 
 

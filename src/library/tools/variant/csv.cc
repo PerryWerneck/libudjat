@@ -24,6 +24,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/variant.h>
+ #include <private/variant.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/http/mimetype.h>
  #include <iostream>
@@ -35,9 +36,12 @@
 
 	void Variant::to_csv(std::ostream &ss, char delimiter) const {
 
-		if(*this != Udjat::Variant::Array) {
+		if(*this != Udjat::Variant::Array && *this != Udjat::Variant::DataTable) {
+
+			debug("Searching for array or table");
+
 			if(!for_each([&ss,delimiter](const char *, const Value &value) {
-				if(value == Udjat::Variant::Array) {
+				if(value == Udjat::Variant::Array || value == Udjat::Variant::DataTable) {
 					value.to_csv(ss,delimiter);
 					return true;
 				}
@@ -45,7 +49,34 @@
 			})) {
 				throw runtime_error(Logger::String{"Only arrays or object with an array can be serialized as ",std::to_string(MimeType::csv)});
 			}
+		}
 
+		if(*this == Udjat::Variant::DataTable) {
+			Variant::Table &table = *(((Variant::Table *) content.ptr)); 
+			bool first = true;
+			table.for_each([&ss,&first,delimiter](const char *name, const Variant::Type){
+				if(!first) {
+					ss << delimiter;
+				}
+				first = false;
+				ss << name;
+			});
+
+			table.for_each([&ss,delimiter](size_t column, const char *name, const Variant::Type type, const Variant::Content &content){
+				if(column) {
+					ss << delimiter;
+				} else {
+					ss << endl;
+				}
+				if(Variant::isString(type)) {
+					ss << "\"" << Variant::to_string(type,content,MimeType::csv) << "\"";
+				} else {
+					ss << Variant::to_string(type,content,MimeType::csv);
+				}
+			});
+
+			ss << endl;
+			return;
 		}
 
 		if(empty()) {
