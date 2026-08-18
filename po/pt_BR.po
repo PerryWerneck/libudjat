@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-03 15:40-0300\n"
+"POT-Creation-Date: 2026-08-18 11:23-0300\n"
 "PO-Revision-Date: 2026-07-29 17:40-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -49,9 +49,13 @@ msgstr "Normal"
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/library/agent/controller.cc:145
+#: src/library/agent/controller.cc:122
 msgid "Root agent is not available"
 msgstr "Agente raiz não está disponível"
+
+#: src/library/agent/controller.cc:466
+msgid "The back end does not provide an output schema."
+msgstr ""
 
 #: src/library/agent/properties.cc:54
 msgid "The agent path"
@@ -95,12 +99,12 @@ msgstr ""
 msgid "The module filename"
 msgstr "Carrega arquivo de módulo"
 
-#: src/library/module/module.cc:105
+#: src/library/module/module.cc:121
 #, c++-format
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/library/module/module.cc:121
+#: src/library/module/module.cc:137
 #, c++-format
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
@@ -331,7 +335,7 @@ msgstr "O servidor encontrou uma situação que ele não sabe como resolver."
 msgid "Not Implemented"
 msgstr "Não implementado"
 
-#: src/library/tools/http/error.cc:166 src/library/tools/http/status.cc:418
+#: src/library/tools/http/error.cc:166 src/library/tools/http/status.cc:437
 msgid ""
 "The request method is not supported by the server and cannot be handled."
 msgstr ""
@@ -418,62 +422,66 @@ msgstr "Erro HTTP {}"
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
 
-#: src/library/tools/http/status.cc:182
+#: src/library/tools/http/status.cc:200
 msgid "Unable to serialize undefined value"
 msgstr "Não é possível serializar valor indefinido"
 
-#: src/library/tools/http/status.cc:213
+#: src/library/tools/http/status.cc:231
 msgid "Failed."
 msgstr ""
 
-#: src/library/tools/http/status.cc:260 src/library/tools/http/status.cc:366
+#: src/library/tools/http/status.cc:281 src/library/tools/http/status.cc:385
 msgid "Unable to Complete Request"
 msgstr "Não foi possível completar a requisição"
 
-#: src/library/tools/http/status.cc:261 src/library/tools/http/status.cc:298
-#: src/library/tools/http/status.cc:320 src/library/tools/http/status.cc:376
-#: src/library/tools/http/status.cc:379 src/library/tools/http/status.cc:382
+#: src/library/tools/http/status.cc:282 src/library/tools/http/status.cc:318
+#: src/library/tools/http/status.cc:342 src/library/tools/http/status.cc:395
+#: src/library/tools/http/status.cc:398 src/library/tools/http/status.cc:401
 msgid "We're sorry, but we encountered an error while processing your request."
 msgstr ""
 
-#: src/library/tools/http/status.cc:281 src/library/tools/http/status.cc:329
-#: src/library/tools/http/status.cc:336
+#: src/library/tools/http/status.cc:341
+msgid "System error"
+msgstr "Erro de sistema"
+
+#: src/library/tools/http/status.cc:348
+#, fuzzy, c++-format
+msgid "{} (The system error was '{}')"
+msgstr "O erro de sistema foi '{}'"
+
+#: src/library/tools/http/status.cc:355
 #, c++-format
 msgid "The system error was '{}'"
 msgstr "O erro de sistema foi '{}'"
 
-#: src/library/tools/http/status.cc:319
-msgid "System error"
-msgstr "Erro de sistema"
-
-#: src/library/tools/http/status.cc:383
+#: src/library/tools/http/status.cc:402
 msgid "Unexpected error processing request"
 msgstr "Erro inesperado processando requisição"
 
-#: src/library/tools/http/status.cc:402
+#: src/library/tools/http/status.cc:421
 msgid "The requested resource could not be found."
 msgstr "O recurso pedido não foi encontrado."
 
-#: src/library/tools/http/status.cc:406
+#: src/library/tools/http/status.cc:425
 msgid "You dont have access to this resource."
 msgstr "Você não tem acesso a esse recurso."
 
-#: src/library/tools/http/status.cc:410
+#: src/library/tools/http/status.cc:429
 msgid "Request timeout."
 msgstr "Tempo da requisição esgotado."
 
-#: src/library/tools/http/status.cc:414
+#: src/library/tools/http/status.cc:433
 msgid "Internal Server Error."
 msgstr "Erro interno."
 
-#: src/library/tools/http/status.cc:422
+#: src/library/tools/http/status.cc:441
 msgid ""
 "Our system is temporarily unavailable. Please wait a moment and try again."
 msgstr ""
 "Nosso sistema está temporariamente indisponível. Espero um momento e tente "
 "de novo."
 
-#: src/library/tools/http/status.cc:432
+#: src/library/tools/http/status.cc:451
 #, c++-format
 msgid "HTTP Status {}"
 msgstr "Erro HTTP {}"
@@ -792,27 +800,6 @@ msgstr "Bloquear acesso a 'net stop' no serviço"
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/library/tools/template.cc:91
-msgid "en"
-msgstr ""
-
-#: src/library/tools/template.cc:93
-msgid "Undefined page title"
-msgstr ""
-
-#: src/library/tools/template.cc:110
-msgid ""
-"A required file is unavailable within the selected theme. Please contact the "
-"system administrator for assistance."
-msgstr ""
-"Um arquivo necessário não está disponível no tema selecionado. Entre em "
-"contato com o administrador do sistema para auxílio."
-
-#: src/library/tools/template.cc:157
-#, c++-format
-msgid "Unable to resolve '{}' on template '{}'"
-msgstr "Não foi possível resolver '{}' no template '{}'"
-
 #: src/library/tools/variant/text.cc:47
 msgid "Item "
 msgstr ""
@@ -840,8 +827,8 @@ msgid "array"
 msgstr ""
 
 #: src/library/tools/variant/type.cc:34
-msgid "object"
-msgstr "objeto"
+msgid "valuemap"
+msgstr ""
 
 #: src/library/tools/variant/type.cc:35
 msgid "string"
@@ -895,9 +882,22 @@ msgstr "inteiro"
 msgid "number"
 msgstr "numero"
 
-#: src/library/tools/variant/type.cc:94
+#: src/library/tools/variant/type.cc:49
+msgid "object"
+msgstr "objeto"
+
+#: src/library/tools/variant/type.cc:50
+msgid "dictionary"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:96
 msgid "Unknown"
 msgstr "Desconhecido"
+
+#: src/library/tools/schema.cc:62
+#, fuzzy, c++-format
+msgid "Required argument '{}' is missing"
+msgstr "Atributo necessário '{}' não foi encontrado"
 
 #: src/library/tools/timestamp.cc:104
 msgid "Less than one minute"
@@ -989,10 +989,36 @@ msgstr "Uso inválido de argumento repetido"
 msgid "[options]"
 msgstr "[opções]"
 
-#: src/library/tools/object/abstract.cc:217
+#: src/library/tools/template.cc:91
+msgid "en"
+msgstr ""
+
+#: src/library/tools/template.cc:93
+msgid "Undefined page title"
+msgstr ""
+
+#: src/library/tools/template.cc:110
+msgid ""
+"A required file is unavailable within the selected theme. Please contact the "
+"system administrator for assistance."
+msgstr ""
+"Um arquivo necessário não está disponível no tema selecionado. Entre em "
+"contato com o administrador do sistema para auxílio."
+
+#: src/library/tools/template.cc:157
+#, c++-format
+msgid "Unable to resolve '{}' on template '{}'"
+msgstr "Não foi possível resolver '{}' no template '{}'"
+
+#: src/library/tools/object/abstract.cc:215
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
+
+#: src/library/tools/interface.cc:121
+#, c++-format
+msgid "The backend '{}' does not supply a request handler."
+msgstr ""
 
 #: src/library/ui/console.cc:88
 msgid "Previous page"
@@ -1006,18 +1032,17 @@ msgstr "Página seguinte"
 msgid "Select option (Enter to quit): "
 msgstr "Selecione opção (Enter para sair): "
 
-#: src/library/response/response.cc:114
+#: src/library/request.cc:130
+msgid "Invalid or unexpected API version"
+msgstr "Versão de API inválida ou não esperada"
+
+#: src/library/response.cc:82
 #, fuzzy
 msgid "Unable to serialize response with undefined mimetype"
 msgstr "Não é possível serializar valor indefinido"
 
-#: src/library/response/response.cc:149
-msgid "Operation failed"
-msgstr "Operação falhou"
-
-#: src/library/request.cc:130
-msgid "Invalid or unexpected API version"
-msgstr "Versão de API inválida ou não esperada"
+#~ msgid "Operation failed"
+#~ msgstr "Operação falhou"
 
 #~ msgid "Available modules"
 #~ msgstr "Módulos disponíveis"
@@ -1028,10 +1053,6 @@ msgstr "Versão de API inválida ou não esperada"
 #, fuzzy
 #~ msgid "Icon name for the current agent state"
 #~ msgstr "Não foi possível obter o estado da TPM"
-
-#, c++-format
-#~ msgid "Required attribute '{}' is missing"
-#~ msgstr "Atributo necessário '{}' não foi encontrado"
 
 #~ msgid "[OPTIONS]"
 #~ msgstr "[OPÇÕES]"

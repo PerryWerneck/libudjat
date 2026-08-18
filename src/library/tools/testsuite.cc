@@ -129,7 +129,7 @@
 		// Load tests from modules.
 		debug("--- Analizing ",modules.size()," modules");
 		Udjat::Module::for_each([this](Udjat::Module &module){
-			auto *symbol = reinterpret_cast<void(*)(UnitTests &)>(module.get_symbol("udjat_register_tests",false));
+			auto *symbol = reinterpret_cast<void(*)(Udjat::TestSuite &)>(module.get_symbol("udjat_register_tests",false));
 			if(symbol) {
 				symbol(*this);
 			}
@@ -172,7 +172,7 @@
 	void TestSuite::run(const char *path) noexcept {
 
 		// TODO: Refactor using groups.
-		throw runtime_error("Incomplete");
+		Logger::String{"Test suite by path is incomplete"}.error();
 		
 		/*
 		for(const auto &worker : workers ) {

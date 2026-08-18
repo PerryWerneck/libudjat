@@ -34,7 +34,7 @@
  namespace Udjat {
 
 	SubProcess::SubProcess(const char *n, const char *c, Logger::Level out, Logger::Level err) : NamedObject{n}, command{c}, loglevels{out,err} {
-		info() << "Running '" << command << "'" << endl;
+		Logger::String{"Running '",command,"'"}.trace(name());
 		ZeroMemory(&piProcInfo,sizeof(piProcInfo));
 	}
 

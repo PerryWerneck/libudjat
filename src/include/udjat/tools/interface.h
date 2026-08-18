@@ -30,6 +30,7 @@
  #include <udjat/tools/http/status.h>
  #include <cstring>
  #include <ostream>
+ #include <functional>
 
  namespace Udjat {
 
@@ -183,7 +184,7 @@
 		virtual bool for_each(const std::function<bool(const Udjat::Variant &value)> &func) const noexcept;
 		
 		/// @brief Enumerate interfaces.
-		static bool for_each(const std::function<bool(const Interface &interface)> &func);
+		static bool for_each(const std::function<bool(const Interface &intf)> &func);
 
 		/// @brief Find an interface matching with path, extract prefix.
 		/// @param path The path for required interface, if found the interface part will be stripped.

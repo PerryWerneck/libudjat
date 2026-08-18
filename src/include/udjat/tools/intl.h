@@ -23,6 +23,12 @@
 
 	#if defined(GETTEXT_PACKAGE)
 
+		#ifdef _WIN32
+			#include <string>
+			#include <cwchar>
+			#include <cstdio>
+		#endif // _WIN32
+
 		#include <locale.h>
 		#include <libintl.h>
 

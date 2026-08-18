@@ -35,6 +35,10 @@
  #include <udjat/tools/datatable.h>
  #include <udjat/tools/variant.h>
  #include <vector>
+
+ #if defined(_WIN32) && defined(interface)
+	#undef interface
+ #endif
  
  using namespace std;
 

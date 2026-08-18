@@ -23,6 +23,7 @@
  #include <udjat/tools/threadpool.h>
  #include <private/win32/mainloop.h>
  #include <private/win32/handler.h>
+ #include <system_error>
 
  using namespace std;
 
