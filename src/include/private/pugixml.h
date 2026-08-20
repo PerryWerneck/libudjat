@@ -68,14 +68,15 @@
 			float get(const char *attrname, const float def) const override;
 			int get(const char *attrname, const int def) const override;
 			unsigned int get(const char *attrname, const unsigned int def) const override;
+			unsigned long get(const char *attrname, const unsigned long def) const override;
 
-			template <typename T>
-			inline T get(const char *groupname, const char *attrname, const T def) const {
-				if(contains(attrname)) {
-					return get(attrname,def);
-				}
-				return Properties::get(groupname,attrname,def);
-			}
+			// template <typename T>
+			// inline T get(const char *groupname, const char *attrname, const T def) const {
+			// 	if(contains(attrname)) {
+			// 		return get(attrname,def);
+			// 	}
+			// 	return Config::get(groupname,attrname,def);
+			// }
 			
 			String child_value() const override;
 			String child_value(const char *attrname, const char *def) const override;

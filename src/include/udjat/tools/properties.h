@@ -122,6 +122,7 @@
 		virtual float get(const char *attrname, const float def) const;
 		virtual int get(const char *attrname, const int def) const;
 		virtual unsigned int get(const char *attrname, const unsigned int def) const;
+		virtual unsigned long get(const char *attrname, const unsigned long def) const;
 		
 		/// @brief Get attribute with fallback to configuration file.
 		/// @param groupname The group on the configuration file to search.
@@ -134,6 +135,7 @@
 		float get(const char *groupname, const char *attrname, const float def) const;
 		int get(const char *groupname, const char *attrname, const int def) const;
 		unsigned int get(const char *groupname, const char *attrname, const unsigned int def) const;
+		unsigned long get(const char *groupname, const char *attrname, const unsigned long def) const;
 
 		/// @brief On XML property get the text inside the node.
 		/// @return The child value.

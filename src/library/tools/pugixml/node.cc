@@ -200,6 +200,10 @@
 		return xml_attribute(*this,attrname).as_uint(def);
 	}
 	
+	unsigned long XML::Node::get(const char *attrname, const unsigned long def) const {
+		return (unsigned long) xml_attribute(*this,attrname).as_ullong(def);
+	}
+	
 	String XML::Node::child_value() const {
 		return pugi::xml_node::child_value();
 	}
