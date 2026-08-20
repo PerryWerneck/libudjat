@@ -131,10 +131,7 @@ namespace Udjat {
 			add(Fargs...);
 		}
 
-		inline void add(const char *group) {
-			groups.emplace_back(group);
-		}
-
+		void add(const char *group);
 		void add(const Case &obj);
 
 #ifndef _WIN32
@@ -187,6 +184,9 @@ namespace Udjat {
 
 		};
 
+		/// @brief The group to receive the added cases.
+		Group *group = nullptr;
+		
 		/// @brief The optional argument groups.
 		std::list<Group> groups;
 

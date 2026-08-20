@@ -46,6 +46,7 @@
  UDJAT_API void udjat_register_tests(Udjat::TestSuite &suite) noexcept {
 
 	suite.add(
+		PACKAGE_NAME " core library",
 		TestSuite::Case{
 			"interface", "Interface test",
 			[](std::ostream &stream) {

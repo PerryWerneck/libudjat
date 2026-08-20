@@ -159,14 +159,31 @@
 	TestSuite::~TestSuite() {
 	}
 
+	void TestSuite::add(const char *group) {
+		for(Group &item : groups) {
+			if(!strcmp(item.c_str(),group)) {
+				this->group = &item;
+				return;
+			}
+		}
+		groups.emplace_back(group);
+		this->group = &groups.back();
+	}
+
 	void TestSuite::add(const Case &obj) {
-		for(auto &cs : groups.back().cases) {
+
+		if(!group) {
+			throw logic_error("No group defined");
+		}
+
+		for(auto &cs : group->cases) {
 			if(cs == obj) {
 				// Same case, ignore it.
 				return;
 			}
 		}
-		groups.back().cases.push_back(obj);
+		debug("\tAdding case '",obj.c_str(),"'");
+		group->cases.push_back(obj);
 	}
 
 	void TestSuite::run(const char *path) noexcept {
@@ -223,7 +240,6 @@
 			//
 			for(const auto &testcase : cases) {
 				String opt{testcase.c_str()};
-
 				if(testcase.option && *testcase.option) {
 					for(size_t ix = testcase.size();ix < width;ix++) {
 						opt.append(" ");
