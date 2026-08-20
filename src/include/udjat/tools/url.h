@@ -218,15 +218,3 @@
 	};
 
  }
-
- namespace std {
-
- 	inline const char * to_string(const Udjat::URL &url) {
-		return url.c_str();
- 	}
-
-	inline ostream& operator<< (ostream& os, const Udjat::URL &url) {
-		return os << to_string(url);
-	}
-
- }

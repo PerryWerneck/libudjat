@@ -224,8 +224,6 @@
 				: Abstract::State{name,level,summary,body}, from{value},to{value} { }
 
 		State(const Properties &props, const T v = (T) 0) : Abstract::State{props}, from{props.get("value",v)}, to{props.get("value",v)} {
-			from = props.get("from",from);
-			to = props.get("to",to);
 		}
 
 		State(const Properties &props, T from_value, T to_value) : Abstract::State{props}, from{from_value}, to{to_value} {

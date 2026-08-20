@@ -415,6 +415,18 @@
 	}
 
 	template <>
+	inline Variant & Variant::append<long>(const long value) {
+		append_type(SignedLong).sl = value;
+		return *this;
+	}
+
+	template <>
+	inline Variant & Variant::append<unsigned long>(const unsigned long value) {
+		append_type(UnsignedLong).ul = value;
+		return *this;
+	}
+
+	template <>
 	inline Variant & Variant::append<const TimeStamp &>(const TimeStamp &value) {
 		append_type(Timestamp).timestamp = (time_t) value;
 		return *this;
