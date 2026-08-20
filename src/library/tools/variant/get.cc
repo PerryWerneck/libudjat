@@ -137,6 +137,14 @@
 				dst = (T) src.content.unsig;
 				break;
 
+			case Variant::SignedLong:
+				dst = (T) src.content.sl;
+				break;
+
+			case Variant::UnsignedLong:
+				dst = (T) src.content.ul;
+				break;
+
 			case Variant::Real:
 			case Variant::Fraction:
 				dst = (T) src.content.dbl;
@@ -561,6 +569,12 @@
 
 		case Unsigned:
 			return std::to_string(content.unsig);
+
+		case SignedLong:
+			return std::to_string(content.sl);
+
+		case UnsignedLong:
+			return std::to_string(content.ul);
 
 		case Real:
 			{

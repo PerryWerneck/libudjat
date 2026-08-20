@@ -36,6 +36,8 @@
 	{ Udjat::Variant::Type::Timestamp,		N_("timestamp") 	},
 	{ Udjat::Variant::Type::Signed,			N_("signed") 		},
 	{ Udjat::Variant::Type::Unsigned,		N_("unsigned") 		},
+	{ Udjat::Variant::Type::SignedLong,		N_("signedlong") 	},
+	{ Udjat::Variant::Type::UnsignedLong,	N_("unsignedlong") 	},
 	{ Udjat::Variant::Type::Real,			N_("real") 			},
 	{ Udjat::Variant::Type::Boolean,		N_("boolean") 		},
 	{ Udjat::Variant::Type::Fraction,		N_("fraction") 		},

@@ -170,6 +170,14 @@
 			content.unsig = (unsigned int) atoi(value);
 			break;
 
+		case Variant::SignedLong:
+			content.sl = atol(value);
+			break;
+
+		case Variant::UnsignedLong:
+			content.ul = (unsigned long) atol(value);
+			break;
+
 		case Variant::Real:
 		case Variant::Fraction:
 			content.dbl = (double) atof(value);

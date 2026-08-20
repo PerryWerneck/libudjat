@@ -82,6 +82,14 @@
 			content.unsig = src.content.unsig;
 			break;
 
+		case SignedLong:
+			content.sl = src.content.sl;
+			break;
+
+		case UnsignedLong:
+			content.ul = src.content.ul;
+			break;
+
 		case Real:
 		case Fraction:
 			content.dbl = src.content.dbl;
@@ -141,6 +149,14 @@
 		case Unsigned:
 		case State:
 			content.unsig = 0;
+			break;
+
+		case SignedLong:
+			content.sl = 0;
+			break;
+
+		case UnsignedLong:
+			content.ul = 0;
 			break;
 
 		case Real:

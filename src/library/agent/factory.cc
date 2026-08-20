@@ -328,6 +328,12 @@
 			case Variant::Unsigned:
 				return make_shared<ActionAgent<unsigned int>>(props,action);
 
+			case Variant::SignedLong:
+				return make_shared<ActionAgent<long>>(props,action);
+
+			case Variant::UnsignedLong:
+				return make_shared<ActionAgent<unsigned long>>(props,action);
+
 			case Variant::Real:
 			case Variant::Fraction:
 				return make_shared<ActionAgent<double>>(props,action);

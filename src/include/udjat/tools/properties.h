@@ -121,6 +121,7 @@
 		virtual double get(const char *attrname, const double def) const;
 		virtual float get(const char *attrname, const float def) const;
 		virtual int get(const char *attrname, const int def) const;
+		virtual long get(const char *attrname, const long def) const;
 		virtual unsigned int get(const char *attrname, const unsigned int def) const;
 		virtual unsigned long get(const char *attrname, const unsigned long def) const;
 		
@@ -134,6 +135,7 @@
 		double get(const char *groupname, const char *attrname, const double def) const;
 		float get(const char *groupname, const char *attrname, const float def) const;
 		int get(const char *groupname, const char *attrname, const int def) const;
+		long get(const char *groupname, const char *attrname, const long def) const;
 		unsigned int get(const char *groupname, const char *attrname, const unsigned int def) const;
 		unsigned long get(const char *groupname, const char *attrname, const unsigned long def) const;
 

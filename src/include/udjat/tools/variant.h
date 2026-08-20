@@ -33,21 +33,23 @@
 
 		/// @brief Variant types.
 		enum Type : uint8_t {
-			Undefined	= '\0',			///< @brief 'null' value.
-			ObjectPath	= 'p',			///< @brief Object path (string).
-			Array		= 'a',			///< @brief Array value (ordered list).
-			ValueMap	= 'm',			///< @brief collection of name/value pairs.
-			String		= 's',			///< @brief UTF-8 string value.
-			Timestamp	= 'T',			///< @brief Timestamp value.
-			Signed		= 'S',			///< @brief Signed integer value.
-			Unsigned	= 'U',			///< @brief Unsigned integer value.
-			Real		= 'd',			///< @brief Double value.
-			Boolean		= 'b',			///< @brief Bool value.
-			Fraction	= 'F',			///< @brief Fraction value (Float from 0.0 to 1.0).
-			Icon		= 'I',			///< @brief Icon name.
-			Url			= '@',			///< @brief URL.
-			State		= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error', etc)
-			DataTable	= 't',			///< @brief Table with all columns with the same type.
+			Undefined		= '\0',			///< @brief 'null' value.
+			ObjectPath		= 'p',			///< @brief Object path (string).
+			Array			= 'a',			///< @brief Array value (ordered list).
+			ValueMap		= 'm',			///< @brief collection of name/value pairs.
+			String			= 'c',			///< @brief UTF-8 string value.
+			Timestamp		= 'T',			///< @brief Timestamp value.
+			Signed			= 's',			///< @brief Signed integer value.
+			Unsigned		= 'u',			///< @brief Unsigned integer value.
+			SignedLong		= 'S',			///< @brief Unsigned integer value.
+			UnsignedLong	= 'L',			///< @brief Unsigned integer value.
+			Real			= 'd',			///< @brief Double value.
+			Boolean			= 'b',			///< @brief Bool value.
+			Fraction		= 'F',			///< @brief Fraction value (Float from 0.0 to 1.0).
+			Icon			= 'I',			///< @brief Icon name.
+			Url				= '@',			///< @brief URL.
+			State			= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error', etc)
+			DataTable		= 't',			///< @brief Table with all columns with the same type.
 
 			Object	[[deprecated("Use ValueMap instead.")]] = 'm'
 		};
@@ -73,6 +75,8 @@
 			unsigned int unsig;
 			double dbl;
 			void *ptr;
+			long sl;
+			unsigned long ul; 
 
 			constexpr Content() : ptr{nullptr} {
 			}
@@ -291,6 +295,16 @@
 	}
 
 	template <>
+	constexpr Variant::Type Variant::TypeFactory<long>() {
+		return Type::SignedLong;
+	}
+
+	template <>
+	constexpr Variant::Type Variant::TypeFactory<unsigned long>() {
+		return Type::UnsignedLong;
+	}
+
+	template <>
 	constexpr Variant::Type Variant::TypeFactory<float>() {
 		return Type::Real;
 	}
@@ -326,6 +340,20 @@
 	inline Variant & Variant::assign<unsigned int>(const unsigned int value) {
 		clear(Unsigned);
 		content.unsig = value;
+		return *this;
+	}
+
+	template <>
+	inline Variant & Variant::assign<long>(const long value) {
+		clear(SignedLong);
+		content.sl = value;
+		return *this;
+	}
+
+	template <>
+	inline Variant & Variant::assign<unsigned long>(const unsigned long value) {
+		clear(UnsignedLong);
+		content.ul = value;
 		return *this;
 	}
 

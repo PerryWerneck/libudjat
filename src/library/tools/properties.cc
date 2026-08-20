@@ -187,6 +187,10 @@
 		return get(attrname,"").as_int(def);
 	}
 
+	long Properties::get(const char *attrname, const long def) const {
+		return get(attrname,"").as_long(def);
+	}
+
 	unsigned int Properties::get(const char *attrname, const unsigned int def) const {
 		return get(attrname,"").as_uint(def);
 	}
@@ -231,6 +235,13 @@
 	}
 
 	unsigned int Properties::get(const char *groupname, const char *attrname, const unsigned int def) const {
+		if(contains(attrname)) {
+			return get(attrname,def);
+		}
+		return Config::get(groupname,attrname,def);
+	}
+
+	long Properties::get(const char *groupname, const char *attrname, const long def) const {
 		if(contains(attrname)) {
 			return get(attrname,def);
 		}

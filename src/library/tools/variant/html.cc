@@ -109,6 +109,8 @@
 
 		case Udjat::Variant::Signed:
 		case Udjat::Variant::Unsigned:
+		case Udjat::Variant::SignedLong:
+		case Udjat::Variant::UnsignedLong:
 		case Udjat::Variant::Real:
 		case Udjat::Variant::Fraction:
 			try {

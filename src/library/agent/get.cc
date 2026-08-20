@@ -145,6 +145,8 @@
 
 				case Variant::Signed:
 				case Variant::Unsigned:
+				case Variant::SignedLong:
+				case Variant::UnsignedLong:
 					state = (int) this->current_state.selected->level();
 					break;
 
