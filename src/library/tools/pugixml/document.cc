@@ -49,7 +49,7 @@
 
 		auto result = document->load_file(filename);
 		if(result.status != pugi::status_ok) {
-			throw runtime_error(Logger::String{filename,": ",result.description()});
+			Logger::String{"Failed to load XML file '",filename,"': ",result.description()};
 		}
 
 		Config::Value<string> tagname{"xml","tagname",Application::Name().c_str()};

@@ -36,10 +36,54 @@
  #include <stdexcept>
  #include <sstream>
  #include <udjat/tools/file/path.h>
+ #include <udjat/tools/properties.h>
 
  using namespace std;
 
  namespace Udjat {
+
+	Template::Template(const Udjat::Properties &props) {
+
+		filepath = props["file"];
+		if(filepath.empty()) {
+			filepath = Config::Value<string>{"theme","template-path"}.c_str();
+		}
+
+		if(filepath.empty()) {
+
+#ifdef DEBUG
+			filepath = String{(const char *) getenv("PWD"),"/templates"}.c_str();
+#else
+			filepath = Application::DataDir{"templates"};
+#endif
+
+			auto name = props["name"];
+			if(name.empty()) {
+				throw runtime_error(_("Template name is required when no template file is specified"));
+			} 
+
+			if(!strchr(name.c_str(),'.')) {
+				auto mimetype = props["mimetype"];
+				if(mimetype.empty()) {
+					throw runtime_error(_("Template mimetype is required when no template file is specified"));
+				}
+				filepath.append(name.c_str(),".",mimetype.c_str());
+			} else {
+				filepath.append(name.c_str());
+			}
+
+		}
+
+		auto delimiter = props["delimiter"];
+		if(!delimiter.empty()) {
+			if(delimiter.size() != 1) {
+				throw runtime_error(_("Template delimiter should be a single character"));
+			}
+			char sMarker[] = { delimiter[0], '{', 0 };
+			marker = String{sMarker}.as_quark();
+		}
+
+	}
 
 	Template::Template(const char *name, const MimeType mimetype) {
 
@@ -60,27 +104,6 @@
 		debug("Template file set to '",filepath.c_str(),"'");
 
 	}
-
-	// time_t Template::last_modified() const {
-
-	// 	struct stat st;
-	// 	if(stat(filename.c_str(), &st) < 0) {
-
-	// 		Logger::String{filename.c_str(),": ",strerror(errno)}.error();
-	// 		status.assign(HTTP::NotFound);
-	// 		return send(status,false);
-
-	// 	}
-
-	// 	if(!S_ISREG(st.st_mode)) {
-		
-	// 		status.assign(HTTP::NotFound);
-	// 		error(status.code,String{filename.c_str()," is not a regular file"}.c_str());
-	// 		return send(status,false);
-
-	// 	}
-
-	// }
 
 	static const char *get_default(const char *key) {
 

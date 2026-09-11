@@ -67,6 +67,15 @@
 		Properties() = default;
 		virtual ~Properties() = default;
 
+		/// @brief Get parent properties, usually the parent XML node.
+		/// @return The parent properties, empty object if not exist.
+		virtual Properties parent() const noexcept; 
+
+		/// @brief Load children from file.
+		/// @param filename The file to load children from, usually a XML file.
+		/// @return true if the file was loaded and parsed, false if not.
+        virtual bool load(const char *filename);
+
 #if __cplusplus >= 202002L
 			inline auto operator <=>(const char *name) const noexcept {
 				return strcasecmp(name,node_name());

@@ -42,6 +42,9 @@
 
 	public:
 
+		/// @brief Build a template from properties.
+		Template(const Udjat::Properties &props);
+
 		/// @brief Build a template page for mimetyppe.
 		Template(const char *name, const MimeType mimetype = MimeType::none);
 

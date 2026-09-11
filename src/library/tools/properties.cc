@@ -57,6 +57,14 @@
 		return false; // Not handled.
 	}
 
+	Properties Properties::parent() const noexcept {
+		return Properties{}; // No parent by default.
+	}
+
+    bool Properties::load(const char *) {
+		return false; // Not handled.
+	}
+
 	Properties::ObjectBuilder::ObjectBuilder(const char *name) : builder_name{name} {
 		Logger::String{"Registering parser for Properties::",builder_name}.trace();
 		Factories().push_back(this);

@@ -44,7 +44,9 @@
 
 			~Node() override;
 
-			Node parent() const;
+        	bool load(const char *filename) override;
+
+			Properties parent() const noexcept override;
 
 			Node child(const char *name) const;
 
