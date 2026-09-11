@@ -56,6 +56,10 @@
 		return Properties();
 	}
 
+	bool Properties::empty() const noexcept {
+		return true;
+	}
+
 	bool Properties::load(const char *) {
 		return false;
 	}

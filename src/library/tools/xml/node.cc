@@ -44,6 +44,10 @@
 		return pugi::xml_node::name();
 	}
 
+	bool XML::Node::empty() const noexcept {
+		return ! *((pugi::xml_node *) this);
+	}
+
 	Properties XML::Node::parent() const noexcept {
 		return XML::Node{pugi::xml_node::parent()};
 	}

@@ -67,6 +67,13 @@
 		Properties() = default;
 		virtual ~Properties() = default;
 
+		/// @brief The property has values?
+		virtual bool empty() const noexcept;
+
+		inline operator bool() const noexcept {
+			return !empty();
+		}
+
 		/// @brief Get parent properties, usually the parent XML node.
 		/// @return The parent properties, empty object if not exist.
 		virtual Properties parent() const noexcept; 

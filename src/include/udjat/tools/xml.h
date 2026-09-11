@@ -55,6 +55,8 @@
 
 			Properties parent() const noexcept override; 
 
+			bool empty() const noexcept override;
+
 			bool load(const char *filename) override;
 
 			Node child(const char *name) const;
