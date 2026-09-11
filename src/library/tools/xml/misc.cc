@@ -63,7 +63,7 @@
 
 			if(upsearch && node.attribute("allow-upsearch").as_bool(true)) {
 				name = upsearch;
-				node = node.parent();
+				node = node.pugi::xml_node::parent();
 			} else {
 				break;
 			}

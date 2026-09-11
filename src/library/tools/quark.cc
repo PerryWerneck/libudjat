@@ -252,7 +252,9 @@ namespace Udjat {
 	}
 
 #ifdef HAVE_PUGIXML
-	const Quark & Quark::set(const XML::Node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate) {
+	const Quark & Quark::set(const XML::Node &n, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate) {
+
+		const pugi::xml_node &node = n;
 
 		if(!node)
 			return *this;
@@ -283,8 +285,10 @@ namespace Udjat {
 
 	}
 
-	const Quark & Quark::set(const XML::Node &node, const char *xml_attribute, bool upsearch) {
+	const Quark & Quark::set(const XML::Node &n, const char *xml_attribute, bool upsearch) {
 
+		const pugi::xml_node &node = n;
+		
 		if(!node)
 			return *this;
 

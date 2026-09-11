@@ -418,8 +418,8 @@
 		}
 
 		if(upstream) {
-			for(XML::Node parent = node.parent(); parent; parent = parent.parent()) {
-				attribute = parent.pugi::xml_node::attribute(attrname.c_str());
+			for(pugi::xml_node parent = node.pugi::xml_node::parent(); parent; parent = parent.parent()) {
+				attribute = parent.attribute(attrname.c_str());
 				if(attribute) {
 					return attribute.as_string(def);
 				}
@@ -437,9 +437,9 @@
 
 		bool rc = false;
 
-		for(XML::Node n = node; n && !rc; n = n.parent()) {
+		for(pugi::xml_node n = node; n && !rc; n = n.parent()) {
 
-			for(XML::Node child = n.child(tagname); child && !rc; child = child.next_sibling(tagname)) {
+			for(pugi::xml_node child = n.child(tagname); child && !rc; child = child.next_sibling(tagname)) {
 
 				if(is_allowed(child)) {
 					rc = call(child);
@@ -514,9 +514,9 @@
 
 	bool Abstract::Object::search(const XML::Node &node, const char *tagname, const std::function<bool(const XML::Node &node)> &call) {
 
-		for(XML::Node nd = node; nd; nd = nd.parent()) {
-			for(XML::Node child = nd.child(tagname); child; child = child.next_sibling(tagname)) {
-				if(call(child)) {
+		for(pugi::xml_node nd = node; nd; nd = nd.parent()) {
+			for(pugi::xml_node child = nd.child(tagname); child; child = child.next_sibling(tagname)) {
+				if(call(XML::Node{child})) {
 					return true;
 				}
 			}

@@ -52,6 +52,14 @@
 
 	}
 
+	Properties Properties::parent() const noexcept { 
+		return Properties();
+	}
+
+	bool Properties::load(const char *) {
+		return false;
+	}
+
 	Properties::Parser::Parser(const char *name) {
 		Logger::String{"Registering parser for Properties::",parser_name}.trace();
 		Factories().push_back(this);

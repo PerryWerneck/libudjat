@@ -44,8 +44,27 @@
 		return pugi::xml_node::name();
 	}
 
-	XML::Node XML::Node::parent() const {
-		return Node{pugi::xml_node::parent()};
+	Properties XML::Node::parent() const noexcept {
+		return XML::Node{pugi::xml_node::parent()};
+	}
+
+    bool XML::Node::load(const char *filename) {
+
+		pugi::xml_document doc;
+		pugi::xml_parse_result result = doc.load_file(filename);
+
+		if(result.status != pugi::status_ok) {
+			throw runtime_error(
+				Logger::String{"Failed to load XML file '",filename,"': ",result.description()}
+			);
+		}
+
+		for (pugi::xml_node child = doc.document_element().first_child(); child; child = child.next_sibling()) {
+			this->pugi::xml_node::append_copy(child);
+		}
+
+		return true;
+
 	}
 
 	XML::Node XML::Node::child(const char *name) const {
@@ -301,7 +320,7 @@
 	}
 
 	bool XML::Node::for_each_attribute(const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) const {
-		for(XML::Node nd = *this; nd; nd = nd.parent()) {
+		for(pugi::xml_node nd = *this; nd; nd = nd.parent()) {
 			for(XML::Node child = nd.child(attrname); child; child = child.next_sibling(attrname)) {
 				if(is_allowed(child) && test(child)) {
 					return true;

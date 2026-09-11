@@ -47,11 +47,12 @@
 
  namespace Udjat {
 
-	XML::Attribute XML::AttributeFactory(const XML::Node &node, const char *attrname) {
+	XML::Attribute XML::AttributeFactory(const XML::Node &n, const char *attrname) {
+
+		const pugi::xml_node &node = n;
 
 		XML::Attribute attribute{node.attribute(attrname)};
 		if(attribute) {
-//			debug("Found '",attrname,"' in node '",node.name(),"'");
 			return attribute;
 		}
 
@@ -67,7 +68,7 @@
 			String key{node.name(),"-",attrname};
 			// debug("Searching for '",key,"' in parents of node '",node.name(),"'");
 			
-			for(XML::Node parent = node.parent();parent;parent = parent.parent()) {
+			for(pugi::xml_node parent = node.parent();parent;parent = parent.parent()) {
 
 				// Search on parent node attributes
 				{
