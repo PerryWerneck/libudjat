@@ -191,6 +191,12 @@
 		return def;
 	}
 
+	bool Properties::for_each(const char *tagname, const std::function<bool(const Properties &property)> &call) const {
+		return for_each_child(tagname,[&call](const Properties &property) {
+			return call(property);
+		});
+	}
+
 	bool Properties::for_each_child(const std::function<bool(const Properties &property)> &call) const {
 		// The default properties have no children.
 		return false;

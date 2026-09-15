@@ -93,6 +93,8 @@
 			String child_value() const override;
 			String child_value(const char *attrname, const char *def) const override;
 
+			bool for_each(const char *tagname, const std::function<bool(const Properties &property)> &call) const override;
+			
 			bool for_each_child(const char *tagname, const std::function<bool(const Properties &property)> &call) const override;
 
 			bool for_each_child(const std::function<bool(const Properties &property)> &call) const override;

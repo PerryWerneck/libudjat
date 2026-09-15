@@ -147,6 +147,12 @@
 
 		String operator[](const char *attrname) const;
 
+		/// @brief Enumerate nodes by name, including parents.
+		/// @param tagname The tagname to search for.
+		/// @param call Method to callback, if the callback returns true the enumeration stops.
+		/// @return true if the callback returned true in any node, false if not.
+		virtual bool for_each(const char *tagname, const std::function<bool(const Properties &property)> &call) const;
+
 		/// @brief Enumerate children by attribute name.https://x.com/evandroratho/status/2064074016793481270
 		/// @param attrname The attribute name.
 		/// @param call Method to callback.
