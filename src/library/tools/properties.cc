@@ -61,6 +61,10 @@
 		return Properties{}; // No parent by default.
 	}
 
+	bool Properties::empty() const noexcept {
+		return true; // Default properties are empty.
+	}
+
     bool Properties::load(const char *) {
 		return false; // Not handled.
 	}
@@ -273,6 +277,12 @@
 
 	String Properties::child_value(const char *, const char *def) const {
 		return def;
+	}
+
+	bool Properties::for_each(const char *tagname, const std::function<bool(const Properties &property)> &call) const {
+		return for_each_child(tagname,[&call](const Properties &property) {
+			return call(property);
+		});
 	}
 
 	bool Properties::for_each_child(const std::function<bool(const Properties &property)> &call) const {

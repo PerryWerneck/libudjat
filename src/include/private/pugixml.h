@@ -83,6 +83,8 @@
 			String child_value() const override;
 			String child_value(const char *attrname, const char *def) const override;
 
+			bool for_each(const char *tagname, const std::function<bool(const Properties &property)> &call) const override;
+
 			bool for_each_child(const char *tagname, const std::function<bool(const Properties &property)> &call) const override;
 
 			bool for_each_child(const std::function<bool(const Properties &property)> &call) const override;
@@ -97,7 +99,6 @@
 
 		/// @brief Load multiple child nodes into a container.
 		/// @details This function loads all child nodes with the given name into the provided container.
-		/// @tparam C 
 		/// @param node Parent node.
 		/// @param attrname XML attribute name for child nodes.
 		/// @param container The container to load nodes into.

@@ -215,8 +215,12 @@
 	}
 
 	std::vector<String> String::split(const char *delim, int max) const {
-
 		std::vector<String> strings;
+		split(strings,delim,max);
+		return strings;
+	}
+
+	void String::split(std::vector<String> &strings, const char *delim, int max) const {
 
 		size_t szdelim = strlen(delim)-1;
 		const char *ptr = c_str();
@@ -256,8 +260,6 @@
 			}
 
 		}
-
-		return strings;
 
 	}
 

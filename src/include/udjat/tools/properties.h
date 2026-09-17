@@ -67,6 +67,13 @@
 		Properties() = default;
 		virtual ~Properties() = default;
 
+		/// @brief The property has values?
+		virtual bool empty() const noexcept;
+
+		inline operator bool() const noexcept {
+			return !empty();
+		}
+
 		/// @brief Get parent properties, usually the parent XML node.
 		/// @return The parent properties, empty object if not exist.
 		virtual Properties parent() const noexcept; 
@@ -86,7 +93,7 @@
 			}
 #endif
 
-		/// @brief Parse properties, build objects.
+		/// @brief Parse property, build object.
 		static bool build(const Properties &props);
 
 		inline bool build() const {
@@ -159,6 +166,12 @@
 		virtual String child_value(const char *attrname, const char *def) const;
 
 		String operator[](const char *attrname) const;
+
+		/// @brief Enumerate nodes by name, including parents.
+		/// @param tagname The tagname to search for.
+		/// @param call Method to callback, if the callback returns true the enumeration stops.
+		/// @return true if the callback returned true in any node, false if not.
+		virtual bool for_each(const char *tagname, const std::function<bool(const Properties &property)> &call) const;
 
 		/// @brief Enumerate children by attribute name.https://x.com/evandroratho/status/2064074016793481270
 		/// @param attrname The attribute name.

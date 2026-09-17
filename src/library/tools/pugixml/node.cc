@@ -234,6 +234,20 @@
 		return def;
 	}
 
+	bool XML::Node::for_each(const char *tagname, const std::function<bool(const Properties &property)> &call) const {
+
+		for(pugi::xml_node node = *this; node; node = node.parent()) {
+
+			for(auto child = node.child(tagname);child;child = child.next_sibling(tagname)) {
+				if(call(XML::Node{child})) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+	
 	bool XML::Node::for_each_child(const char *tagname, const std::function<bool(const Properties &property)> &call) const {		
 		for(auto child = this->child(tagname); child; child = child.next_sibling(tagname)) {
 			if(call(XML::Node{child})) {
