@@ -39,6 +39,19 @@
 			ss << " null" << endl;
 			break;
 
+		case Udjat::Variant::ValueMap:
+			if(left_margin) {
+				ss << endl;
+			}
+			for_each([&ss,left_margin](const char *key, const Value &value){
+				std::string spaces;
+				spaces.resize(left_margin,' ');
+				ss << spaces << key << ":";
+				value.to_yaml(ss,left_margin+2);
+				return false;
+			});
+			break;
+
 		case Udjat::Variant::Array:
 			if(left_margin) {
 				ss << endl;
@@ -47,6 +60,24 @@
 				std::string spaces;
 				spaces.resize(left_margin,' ');
 				ss << spaces << "-";
+				if(((Variant::Type) value) == Udjat::Variant::ValueMap) {
+					bool spc = false;
+					value.for_each([&spc,&ss,left_margin](const char *key, const Value &child){
+						if(spc) {
+							std::string spaces;
+							spaces.resize(left_margin+2,' ');
+							ss << spaces << key << ":";
+						} else {
+							ss << " " << key << ":";
+						}
+						spc = true;
+						child.to_yaml(ss,left_margin+4);
+						return false;
+					});
+
+					return false;
+				}
+
 				value.to_yaml(ss,left_margin+2);
 				return false;
 			});
@@ -67,19 +98,6 @@
 					ss << "  ";
 				}
 				ss << name << ": " << Variant::to_string(type,content,MimeType::yaml) << endl;
-			});
-			break;
-
-		case Udjat::Variant::ValueMap:
-			if(left_margin) {
-				ss << endl;
-			}
-			for_each([&ss,left_margin](const char *key, const Value &value){
-				std::string spaces;
-				spaces.resize(left_margin,' ');
-				ss << spaces << key << ":";
-				value.to_yaml(ss,left_margin+4);
-				return false;
 			});
 			break;
 
