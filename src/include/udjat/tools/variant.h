@@ -83,7 +83,7 @@
 
 		} content;
 
-		Content & append_type(const Type type);
+		Variant & append_type(const Type type);
 		static void clear(const Type type, Content &content);
 		static std::string to_string(const Type type, const Content &content, const MimeType mimetype);
 
@@ -217,7 +217,12 @@
 			return assign(value);
 		}
 
-		/// @brief Set value and type.
+		/// @brief Append empty object.
+		/// @return The appended value
+		Variant & append();
+
+		/// @brief Append value and type.
+		/// @return The appended value
 		Variant & append(const char *value, const Type type);
 
 		inline Variant & append(const std::string &value, const Type type) {
@@ -404,49 +409,49 @@
 
 	template <>
 	inline Variant & Variant::append<int>(const int value) {
-		append_type(Signed).sig = value;
+		append_type(Signed).content.sig = value;
 		return *this;
 	}
 
 	template <>
 	inline Variant & Variant::append<unsigned int>(const unsigned int value) {
-		append_type(Unsigned).unsig = value;
+		append_type(Unsigned).content.unsig = value;
 		return *this;
 	}
 
 	template <>
 	inline Variant & Variant::append<long>(const long value) {
-		append_type(SignedLong).sl = value;
+		append_type(SignedLong).content.sl = value;
 		return *this;
 	}
 
 	template <>
 	inline Variant & Variant::append<unsigned long>(const unsigned long value) {
-		append_type(UnsignedLong).ul = value;
+		append_type(UnsignedLong).content.ul = value;
 		return *this;
 	}
 
 	template <>
 	inline Variant & Variant::append<const TimeStamp &>(const TimeStamp &value) {
-		append_type(Timestamp).timestamp = (time_t) value;
+		append_type(Timestamp).content.timestamp = (time_t) value;
 		return *this;
 	}
 
 	template <>
 	inline Variant & Variant::append<bool>(const bool value) {
-		append_type(Boolean).sig = value;
+		append_type(Boolean).content.sig = value;
 		return *this;
 	}
 
 	template <>
 	inline Variant & Variant::append<float>(const float value) {
-		append_type(Real).dbl = (double) value;
+		append_type(Real).content.dbl = (double) value;
 		return *this;
 	}
 
 	template <>
 	inline Variant & Variant::append<double>(const double value) {
-		append_type(Real).dbl = value;
+		append_type(Real).content.dbl = value;
 		return *this;
 	}
 

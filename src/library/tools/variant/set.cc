@@ -112,7 +112,7 @@
 
 	}
 
-	Variant::Content & Variant::append_type(const Variant::Type type) {
+	Variant & Variant::append_type(const Variant::Type type) {
 
 		if(this->type == Undefined) {
 			clear(Array);
@@ -127,24 +127,28 @@
 			// It's an array.
 			vector<Value> *children = ((vector<Value> *) content.ptr);
 			children->emplace_back(type);
-			return children->back().content;
+			return children->back();
 
 		}
 
-		if(this->type == DataTable) {
+		// if(this->type == DataTable) {
 
-			// It's a datatable
-			return ((Variant::Table *) content.ptr)->append_type(type);
+		// 	// It's a datatable
+		// 	return ((Variant::Table *) content.ptr)->append_type(type);
 
-		}
+		// }
 
 		throw logic_error("The variant doesn't contain an array.");
 
 	}
 
+	Variant & Variant::append() {
+		return append_type(Variant::Undefined);
+	}
+
 	Variant & Variant::append(const char *value, const Variant::Type type) {
 
-		Content &content = append_type(type);
+		auto &response = append_type(type);
 
 		switch(type) {
 		case Variant::Undefined:
@@ -153,34 +157,34 @@
 		case Variant::String:
 		case Variant::Icon:
 		case Variant::Url:
-			content.ptr = strdup(value);
+			response.content.ptr = strdup(value);
 			break;
 
 		case Variant::Timestamp:
-			content.timestamp = (time_t) TimeStamp{value};
+			response.content.timestamp = (time_t) TimeStamp{value};
 			break;
 
 		case Variant::Signed:
 		case Variant::Boolean:
-			content.sig = atoi(value);
+			response.content.sig = atoi(value);
 			break;
 
 		case Variant::Unsigned:
 		case Variant::State:
-			content.unsig = (unsigned int) atoi(value);
+			response.content.unsig = (unsigned int) atoi(value);
 			break;
 
 		case Variant::SignedLong:
-			content.sl = atol(value);
+			response.content.sl = atol(value);
 			break;
 
 		case Variant::UnsignedLong:
-			content.ul = (unsigned long) atol(value);
+			response.content.ul = (unsigned long) atol(value);
 			break;
 
 		case Variant::Real:
 		case Variant::Fraction:
-			content.dbl = (double) atof(value);
+			response.content.dbl = (double) atof(value);
 			break;
 
 		default:
@@ -188,7 +192,7 @@
 
 		}
 
-		return *this;
+		return response;
 	}
 
 	Variant & Variant::merge(const Variant &src) {

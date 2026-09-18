@@ -20,12 +20,34 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/loader.h>
- 
+ #include <udjat/tools/variant.h>
+ #include <iostream>
+
  using namespace Udjat;
- 
+ using namespace std;
+
  int main(int argc, char **argv) {
-	return loader(argc, argv, [](const LoaderMode mode, Application &app, const char *arg){
-		return 0;
-	});
+
+	Logger::verbosity(9);
+	Logger::console(true);
+	
+	Variant response;
+	response["provider"] = "provider";
+	auto &k7 = response["k7"];
+	k7.clear(Variant::Array);
+
+	for(size_t ix = 0 ; ix < 10; ix++) {
+		auto &row = k7.append();
+		row["ix"] = ix;
+		row["text"] = "text";
+	}
+
+	cout << "--------------------------------" << endl;
+	response.to_yaml(cout);
+	cout << "--------------------------------" << endl;
+
+	// return loader(argc, argv, [](const LoaderMode mode, Application &app, const char *arg){
+	// 	return 0;
+	// });
 
  }
