@@ -102,7 +102,6 @@ namespace Udjat {
 				return dir(c_str());
 			}
 
-
 			/// @brief Check if file match wildcard.
 			static bool match(const char *pathname, const char *pattern) noexcept;
 
@@ -167,6 +166,15 @@ namespace Udjat {
 			/// @brief Save file.
 			inline void save(const char *contents) const {
 				save(c_str(),contents);
+			}
+		
+			/// @brief Assign default path for mimetype.
+			/// @param type The mimetype
+			void assign(MimeType type);
+
+			template <typename T>
+			inline void assign(const T value) {
+				Udjat::String::assign(value);
 			}
 
 		};

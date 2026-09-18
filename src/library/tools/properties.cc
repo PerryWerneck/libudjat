@@ -27,6 +27,13 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
  #include <string>
+ #include <algorithm>
+ #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/file/path.h>
+
+ #ifdef HAVE_PUGIXML
+	#include <private/pugixml.h>
+ #endif // HAVE_PUGIXML
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>
@@ -307,6 +314,49 @@
 
 	bool Properties::for_each_attribute(const char *, const std::function<bool(const Udjat::Properties &props)> &) const {
 		return false;
+	}
+
+	time_t Properties::parse(MimeType type, const char *p) {
+
+		// Setup path for files
+		File::Path path;
+		if(p && *p) {
+			// Have path, use it.
+			path = p;
+		} else {
+			// Path is empty, use default.
+			path.assign(type);
+		}
+
+		// Get list of files.
+		String pattern{"*.",std::to_string(type,true)};
+		vector<String> filepaths;
+		if(path.dir()) {
+			// It's a directory, scan for files.
+			path.for_each([&filepaths,&pattern](const File::Path &file, const File::Stat &){
+				if(file.match(pattern.c_str())) {
+					filepaths.push_back(file);
+				}
+				return false;
+			});
+
+		} else {
+			// It's not a directory, add file.
+			filepaths.push_back(path);
+		}
+
+		std::sort(filepaths.begin(), filepaths.end());
+
+		debug("Got '",filepaths.size(),"' file(s)");
+
+#ifdef HAVE_PUGIXML
+		if(type == MimeType::xml) {
+			// Parse using pugixml
+			return XML::parse(filepaths);
+		}
+#endif // HAVE_PUGIXML
+
+		throw runtime_error(String{"Unable to parse files on '",path.c_str(),"'"});
 	}
 
  }

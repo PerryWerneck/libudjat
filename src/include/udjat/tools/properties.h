@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <cstring>
  #include <functional>
+ #include <udjat/tools/http/mimetype.h>
 
  namespace Udjat {
 
@@ -69,6 +70,13 @@
 
 		/// @brief The property has values?
 		virtual bool empty() const noexcept;
+
+		/// @brief Parse definitions on file or directory, call the instances of ObjectBuilder on every node.
+		/// @param path The file or directory with the files, nullptr for the default one.
+		/// @param type Mimetype of the files, used to select the correct parser.
+		/// @return Timestamp for the next reload.
+		/// @retval 0 if no reload is required.
+		static time_t parse(MimeType type = MimeType::xml, const char *path = nullptr);
 
 		inline operator bool() const noexcept {
 			return !empty();

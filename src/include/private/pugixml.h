@@ -26,7 +26,7 @@
  #include <functional>
  #include <cstdint>
  #include <cstring>
- #include <udjat/tools/properties.h>
+ #include <vector>
 
  namespace Udjat {
 
@@ -141,11 +141,17 @@
 		/// @return The attribute (empty if not found).
 		UDJAT_API XML::Attribute AttributeFactory(const XML::Node &node, const char *attrname);
 
+		/// @brief Load a list of XML files.
+		/// @param path List of XML files to parse.
+		/// @return Timestamp for the next reload.
+		/// @retval 0 if no reload is required.
+		UDJAT_API time_t parse(const std::vector<Udjat::String> &paths);
+
 		/// @brief Load default XML files.
 		/// @param path Path for configuration file or directory.
 		/// @return Timestamp for the next reload.
 		/// @retval 0 if no reload is required.
-		UDJAT_API time_t parse(const char *path = nullptr);
+		[[deprecated("Use Properties::parse")]] UDJAT_API time_t parse(const char *path = nullptr);
 
 		/// @brief Load xml options for node.
 		/// @param node XML node to parse.

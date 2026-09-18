@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/file/text.h>
  #include <udjat/tools/file/path.h>
+ #include <udjat/tools/application.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
@@ -121,6 +122,36 @@
 		},recursive);
 
 	}
+
+	void File::Path::assign(MimeType type) {
+
+		const char *ext = std::to_string(type,true);
+		auto name = Application::Name();
+		Application::DataDir datadir;
+		
+		String alternatives[] = {
+#ifndef _WIN32
+			String{"/etc/",name.c_str(),".",ext,".d"},
+			String{"/etc/",name.c_str(),".",ext},
+#endif // _WIN32
+			String{datadir.c_str(),ext,".d"},
+			String{datadir.c_str(),"settings.",ext},
+		};
+
+		for(const auto &alternative : alternatives) {
+			debug("Checking '",alternative.c_str(),"'");
+			if(access(alternative.c_str(),R_OK) == 0) {
+				debug("Found '",alternative.c_str(),"'");
+				assign(alternative.c_str());
+				return;
+			}
+		}
+
+		// Cant find, use the default path.
+		assign(alternatives[0].c_str());
+		
+	}
+
 
  }
 

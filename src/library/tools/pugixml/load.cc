@@ -36,6 +36,7 @@
  #include <udjat/tools/object.h>
  #include <stdexcept>
  #include <udjat/action.h>
+ #include <udjat/tools/properties.h>
 
  #ifdef HAVE_UNISTD_H
  	#include <unistd.h>
@@ -80,39 +81,59 @@
 
 	}
 
-	time_t XML::parse(const char *p) {
+	time_t XML::parse(const char *path) {
 
-		File::Path path{XML::PathFactory(p)};
+		return Properties::parse(MimeType::xml, path);
+
+		// File::Path path{XML::PathFactory(p)};
+
+		// time_t next = 0;
+
+		// if(path.dir()) {
+
+		// 	// Is a directory, scan for files
+		// 	std::vector<std::string> files;
+		// 	path.for_each("*.xml",[&files](const File::Path &path) -> bool {
+		// 		files.emplace_back(path.c_str());
+		// 		return false;
+		// 	});
+
+		// 	std::sort(files.begin(), files.end());
+
+		// 	for(const auto &file : files) {
+
+		// 		// Recursive call to parse document.
+		// 		time_t result = XML::parse(file.c_str());
+		// 		if(result && (result < next || next == 0)) {
+		// 			next = result;
+		// 		}
+				
+		// 	}
+
+		// } else {
+
+		// 	// Is a file, load it
+		// 	Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.info();
+		// 	next = Document{path.c_str()}.parse();
+
+		// }
+
+		// return next;
+
+	}
+
+	UDJAT_API time_t XML::parse(const vector<Udjat::String> &files) {
 
 		time_t next = 0;
 
-		if(path.dir()) {
+		for(const auto &file : files) {
 
-			// Is a directory, scan for files
-			std::vector<std::string> files;
-			path.for_each("*.xml",[&files](const File::Path &path) -> bool {
-				files.emplace_back(path.c_str());
-				return false;
-			});
-
-			std::sort(files.begin(), files.end());
-
-			for(const auto &file : files) {
-
-				// Recursive call to parse document.
-				time_t result = XML::parse(file.c_str());
-				if(result && (result < next || next == 0)) {
-					next = result;
-				}
-				
+			// Recursive call to parse document.
+			time_t result = XML::parse(file.c_str());
+			if(result && (result < next || next == 0)) {
+				next = result;
 			}
-
-		} else {
-
-			// Is a file, load it
-			Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.info();
-			next = Document{path.c_str()}.parse();
-
+			
 		}
 
 		return next;
