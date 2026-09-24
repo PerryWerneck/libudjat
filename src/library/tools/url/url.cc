@@ -476,7 +476,7 @@
 		);	
 	}
 
-	std::string URL::cache(const std::function<bool(double current, double total)> &progress) {
+	std::string URL::cache(const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 
 		Application::CacheDir name{"urls"};
 		name += Base64::encode(c_str());
@@ -486,7 +486,7 @@
 		return name;
 	}
 
-	std::string URL::tempfile(const std::function<bool(double current, double total)> &progress) {
+	std::string URL::tempfile(const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 
 		string name = File::Temporary::create();
 

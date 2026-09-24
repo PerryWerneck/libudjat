@@ -200,12 +200,12 @@
 		/// @brief Get URL, save response to cache file.
 		/// @param progress The download progress notifier (return true to abort transfer).
 		/// @return The cached filename.
-		std::string cache(const std::function<bool(double current, double total)> &progress);
+		std::string cache(const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
 		/// @brief Get URL, save response to cache file.
 		/// @param progress The download progress notifier (return true to abort transfer).
 		/// @return The cached filename.
-		std::string tempfile(const std::function<bool(double current, double total)> &progress);
+		std::string tempfile(const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
 		/// @brief Get URL, save contents to cache file, update it if necessary.
 		/// @return The cached filename.
