@@ -505,11 +505,11 @@
 
 
 	std::string URL::cache() {
-		return cache([](double,double) -> bool { return false; });
+		return cache([](uint64_t,uint64_t) -> bool { return false; });
 	}
 
 	std::string URL::tempfile() {
-		return cache([](double,double) -> bool { return false; });
+		return cache([](uint64_t,uint64_t) -> bool { return false; });
 	}
 
  }
