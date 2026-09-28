@@ -38,7 +38,7 @@
 
 		ParsedUri(const std::string &str) {
 			const char * errorPos;
-			if(uriParseSingleUriA(this, str.c_str(), &errorPos) != URI_SUCCESS) {
+			if(str.empty() || uriParseSingleUriA(this, str.c_str(), &errorPos) != URI_SUCCESS) {
 				throw std::invalid_argument(Logger::String{"Invalid URL: ",str.c_str()});
 			}
 		}
