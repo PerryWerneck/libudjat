@@ -95,7 +95,9 @@
 	}
 
 	String URL::hostname() const {
-		
+		if(empty()) {
+			return "";
+		}
 		ParsedUri uri{*this};
 		return String{uri.hostText.first, (size_t) (uri.hostText.afterLast - uri.hostText.first)};
 
