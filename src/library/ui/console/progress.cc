@@ -52,11 +52,11 @@ namespace Udjat {
 		return *this;
 	}
 
-	Dialog::Progress & Console::Progress::set(uint64_t current, uint64_t total, bool) noexcept {
+	bool Console::Progress::set(uint64_t current, uint64_t total, bool) noexcept {
 		this->current = current;
 		this->total = total;
 		present();
-		return *this;
+		return false;
 	}
 
     Dialog::Progress & Console::Progress::set(const Console::Color color) noexcept {

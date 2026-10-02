@@ -43,10 +43,6 @@
 			Progress(const Progress &other) = delete;
 			Progress(Progress *other) = delete;
 
-			/// @brief Get a new instance of dialog progress.
-			/// @return The dialog progress to use (if it's a new one or an already built depends on the factory).
-			static std::shared_ptr<Progress> getInstance();
-
 			virtual ~Progress();
 
 			virtual Progress & title(const char *title) noexcept;
@@ -55,9 +51,17 @@
 			/// @details This method is used to update the current step in a multi-step operation.
 			/// @param current The current step number.
 			/// @param total The total number of steps in the operation.
-			virtual Progress & step(const unsigned int current = 0, const unsigned int total = 0) noexcept;
+			virtual bool step(const unsigned int current = 0, const unsigned int total = 0) noexcept;
 
-			virtual Progress & set(uint64_t current = 0, uint64_t total = 0, bool is_file_size = true) noexcept;
+			/// @brief Set progress in the current operation.
+			/// @details This method is used to update the progress of an ongoing operation.
+			/// @param current The current file size position.
+			/// @param total The total file size.
+			/// @param is_file_size true if the parameters represent file size, false if they represent steps.
+			/// @note This method should be called periodically during the operation to provide feedback to the user.
+			/// @note If is_file_size is true, current and total are interpreted as file size values. If false, they are interpreted as step counts.
+			/// @return true to abort the operation, false to continue. This allows the user to cancel the operation if needed.
+			virtual bool set(uint64_t current = 0, uint64_t total = 0, bool is_file_size = true) noexcept;
 	
 			virtual Progress & show() noexcept;
 			virtual Progress & hide() noexcept;

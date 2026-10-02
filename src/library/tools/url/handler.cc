@@ -239,9 +239,9 @@
 			}
 		);
 
-		debug("rc=",rc);
+		// debug("rc=",rc);
 		except(rc);
-		debug("str=\n",str.str());
+		// debug("str=\n",str.str());
 
 		return String{str.str()};
 	}
@@ -324,14 +324,14 @@
 			[&file,&progress](uint64_t current, uint64_t total, const void *data, size_t len){
 
 				if(len && data) {
-					debug("Writing ",len," bytes");
+//					debug("Writing ",len," bytes");
 					file.write(current,data,len);
 				} else if(current == 0 && total) {
-					debug("Allocating ",total," bytes");
+//					debug("Allocating ",total," bytes");
 					file.allocate(total);
 				}
 				
-				debug("Calling progress(",current,",",total,")");
+//				debug("Calling progress(",current,",",total,")");
 				return progress(current,total);
 			}
 		);

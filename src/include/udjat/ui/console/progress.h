@@ -56,7 +56,7 @@
 
             Dialog::Progress & set(Console::Color color) noexcept;
 
-			Dialog::Progress & set(uint64_t current, uint64_t total, bool is_file_size = true) noexcept override;
+			bool set(uint64_t current, uint64_t total, bool is_file_size = true) noexcept override;
             Dialog::Progress & url(const char *url) noexcept override;
     
         };

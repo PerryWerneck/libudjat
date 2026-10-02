@@ -49,12 +49,12 @@
 		return *this;
 	}
 
-	Dialog::Progress & Dialog::Progress::step(const unsigned int, const unsigned int) noexcept {
-		return *this;
+	bool Dialog::Progress::step(const unsigned int, const unsigned int) noexcept {
+		return false;
 	}
 
-	Dialog::Progress & Dialog::Progress::set(uint64_t, uint64_t, bool) noexcept {
-		return *this;
+	bool Dialog::Progress::set(uint64_t, uint64_t, bool) noexcept {
+		return false;
 	}
 
 	Dialog::Progress & Dialog::Progress::url(const char *) noexcept{
