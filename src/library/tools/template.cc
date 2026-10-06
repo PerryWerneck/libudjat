@@ -21,8 +21,11 @@
   * @brief Implement template pages.
   */
 
+ #define LOG_DOMAIN "template"
+
  #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/http/status.h>
@@ -37,39 +40,52 @@
  #include <sstream>
  #include <udjat/tools/file/path.h>
  #include <udjat/tools/properties.h>
+ #include <fcntl.h> 
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
 
  using namespace std;
 
  namespace Udjat {
 
-	Template::Template(const Udjat::Properties &props) {
+	Template::Template(const Udjat::Properties &props, const char *tagfile) {
 
-		filepath = props["file"];
-		if(filepath.empty()) {
-			filepath = Config::Value<string>{"theme","template-path"}.c_str();
+		if(tagfile && *tagfile) {
+			filepath = props[tagfile];
 		}
 
 		if(filepath.empty()) {
 
+			filepath = Config::Value<string>{"theme","template-path"};
+
+			if(filepath.empty()) {
 #ifdef DEBUG
-			filepath = String{(const char *) getenv("PWD"),"/templates"}.c_str();
+				filepath = String{(const char *) getenv("PWD"),"/templates/"}.c_str();
 #else
-			filepath = Application::DataDir{"templates"};
+				filepath = Application::DataDir{"templates"};
 #endif
+			}
 
 			auto name = props["name"];
 			if(name.empty()) {
-				throw runtime_error(_("Template name is required when no template file is specified"));
+				throw runtime_error(_("Required property 'name' is missing or invalid"));
 			} 
+			
+			if(access(filepath.c_str(),R_OK)) {
 
-			if(!strchr(name.c_str(),'.')) {
 				auto mimetype = props["mimetype"];
-				if(mimetype.empty()) {
-					throw runtime_error(_("Template mimetype is required when no template file is specified"));
+				if(!mimetype.empty()) {
+					filepath.append(".",mimetype.c_str());
 				}
-				filepath.append(name.c_str(),".",mimetype.c_str());
+			}
+
+			Logger::String errmsg{"Template '",filepath.c_str(),"' is not available"};
+			if(props.get("required",true)) {
+				throw runtime_error(errmsg);
 			} else {
-				filepath.append(name.c_str());
+				errmsg.warning();
 			}
 
 		}
@@ -93,13 +109,21 @@
 			filepath = path;
 		} else {
 #ifdef DEBUG
-			filepath = String{(const char *) getenv("PWD"),"/templates"}.c_str();
+			filepath = String{(const char *) getenv("PWD"),"/templates/"}.c_str();
 #else
 			filepath = Application::DataDir{"templates"};
 #endif
 		}
 
-		filepath.append(name,".",std::to_string(mimetype,true));
+		filepath.append(name);
+
+		if(access(filepath.c_str(),R_OK)) {
+			filepath.append(name,".",std::to_string(mimetype,true));
+		}
+
+		if(access(filepath.c_str(),R_OK)) {
+			Logger::String{"Template '",filepath.c_str(),"' is not available"}.warning();
+		}
 
 		debug("Template file set to '",filepath.c_str(),"'");
 

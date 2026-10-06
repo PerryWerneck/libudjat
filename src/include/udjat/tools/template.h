@@ -43,7 +43,7 @@
 	public:
 
 		/// @brief Build a template from properties.
-		Template(const Udjat::Properties &props);
+		Template(const Udjat::Properties &props, const char *tagfile = "file");
 
 		/// @brief Build a template page for mimetyppe.
 		Template(const char *name, const MimeType mimetype = MimeType::none);

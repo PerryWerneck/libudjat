@@ -35,6 +35,11 @@ project_description = 'UDJat core library'
 product_name = 'udjat'
 product_domain = 'br.eti.werneck'
 product_title = 'The eye of horus'
+library_type = get_option('default_library')  # 'shared', 'static', or 'both'
+
+if library_type == 'both'
+  error('This project does not support -Ddefault_library=both. Use static or shared.')
+endif
 
 cxx = meson.get_compiler('cpp')
 
@@ -158,6 +163,8 @@ if time_epoch == ''
   time_epoch = run_command('date','+%Y%m%d', check: true).stdout().strip()
 endif
 
+
+#    cpp_args: [ , '-fno-lto' ],
 add_project_arguments(cxx.get_supported_arguments([
   '-ggdb3',
   '-fvisibility=hidden',
@@ -180,8 +187,13 @@ app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
 app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
+#app_conf.set('LEGACY_CMDLINE_PARSER', 1)
 
-app_conf.set('LEGACY_CMDLINE_PARSER', 1)
+if library_type == 'static'
+  app_conf.set('LIBUDJAT_STATIC', 1)
+else
+  app_conf.set('LIBUDJAT_DYNAMIC', 1)
+endif
 
 if find_program('dot', required: false).found()
   app_conf.set('HAVE_DOT', 'YES')
@@ -343,8 +355,6 @@ else
     extra_libs += [ dmiget_s ]  
   endif
 endif
-
-
 
 if host_machine.system() != 'windows'
   #
@@ -861,7 +871,7 @@ if host_machine.system() == 'windows'
     )
   )
 
-  dynamic = shared_library(
+  libudjat = library(
     meson.project_name(), 
     config_h + lib_src + resources,
     install: true,
@@ -873,7 +883,7 @@ if host_machine.system() == 'windows'
 
 elif host_machine.system() == 'darwin'
 
-  dynamic = shared_library(
+  libudjat = library(
     meson.project_name(), 
     config_h + lib_src,
     install: true,
@@ -886,7 +896,7 @@ elif host_machine.system() == 'darwin'
 
 else
 
-  dynamic = shared_library(
+  libudjat = library(
     meson.project_name(), 
     config_h + lib_src,
     install: true,
@@ -900,21 +910,8 @@ else
 
 endif
 
-static_library = declare_dependency(
-  link_with : static_library(
-    meson.project_name(), 
-    config_h + lib_src,
-    install: true,
-    cpp_args: [ '-DLIBUDJAT_STATIC', '-fno-lto' ],
-    dependencies: required_libs + private_libs + extra_libs,
-    include_directories: includes_dir
-  ),
-  include_directories : includes_dir,
-  variables: pkg_variables,
-) 
-
-dynamic_library = declare_dependency(
-  link_with : dynamic,
+libudjat_dep = declare_dependency(
+  link_with : libudjat,
   include_directories : includes_dir,
   variables: pkg_variables,
 ) 
@@ -924,7 +921,7 @@ executable(
   config_h + [ 'src/testprogram/main.cc' ],
   cpp_args: [ '-DTEST_PROGRAM' ],
   install: false,
-  link_with : [ dynamic ],
+  link_with : [ libudjat ],
   dependencies: required_libs + private_libs + extra_libs,
   include_directories: includes_dir
 )
@@ -934,7 +931,7 @@ executable(
   config_h + [ 'src/testprogram/main.cc' ],
   cpp_args: [ '-DSDK_APP' ],
   install: true,
-  link_with : [ dynamic ],
+  link_with : [ libudjat ],
   dependencies: required_libs + private_libs + extra_libs,
   include_directories: includes_dir
 )
