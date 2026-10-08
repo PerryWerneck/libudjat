@@ -65,6 +65,35 @@ namespace Udjat {
 		return *this;
 	}
 
+	Dialog::Progress & Console::Progress::done(bool success) noexcept {
+
+		stringstream buffer;
+
+		int width = (int) Screen::width();
+
+		buffer << "\r" << EraseLine;
+
+		if(success) {
+			buffer << BrightGreenForeground << "✓" << GreenForeground << " ";
+		} else {
+			buffer << BrightRedForeground << "✘" << RedForeground << " ";
+		}
+
+		// Show URL
+		size_t extra = url_text.size() - (width+3);
+		if(extra > 0 && extra < url_text.size()) {
+			buffer << url_text.c_str()+extra;
+		} else {
+			buffer << url_text;
+		}
+
+		// Reset and go to the next line.
+		buffer << Reset << '\n';
+
+		Console::write(buffer.str().c_str());
+		return *this;
+	}
+
     void Console::Progress::present() {
 
 		stringstream buffer;
