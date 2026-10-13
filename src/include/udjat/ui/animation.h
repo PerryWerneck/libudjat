@@ -27,6 +27,7 @@
  #include <cstdint>
  #include <ostream>
  #include <memory>
+ #include <chrono>
 
  namespace Udjat {
 
@@ -69,6 +70,9 @@
 		private:
 			static Style style;
 			const char **model;
+
+			/// @brief Timestamp of the last time @a current was advanced.
+			std::chrono::steady_clock::time_point updated;
 
 			static const char **get_model(Animation::Style style);
 

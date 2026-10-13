@@ -20,6 +20,7 @@
 
 #include <config.h>
 #include <cstring>
+#include <chrono>
 #include <udjat/ui/console.h>
 #include <udjat/ui/animation.h>
 #include <memory>
@@ -67,14 +68,21 @@ namespace Udjat {
 		throw logic_error("Unexpected of invalid animation type");
 	}
 
-	Console::Animation::Animation(Console::Animation::Style style) : model{get_model(style)} {
+	Console::Animation::Animation(Console::Animation::Style style) : model{get_model(style)}, updated{std::chrono::steady_clock::now()} {
 	}
 
 	const char * Console::Animation::get() noexcept {
 		if(!model[current]) {
 			current = 0;
 		}
-		return model[current++];
+
+		const auto now = std::chrono::steady_clock::now();
+		if((now - updated) > std::chrono::milliseconds(200)) {
+			updated = now;
+			return model[current++];
+		}
+
+		return model[current];
 	}
 
 
