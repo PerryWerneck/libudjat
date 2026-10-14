@@ -188,35 +188,34 @@
 
 	void TestSuite::run(const char *path) noexcept {
 
-		// TODO: Refactor using groups.
-		Logger::String{"Test suite by path is incomplete"}.error();
-		
-		/*
-		for(const auto &worker : workers ) {
-			try {
+		for(const auto &group : groups) {
 
-				if(!(name && *name) || worker == name) {
+			for(const auto &testcase : group.cases) {
+
+				if(testcase == path) {
+
+					try {
+
+						cout << endl;
+						auto status = testcase.call(cout);
+						cout << endl;
+						Console::status(Logger::Info,testcase.c_str(),status.c_str());
+
+					} catch(const std::exception &e) {
+						Console::status(Logger::Error,testcase.c_str(),e.what());
+					} catch(...) {
+						Console::status(Logger::Error,testcase.c_str(),"Unexpected error");
+					}
 					
-					Logger::String{"--- ",worker.c_str()," ---"}.notice();
-					auto result = worker.call(std::cout);
-
-					Console::status(Logger::Info,worker.c_str(),result.c_str());
-
+					return;
+					
 				}
-
-			} catch(const std::exception &e) {
-
-				Console::status(Logger::Error,worker.c_str(),e.what());
-
-			} catch(...) {
-
-				Console::status(Logger::Error,worker.c_str(),"Unexpected error");
-
 			}
 
 		}
-		*/
 
+		Logger::Message{_("Unable to find a testcase named '{}'"),path}.error();
+		
 	}
 
 	void TestSuite::for_each(const std::function<void(const char *option, const char *label)> &func) const {
