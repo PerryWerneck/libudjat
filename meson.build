@@ -25,16 +25,16 @@ project(
     'c_std=c11', 
     'cpp_std=c++17', 
     'buildtype=release', 
-    'default_library=shared'
+    'default_library=shared',
   ],
 	license: 'GPL-3.0-or-later',
 )
 
 module_build=20260611
 project_description = 'UDJat core library'
-product_name = 'udjat'
-product_domain = 'br.eti.werneck'
-product_title = 'The eye of horus'
+product_name = get_option('product_name')
+product_domain = get_option('product_domain')
+product_title = get_option('product_title')
 library_type = get_option('default_library')  # 'shared', 'static', or 'both'
 
 if library_type == 'both'

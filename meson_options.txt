@@ -1,0 +1,4 @@
+option('product_name', type: 'string', value: 'udjat', description: 'The product name')
+option('product_domain', type: 'string', value: 'br.eti.werneck', description: 'The product domain')
+option('product_title', type: 'string', value: 'The eye of horus', description: 'The product title')
+
