@@ -39,7 +39,7 @@
 
  namespace Udjat {
 
-#ifndef _WIN32
+#if !defined(_WIN32) && defined(LEGACY_CMDLINE_PARSER)
 	static void setup_coredump(const char *pattern = nullptr) {
 		// Reference script:
 		//
@@ -83,7 +83,7 @@
 			console(true);
 		}
 
-		auto &controller = Controller::getInstance();
+		Controller::getInstance();
 		ArgumentParser{}.add_logger_group().parse(argc,argv);
 
 #endif // LEGACY_CMDLINE_PARSER
