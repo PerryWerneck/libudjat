@@ -443,6 +443,11 @@
 		/// @return Numeric value from string.
 		double as_double(double def = 0.0) const;
 
+		/// @brief Convert string to unsigned long long
+		/// @param def The default value, used if string is empty.
+		/// @return Numeric value from string.
+		unsigned long long as_ull(unsigned long long def = 0) const;
+
 		/// @brief Convert string to quark
 		/// @param def The default value, used if string is empty.
 		/// @return Numeric value from string.
