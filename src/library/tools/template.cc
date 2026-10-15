@@ -99,6 +99,8 @@
 			marker = String{sMarker}.as_quark();
 		}
 
+		allow_empty = props.get("allow-empty",false);
+
 	}
 
 	Template::Template(const char *name, const MimeType mimetype) {
@@ -159,6 +161,11 @@
 		}
 		
 		string text = filepath.load();
+		if(!(allow_empty || text.size())) {
+			throw runtime_error(
+				_("A required file is empty within the selected theme. Please contact the system administrator for assistance.")
+			);
+		}
 
 		// Build response.
 		const char *ptr = text.c_str();

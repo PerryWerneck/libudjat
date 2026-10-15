@@ -40,6 +40,9 @@
 	protected:
 		const char *marker = "%{";
 
+		/// @brief If false the template will launch an exception on empty text.
+		bool allow_empty = false;
+
 	public:
 
 		/// @brief Build a template from properties.
