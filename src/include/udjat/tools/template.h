@@ -37,6 +37,24 @@
 	private:
 		File::Path filepath;
 
+		struct Property {
+			const char *name;
+			const char *value;
+
+			constexpr Property(const char *n, const char *v) : name{n}, value{v} {
+			}
+
+		};
+
+		/// @brief Constant properties (got from Properties).		
+		std::vector<Property> const_props;
+
+		/// @brief Apply const property.
+		/// @param key The property name.
+		/// @param stream The stream to receive the value.
+		/// @return true if the key was found.
+		bool apply_const(const char *key, std::ostream &stream) const;
+
 	protected:
 		const char *marker = "%{";
 
@@ -50,6 +68,8 @@
 
 		/// @brief Build a template page for mimetyppe.
 		Template(const char *name, const MimeType mimetype = MimeType::none);
+
+		static File::Path make_path(const char *name, const MimeType mimetype = MimeType::none);
 
 		inline operator bool() const noexcept {
 			return filepath.regular();

@@ -32,6 +32,7 @@
  #include <udjat/tools/template.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/quark.h>
  #include <fcntl.h>
  #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/intl.h>
@@ -53,8 +54,21 @@
 	Template::Template(const Udjat::Properties &props, const char *tagfile) {
 
 		if(tagfile && *tagfile) {
-			filepath = props[tagfile];
+			filepath = make_path(props[tagfile].c_str());
+		} else {
+			filepath = make_path(props["name"].c_str());
 		}
+
+		auto delimiter = props["delimiter"];
+		if(!delimiter.empty()) {
+			if(delimiter.size() != 1) {
+				throw runtime_error(_("Template delimiter should be a single character"));
+			}
+			char sMarker[] = { delimiter[0], '{', 0 };
+			marker = String{sMarker}.as_quark();
+		}
+
+		allow_empty = props.get("allow-empty",false);
 
 		if(filepath.empty()) {
 
@@ -74,36 +88,90 @@
 			} 
 			
 			if(access(filepath.c_str(),R_OK)) {
-
 				auto mimetype = props["mimetype"];
 				if(!mimetype.empty()) {
 					filepath.append(".",mimetype.c_str());
 				}
 			}
 
-			Logger::String errmsg{"Template '",filepath.c_str(),"' is not available"};
-			if(props.get("required",true)) {
-				throw runtime_error(errmsg);
-			} else {
-				errmsg.warning();
+
+			if(access(filepath.c_str(),R_OK)) {
+
+				// File not available.
+				int err = errno;
+
+				if(props.get("required",true)) {
+					throw system_error(err,system_category(),filepath.c_str());
+				} else {
+					Logger::String{filepath.c_str(),": ",strerror(errno)}.warning();
+				}
+				return;
+			}
+
+			// Load file, store constant properties.
+			try {
+
+				string text = filepath.load();
+				if(text.empty()) {
+					return;
+				}
+				
+				const char *ptr = text.c_str();
+
+				while(*ptr) {
+
+					const char *mark = strstr(ptr,marker);
+					if(!mark) {
+						break;
+					}
+
+					size_t len = mark - ptr;
+					ptr += len;
+
+					mark += 2;
+					ptr = strstr(mark,"}");
+					if(!ptr) {
+						throw runtime_error("Malformed variable definition due to a missing '}' bracket");
+					}
+					std::string key{mark,(size_t) (ptr-mark)};
+					ptr++;
+
+					debug("---> key=",key.c_str());
+
+					if(props.contains(key.c_str())) {
+						const_props.emplace_back(
+							Quark{key}.c_str(),
+							props[key.c_str()].as_quark()
+						);
+					}
+
+				}
+
+			} catch(const std::exception &e) {
+
+				Logger::String{filepath.c_str(),": ",e.what()}.warning();
+
+			} catch(...) {
+
+				Logger::String{filepath.c_str(),": Unexpected error processing template"}.warning();
+
 			}
 
 		}
-
-		auto delimiter = props["delimiter"];
-		if(!delimiter.empty()) {
-			if(delimiter.size() != 1) {
-				throw runtime_error(_("Template delimiter should be a single character"));
-			}
-			char sMarker[] = { delimiter[0], '{', 0 };
-			marker = String{sMarker}.as_quark();
-		}
-
-		allow_empty = props.get("allow-empty",false);
 
 	}
 
-	Template::Template(const char *name, const MimeType mimetype) {
+	Template::Template(const char *name, const MimeType mimetype) : filepath{make_path(name,mimetype)} {
+		debug("Template file set to '",filepath.c_str(),"'");
+	}
+
+	File::Path Template::make_path(const char *name, const MimeType mimetype) {
+
+		if(name[0] == '/') {
+			return File::Path{name};
+		}
+
+		File::Path filepath;
 
 		Config::Value<string> path{"theme","template-path"};
 
@@ -119,7 +187,7 @@
 
 		filepath.append(name);
 
-		if(access(filepath.c_str(),R_OK)) {
+		if(access(filepath.c_str(),R_OK) && mimetype != MimeType::none) {
 			filepath.append(name,".",std::to_string(mimetype,true));
 		}
 
@@ -127,8 +195,7 @@
 			Logger::String{"Template '",filepath.c_str(),"' is not available"}.warning();
 		}
 
-		debug("Template file set to '",filepath.c_str(),"'");
-
+		return filepath;
 	}
 
 	static const char *get_default(const char *key) {
@@ -144,7 +211,11 @@
 
 		for(const auto &def : defs) {
 			if(!strcasecmp(key,def.key)) {
+#ifdef GETTEXT_PACKAGE
 				return dgettext(GETTEXT_PACKAGE,def.value);
+#else
+				return def.value;
+#endif
 			}
 		}
 
@@ -192,7 +263,8 @@
 
 			debug("---> key=",key.c_str());
 
-			if(!callback(key.c_str(),stream)) {
+			// Run callback
+			if(!(apply_const(key.c_str(),stream) || callback(key.c_str(),stream))) {
 
 				// Callback failed, try configuration file.
 				std::string value = Config::Value<string>{"theme",key.c_str(),get_default(key.c_str())}.c_str();
@@ -219,6 +291,16 @@
 
 		}
 
+	}
+
+	bool Template::apply_const(const char *key, std::ostream &stream) const {
+		for(const auto &prop : const_props) {
+			if(!strcasecmp(prop.name,key)) {
+				stream << prop.value;
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void Template::apply(std::ostream &stream, const Value &value) {
