@@ -332,7 +332,7 @@
 			/// @param value Object for child properties.
 			/// @retval true if the child was found.
 			/// @retval false if the child was not found.
-			bool get_properties(const char *path, Value &value) const;
+			virtual bool get_properties(const char *path, Value &value) const;
 
 			/// @brief Retrieves the schema definition for interface HTTP request.
 			/// @param[in] path The path for required object on interface.
