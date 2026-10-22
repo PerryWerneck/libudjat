@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-18 14:59-0300\n"
-"PO-Revision-Date: 2026-07-29 17:40-0300\n"
+"POT-Creation-Date: 2026-10-22 17:53-0300\n"
+"PO-Revision-Date: 2026-10-22 18:29-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -19,6 +19,30 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.9\n"
+
+#: src/library/agent/properties.cc:54
+msgid "The agent path"
+msgstr ""
+
+#: src/library/agent/properties.cc:55
+msgid "The Current state text"
+msgstr ""
+
+#: src/library/agent/properties.cc:56
+msgid "The current state value"
+msgstr ""
+
+#: src/library/agent/properties.cc:57
+msgid "The current state name"
+msgstr ""
+
+#: src/library/agent/properties.cc:58
+msgid "The current state icon"
+msgstr ""
+
+#: src/library/agent/properties.cc:59
+msgid "Timestamp of the last state change"
+msgstr "Data/hora da última mudança de estado"
 
 #: src/library/agent/root.cc:101
 #: src/library/tools/systemservice/systemservice.cc:143
@@ -57,47 +81,21 @@ msgstr "Agente raiz não está disponível"
 msgid "The back end does not provide an output schema."
 msgstr ""
 
-#: src/library/agent/properties.cc:54
-msgid "The agent path"
-msgstr ""
-
-#: src/library/agent/properties.cc:55
-msgid "The Current state text"
-msgstr ""
-
-#: src/library/agent/properties.cc:56
-msgid "The current state value"
-msgstr ""
-
-#: src/library/agent/properties.cc:57
-msgid "The current state name"
-msgstr ""
-
-#: src/library/agent/properties.cc:58
-msgid "The current state icon"
-msgstr ""
-
-#: src/library/agent/properties.cc:59
-msgid "Timestamp of the last state change"
-msgstr "Data/hora da última mudança de estado"
-
 #: src/library/module/controller.cc:105
 msgid "The module name"
 msgstr ""
 
 #: src/library/module/controller.cc:106
-#, fuzzy
 msgid "The module description"
-msgstr "descrição"
+msgstr "Descrição do módulo"
 
 #: src/library/module/controller.cc:107
 msgid "The module version"
 msgstr ""
 
 #: src/library/module/controller.cc:108
-#, fuzzy
 msgid "The module filename"
-msgstr "Carrega arquivo de módulo"
+msgstr "Nome do módulo"
 
 #: src/library/module/module.cc:121
 #, c++-format
@@ -445,9 +443,9 @@ msgid "System error"
 msgstr "Erro de sistema"
 
 #: src/library/tools/http/status.cc:348
-#, fuzzy, c++-format
+#, c++-format
 msgid "{} (The system error was '{}')"
-msgstr "O erro de sistema foi '{}'"
+msgstr "{} (O erro do sistema foi '{}')"
 
 #: src/library/tools/http/status.cc:355
 #, c++-format
@@ -526,19 +524,16 @@ msgid " {} milliseconds"
 msgstr " {} millisegundos"
 
 #: src/library/tools/mainloop/service.cc:129
-#, fuzzy
 msgid "The Service name"
-msgstr "Serviço indisponível"
+msgstr "Nome do serviço"
 
 #: src/library/tools/mainloop/service.cc:130
-#, fuzzy
 msgid "The Service description"
-msgstr "Opções do serviço"
+msgstr "Descrição do serviço"
 
 #: src/library/tools/mainloop/service.cc:131
-#, fuzzy
 msgid "Service state"
-msgstr "Opções do serviço"
+msgstr "Estado do serviço"
 
 #: src/library/tools/message.cc:48
 msgid "The message template is invalid"
@@ -627,6 +622,10 @@ msgstr ""
 "Endereço desconhecido. O nome não é um endereço ou apelido oficial, ou não "
 "pôde ser encontrado nas bases de dados consultadas."
 
+#: src/library/tools/pugixml/load.cc:80
+msgid "Unable to find XML definitions"
+msgstr "Definições XML não foram encontradas"
+
 #: src/library/tools/script.cc:56
 msgid "The required attribute 'cmdline' is missing"
 msgstr "Atributo necessário 'cmdline' não está disponível"
@@ -657,9 +656,148 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
 
-#: src/library/tools/pugixml/load.cc:79
-msgid "Unable to find XML definitions"
-msgstr "Definições XML não foram encontradas"
+#: src/library/tools/variant/text.cc:47
+msgid "Item "
+msgstr ""
+
+#: src/library/tools/variant/text.cc:79
+msgid "Yes"
+msgstr "Sim"
+
+#: src/library/tools/variant/text.cc:79
+msgid "No"
+msgstr "Não"
+
+#: src/library/tools/variant/type.cc:31
+msgid "undefined"
+msgstr "indefinido"
+
+#. Allways the first one
+#: src/library/tools/variant/type.cc:32
+msgid "objectpath"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:33
+msgid "array"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:34
+msgid "valuemap"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:35
+msgid "string"
+msgstr "texto"
+
+#: src/library/tools/variant/type.cc:36
+msgid "timestamp"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:37
+msgid "signed"
+msgstr "com sinal"
+
+#: src/library/tools/variant/type.cc:38
+msgid "unsigned"
+msgstr "sem sinal"
+
+#: src/library/tools/variant/type.cc:39
+msgid "signedlong"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:40
+msgid "unsignedlong"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:41
+msgid "real"
+msgstr "ponto flutuante"
+
+#: src/library/tools/variant/type.cc:42
+msgid "boolean"
+msgstr "condicional"
+
+#: src/library/tools/variant/type.cc:43
+msgid "fraction"
+msgstr "fração"
+
+#: src/library/tools/variant/type.cc:44
+msgid "icon"
+msgstr "ícone"
+
+#: src/library/tools/variant/type.cc:45
+msgid "url"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:46
+msgid "state"
+msgstr "estado"
+
+#: src/library/tools/variant/type.cc:48
+msgid "int"
+msgstr "inteiro"
+
+#: src/library/tools/variant/type.cc:49
+msgid "integer"
+msgstr "inteiro"
+
+#: src/library/tools/variant/type.cc:50
+msgid "number"
+msgstr "numero"
+
+#: src/library/tools/variant/type.cc:51
+msgid "object"
+msgstr "objeto"
+
+#: src/library/tools/variant/type.cc:52
+msgid "dictionary"
+msgstr ""
+
+#: src/library/tools/variant/type.cc:98
+msgid "Unknown"
+msgstr "Desconhecido"
+
+#: src/library/tools/interface.cc:125
+#, c++-format
+msgid "The backend '{}' does not supply a request handler."
+msgstr ""
+
+#: src/library/tools/template.cc:65
+msgid "Template delimiter should be a single character"
+msgstr ""
+
+#: src/library/tools/template.cc:87
+msgid "Required property 'name' is missing or invalid"
+msgstr "Propriedade necessária '{}' não foi encontrada"
+
+#: src/library/tools/template.cc:207
+msgid "en"
+msgstr ""
+
+#: src/library/tools/template.cc:209
+msgid "Undefined page title"
+msgstr ""
+
+#: src/library/tools/template.cc:230
+msgid ""
+"A required file is unavailable within the selected theme. Please contact the "
+"system administrator for assistance."
+msgstr ""
+"Um arquivo necessário não está disponível no tema selecionado. Entre em "
+"contato com o administrador do sistema para auxílio."
+
+#: src/library/tools/template.cc:237
+msgid ""
+"A required file is empty within the selected theme. Please contact the "
+"system administrator for assistance."
+msgstr ""
+"Um arquivo necessário não está disponível no tema selecionado. Entre em "
+"contato com o administrador do sistema para auxílio."
+
+#: src/library/tools/template.cc:283
+#, c++-format
+msgid "Unable to resolve '{}' on template '{}'"
+msgstr "Não foi possível resolver '{}' no template '{}'"
 
 #: src/library/tools/logger/argparser.cc:44
 msgid "Logger options"
@@ -800,104 +938,15 @@ msgstr "Bloquear acesso a 'net stop' no serviço"
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/library/tools/variant/text.cc:47
-msgid "Item "
-msgstr ""
-
-#: src/library/tools/variant/text.cc:77
-msgid "Yes"
-msgstr "Sim"
-
-#: src/library/tools/variant/text.cc:77
-msgid "No"
-msgstr "Não"
-
-#: src/library/tools/variant/type.cc:31
-msgid "undefined"
-msgstr "indefinido"
-
-#. Allways the first one
-#: src/library/tools/variant/type.cc:32
-#, fuzzy
-msgid "objectpath"
-msgstr "objeto"
-
-#: src/library/tools/variant/type.cc:33
-msgid "array"
-msgstr ""
-
-#: src/library/tools/variant/type.cc:34
-msgid "valuemap"
-msgstr ""
-
-#: src/library/tools/variant/type.cc:35
-msgid "string"
-msgstr "texto"
-
-#: src/library/tools/variant/type.cc:36
-msgid "timestamp"
-msgstr ""
-
-#: src/library/tools/variant/type.cc:37
-msgid "signed"
-msgstr "com sinal"
-
-#: src/library/tools/variant/type.cc:38
-msgid "unsigned"
-msgstr "sem sinal"
-
-#: src/library/tools/variant/type.cc:39
-msgid "real"
-msgstr "ponto flutuante"
-
-#: src/library/tools/variant/type.cc:40
-msgid "boolean"
-msgstr "condicional"
-
-#: src/library/tools/variant/type.cc:41
-msgid "fraction"
-msgstr "fração"
-
-#: src/library/tools/variant/type.cc:42
-msgid "icon"
-msgstr "ícone"
-
-#: src/library/tools/variant/type.cc:43
-msgid "url"
-msgstr ""
-
-#: src/library/tools/variant/type.cc:44
-msgid "state"
-msgstr "estado"
-
-#: src/library/tools/variant/type.cc:46
-msgid "int"
-msgstr "inteiro"
-
-#: src/library/tools/variant/type.cc:47
-msgid "integer"
-msgstr "inteiro"
-
-#: src/library/tools/variant/type.cc:48
-msgid "number"
-msgstr "numero"
-
-#: src/library/tools/variant/type.cc:49
-msgid "object"
-msgstr "objeto"
-
-#: src/library/tools/variant/type.cc:50
-msgid "dictionary"
-msgstr ""
-
-#: src/library/tools/variant/type.cc:96
-msgid "Unknown"
-msgstr "Desconhecido"
+#: src/library/tools/object/abstract.cc:215
+#, c++-format
+msgid "Unable to get value of '{}'"
+msgstr "Incapaz de obter valor para '{}'"
 
 #: src/library/tools/schema.cc:62
-#, fuzzy, c++-format
+#, c++-format
 msgid "Required argument '{}' is missing"
-msgstr "Atributo necessário '{}' não foi encontrado"
+msgstr "Argumento necessário '{}' não foi encontrado"
 
 #: src/library/tools/timestamp.cc:104
 msgid "Less than one minute"
@@ -989,36 +1038,10 @@ msgstr "Uso inválido de argumento repetido"
 msgid "[options]"
 msgstr "[opções]"
 
-#: src/library/tools/template.cc:91
-msgid "en"
-msgstr ""
-
-#: src/library/tools/template.cc:93
-msgid "Undefined page title"
-msgstr ""
-
-#: src/library/tools/template.cc:110
-msgid ""
-"A required file is unavailable within the selected theme. Please contact the "
-"system administrator for assistance."
-msgstr ""
-"Um arquivo necessário não está disponível no tema selecionado. Entre em "
-"contato com o administrador do sistema para auxílio."
-
-#: src/library/tools/template.cc:157
+#: src/library/tools/testsuite.cc:217
 #, c++-format
-msgid "Unable to resolve '{}' on template '{}'"
-msgstr "Não foi possível resolver '{}' no template '{}'"
-
-#: src/library/tools/object/abstract.cc:215
-#, c++-format
-msgid "Unable to get value of '{}'"
-msgstr "Incapaz de obter valor para '{}'"
-
-#: src/library/tools/interface.cc:125
-#, c++-format
-msgid "The backend '{}' does not supply a request handler."
-msgstr ""
+msgid "Unable to find a testcase named '{}'"
+msgstr "Não achei testcase '{}'"
 
 #: src/library/ui/console.cc:88
 msgid "Previous page"
