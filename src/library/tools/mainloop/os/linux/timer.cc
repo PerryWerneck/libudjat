@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #define LOG_DOMAIN "mainloop"
+
  #include <config.h>
  #include <private/linux/mainloop.h>
  #include <udjat/tools/mainloop.h>
@@ -26,6 +28,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/logger.h>
  #include <sys/time.h>
  #include <iostream>
 
@@ -41,10 +44,7 @@
 	}
 
 	MainLoop::Timer::~Timer() {
-#ifdef DEBUG
-		clog << "MainLoop\t---> Timer " << hex << ((void *) this) << dec
-				<< " was deleted and will be disabled" << endl;
-#endif // DEBUG
+		debug("Timer ",to_hex_string(this)," was deleted and will be disabled");
 		disable();
 	}
 
