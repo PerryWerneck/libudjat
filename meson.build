@@ -81,6 +81,7 @@ vmdetect = dependency(
   'vmdetect', 
   method : 'pkg-config',
   required: false,
+  default_options: ['default_library=static'],
 )
 
 # DMIGET (optional)
@@ -88,6 +89,7 @@ dmiget = dependency(
   'dmiget', 
   method : 'pkg-config',
   required: false,
+  default_options: ['default_library=static'],
 )
 
 # PUGIXML

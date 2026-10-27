@@ -1,8 +1,8 @@
 [wrap-git]
 url = https://github.com/PerryWerneck/vmdetect.git
-revision = HEAD
+revision = v1
 depth = 1
 clone-recursive = true
 
 [provide]
-vmdetect = static_library
+vmdetect = vmdetect_dep
