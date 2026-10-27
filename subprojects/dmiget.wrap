@@ -1,8 +1,8 @@
 [wrap-git]
 url = https://github.com/PerryWerneck/dmiget.git
-revision = HEAD
+revision = v1
 depth = 1
 
 [provide]
-dmiget = static_library
+dmiget = dmiget_dep
 
