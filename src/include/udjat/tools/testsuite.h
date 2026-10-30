@@ -110,7 +110,7 @@ namespace Udjat {
 		~TestSuite();
 
 		/// @brief Load unit tests.
-		void load() noexcept;
+		TestSuite & load() noexcept;
 
 		/// @brief Interactive mode.
 		void interactive() noexcept;

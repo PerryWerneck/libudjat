@@ -122,7 +122,7 @@
 		return false;
 	}
 
-	void TestSuite::load() noexcept {
+	TestSuite & TestSuite::load() noexcept {
 
 #ifdef _WIN32
 
@@ -149,6 +149,8 @@
 		}
 
 #endif // _WIN32
+
+		return *this;
 
 	}
 
@@ -187,6 +189,11 @@
 	}
 
 	void TestSuite::run(const char *path) noexcept {
+
+		if(!(path && *path)) {
+			interactive();
+			return;
+		}
 
 		for(const auto &group : groups) {
 
