@@ -64,6 +64,11 @@ subdir('po')
 #
 # Dependencies
 #
+required_libs = [ ]
+extra_libs = [ ]
+
+cmake = import('cmake')
+
 iconv = dependency('iconv')
 intl = dependency('intl', required: false)
 dbus = dependency('dbus-1', required: false, static: false)
@@ -92,7 +97,13 @@ dmiget = dependency(
   default_options: ['default_library=static'],
 )
 
-required_libs = [ ]
+extra_libs += [
+  intl,
+  iconv,
+  dl,
+  threads,
+] 
+
 # PUGIXML
 enable_pugixml = get_option('enable_pugixml')
 
@@ -102,12 +113,34 @@ if enable_pugixml
   pugixml = dependency( 
     'pugixml',
     method : 'pkg-config',
-    required: true,
+    required: false,
   )
 
-  required_libs += [
-    pugixml,
-  ]
+  if pugixml.found()
+
+    required_libs += [
+      pugixml,
+    ]
+
+  else
+
+    # Configure the CMake project with explicit build options
+    pugixml_opts = cmake.subproject_options()
+    pugixml_opts.add_cmake_defines({
+      'BUILD_SHARED_LIBS': 'OFF',
+      'CMAKE_BUILD_TYPE': 'Release',
+      'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
+    })
+
+    # Initialize subproject and pull the target
+    pugixml_sub = cmake.subproject(
+      'pugixml', 
+      options: pugixml_opts
+    )
+
+    extra_libs += [ pugixml_sub.dependency('pugixml-static') ]
+
+  endif
 
 else
   message('PUGIXML support is disabled.')
@@ -129,22 +162,11 @@ uriparser = dependency(
 pkg_libraries_private = [
 ]
 
-extra_libs = [
-  intl,
-  iconv,
-  dl,
-  threads,
-] 
-
-
 if uriparser.found()
 
   required_libs += uriparser
 
 else
-
-  # Import Meson's CMake interpreter
-  cmake = import('cmake')
 
   # Configure the CMake project with explicit build options
   uriparser_opts = cmake.subproject_options()
@@ -164,7 +186,7 @@ else
   
   uriparser = uriparser_sub.dependency('uriparser')
 
-  extra_libs += uriparser
+  extra_libs += [ uriparser ]
 
 endif
 
