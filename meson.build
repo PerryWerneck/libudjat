@@ -92,16 +92,27 @@ dmiget = dependency(
   default_options: ['default_library=static'],
 )
 
+required_libs = [ ]
 # PUGIXML
-pugixml = dependency(
-  'pugixml',
-  method : 'pkg-config',
-  required: true,
-)
+enable_pugixml = get_option('enable_pugixml')
 
-required_libs = [
-  pugixml,
-]
+if enable_pugixml
+
+  message('PUGIXML support is enabled.')
+  pugixml = dependency( 
+    'pugixml',
+    method : 'pkg-config',
+    required: true,
+  )
+
+  required_libs += [
+    pugixml,
+  ]
+
+else
+  message('PUGIXML support is disabled.')
+endif
+
 
 private_libs = [
   vmdetect,
@@ -316,7 +327,9 @@ if cxx.has_function('syslog', prefix: '#include <syslog.h>')
   app_conf.set('HAVE_SYSLOG', 1)
 endif
 
-app_conf.set('HAVE_PUGIXML', 1)
+if enable_pugixml
+  app_conf.set('HAVE_PUGIXML', 1)   
+endif
 
 if intl.found()
   app_conf.set('HAVE_LIBINTL', 1)
@@ -529,11 +542,6 @@ lib_src += [
   'src/library/tools/variant/yaml.cc',
   'src/library/tools/variant/text.cc',
   'src/library/tools/variant/table.cc',
-  'src/library/tools/pugixml/document.cc',
-  'src/library/tools/pugixml/attribute.cc',
-  'src/library/tools/pugixml/misc.cc',
-  'src/library/tools/pugixml/load.cc',
-  'src/library/tools/pugixml/node.cc',
   'src/library/tools/exception.cc',
   'src/library/tools/logger/commandline.cc',
   'src/library/tools/logger/controller.cc',
@@ -572,6 +580,16 @@ lib_src += [
   'src/library/ui/menu.cc',
   'src/library/testcases.cc',
 ]
+
+if enable_pugixml
+  lib_src += [
+    'src/library/tools/pugixml/document.cc',
+    'src/library/tools/pugixml/attribute.cc',
+    'src/library/tools/pugixml/misc.cc',
+    'src/library/tools/pugixml/load.cc',
+    'src/library/tools/pugixml/node.cc',
+  ]
+endif
 
 if openssl.found()
   lib_src += [

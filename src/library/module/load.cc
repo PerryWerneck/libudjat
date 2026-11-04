@@ -30,8 +30,6 @@
 #include <udjat/tools/object.h>
 #include <udjat/tools/logger.h>
 
-#include <private/pugixml.h>
-
 namespace Udjat {
 
 	Module * Module::Controller::find_by_name(const char *name) {
