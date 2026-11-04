@@ -301,9 +301,10 @@
 			}
 		}
 
-		debug("c");
+#ifdef DEBUG
 		serialize(cout);
-		
+#endif // DEBUG
+
 		return *this;
 	}
 
@@ -373,6 +374,10 @@
 
 	HTTP::Status & HTTP::Status::failed(const char *message, const char *details) noexcept {
 		return failed("",message,details);
+	}
+
+	HTTP::Status & HTTP::Status::failed(const std::exception &e) noexcept {
+		return assign(e);
 	}
 
 	HTTP::Status & HTTP::Status::failed(const char *title,  const char *message, const char *body) noexcept {
