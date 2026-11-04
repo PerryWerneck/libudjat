@@ -2,6 +2,7 @@ vmdetect
 dmiget
 libeconf
 uriparser
+pugixml
 *.pot
 *.[0-9]
 .vscode
