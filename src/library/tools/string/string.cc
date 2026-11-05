@@ -417,14 +417,28 @@
 		if(empty()) {
 			return def;
 		}
-		return from_string<float>(c_str());
+
+		const char *ptr = c_str();
+		float rc = from_string<float>(ptr);
+		if(strchr(ptr,'%')) {
+			rc /= 100.0f;
+		}
+
+		return rc;
 	}
 
 	double String::as_double(double def) const {
 		if(empty()) {
 			return def;
 		}
-		return from_string<double>(c_str());
+
+		const char *ptr = c_str();
+		double rc = from_string<double>(ptr);
+		if(strchr(ptr,'%')) {
+			rc /= 100.0;
+		}
+
+		return rc;
 	}
 
 	template<typename T>

@@ -435,12 +435,12 @@
 
 		/// @brief Convert string to float.
 		/// @param def The default value, used if string is empty.
-		/// @return Numeric value from string.
+		/// @return Numeric value from string. If the string contains '%', the value is divided by 100.
 		float as_float(float def = 0.0f) const;
 
 		/// @brief Convert string to double.
 		/// @param def The default value, used if string is empty.
-		/// @return Numeric value from string.
+		/// @return Numeric value from string. If the string contains '%', the value is divided by 100.
 		double as_double(double def = 0.0) const;
 
 		/// @brief Convert string to unsigned long long processing 'kb','gb,tb, etc.
