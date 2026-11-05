@@ -443,7 +443,8 @@
 		/// @return Numeric value from string.
 		double as_double(double def = 0.0) const;
 
-		/// @brief Convert string to unsigned long long
+		/// @brief Convert string to unsigned long long processing 'kb','gb,tb, etc.
+		/// @return Unsigned long long value of string contents.
 		/// @param def The default value, used if string is empty.
 		/// @return Numeric value from string.
 		unsigned long long as_ull(unsigned long long def = 0) const;
@@ -452,12 +453,6 @@
 		/// @param def The default value, used if string is empty.
 		/// @return Numeric value from string.
 		const char * as_quark(const char *def = nullptr) const;
-
-		/// @brief Convert string to unsigned long long processing 'kb','gb,tb, etc.
-		/// @return Unsigned long long value of string contents.
-		/// @param def The default value, used if string is empty.
-		/// @return Numeric value from string.
-		unsigned long long as_ull() const;
 
 		/// @brief Set byte value, add 'kb', 'gb', 'tb'.
 		/// @param value The value to set;

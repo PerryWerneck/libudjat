@@ -427,13 +427,6 @@
 		return from_string<double>(c_str());
 	}
 
-	unsigned long long String::as_ull(unsigned long long def) const {
-		if(empty()) {
-			return def;
-		}
-		return from_string<unsigned long long>(c_str());
-	}
-
 	template<typename T>
 	inline string byte_to_string(T value, int precision) {
 
@@ -501,10 +494,10 @@
 
 	}
 
-	unsigned long long String::as_ull() const {
+	unsigned long long String::as_ull(unsigned long long def) const {
 
 		if(empty()) {
-			return 0;
+			return def;
 		}
 
 		const char *str = c_str();

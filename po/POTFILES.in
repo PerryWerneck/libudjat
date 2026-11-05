@@ -27,8 +27,8 @@ src/library/module/os/windows/load.cc
 src/library/module/os/windows/tools.cc
 src/library/module/unload.cc
 src/library/module/controller.cc
-src/library/module/load.cc
 src/library/module/module.cc
+src/library/module/load.cc
 src/library/os/linux/icon.cc
 src/library/os/windows/icon.cc
 src/library/state/level.cc
@@ -182,7 +182,6 @@ src/library/tools/pugixml/document.cc
 src/library/tools/pugixml/load.cc
 src/library/tools/pugixml/misc.cc
 src/library/tools/pugixml/node.cc
-src/library/tools/script.cc
 src/library/tools/subprocess.cc
 src/library/tools/variant/construct.cc
 src/library/tools/variant/csv.cc
@@ -196,8 +195,8 @@ src/library/tools/variant/xml.cc
 src/library/tools/variant/get.cc
 src/library/tools/variant/set.cc
 src/library/tools/variant/yaml.cc
+src/library/tools/script.cc
 src/library/tools/interface.cc
-src/library/tools/quark.cc
 src/library/tools/template.cc
 src/library/tools/config.cc
 src/library/tools/ip.cc
@@ -224,6 +223,7 @@ src/library/tools/object/load.cc
 src/library/tools/object/named.cc
 src/library/tools/object/object.cc
 src/library/tools/schema.cc
+src/library/tools/quark.cc
 src/library/tools/timestamp.cc
 src/library/tools/argparser.cc
 src/library/tools/authentication.cc
@@ -311,8 +311,8 @@ src/include/udjat/tools/socket.h
 src/include/udjat/tools/subprocess.h
 src/include/udjat/tools/url/handler.h
 src/include/udjat/tools/system.h
-src/include/udjat/tools/testsuite.h
 src/include/udjat/tools/url.h
+src/include/udjat/tools/testsuite.h
 src/include/udjat/tools/schema.h
 src/include/udjat/tools/variant.h
 src/include/udjat/tools/configuration.h
