@@ -31,6 +31,8 @@
  #include <udjat/tools/application.h>
  #include <udjat/agent.h>
  #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/url.h>
+ #include <udjat/net/ip/address.h>
  #include <ostream>
  #include <sstream>
  #include <stdexcept>
@@ -215,8 +217,21 @@
 				return "Table variant test ok";
 				
 			}
-		}
-	);
+		},
+		TestSuite::Case{
+			"hostname", "Test hostname resolution",
+			[](std::ostream &stream) {
+
+				URL url{"http://www.google.com"};
+
+				url.for_each([&stream](const sockaddr_storage &addr){
+					stream << "Found " << IP::Address{addr} << endl;
+					return false;
+				});
+
+				return "Hostname resolution OK";
+			}
+ 		});
 
  }
 
