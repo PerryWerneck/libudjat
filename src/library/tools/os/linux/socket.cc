@@ -604,5 +604,45 @@
 	void Socket::handle_error(int) {
 	}
 
+	bool Socket::for_each(const char *hostname, const char *service, const std::function<bool(const sockaddr_storage &addr)> &call) {
+
+		std::shared_ptr<addrinfo> addrinfo;
+		{
+			struct addrinfo   hints;
+			memset(&hints,0,sizeof(hints));
+
+			hints.ai_family         = AF_UNSPEC;    // Allow IPv4 or IPv6
+			hints.ai_socktype       = SOCK_STREAM;  // Stream socket
+			hints.ai_flags          = AI_PASSIVE;   // For wildcard IP address
+			hints.ai_protocol       = 0;            // Any protocol
+
+	        struct addrinfo * result = NULL;
+			int rc = getaddrinfo(hostname, service, &hints, &result);
+			if(rc) {
+				throw runtime_error(Logger::Message{_("Failed to resolve '{}:{}': {}"),hostname,service,gai_strerror(rc)});
+			}
+			addrinfo = make_handle(result,freeaddrinfo);
+		}
+
+		for(struct addrinfo *rp = addrinfo.get(); rp; rp = rp->ai_next) {
+
+			if(rp->ai_addrlen > sizeof(sockaddr_storage)) {
+				throw runtime_error("Unexpected size in rp->ai_addrlen");
+			}
+
+			sockaddr_storage storage;
+			memset(&storage,0,sizeof(storage));
+			memcpy(&storage,rp->ai_addr,rp->ai_addrlen);
+
+			if(call(storage)) {
+				return true;
+			}
+
+		}
+
+		return false;
+
+	}
+
  }
 

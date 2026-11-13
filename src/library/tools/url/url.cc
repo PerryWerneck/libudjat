@@ -37,6 +37,8 @@
  #include <algorithm>
  #include <udjat/tools/memory.h>
  #include <udjat/tools/properties.h>
+ #include <udjat/tools/intl.h>
+ #include <udjat/tools/socket.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -73,8 +75,6 @@
 	}
 
 	int URL::port(const char *proto) const {
-
-		#include <udjat/tools/string.h>
 
 		ParsedUri uri{*this};
 		String result{uri.portText.first, (size_t) (uri.portText.afterLast - uri.portText.first)};
@@ -512,6 +512,15 @@
 
 	std::string URL::tempfile() {
 		return cache([](uint64_t,uint64_t) -> bool { return false; });
+	}
+
+	bool URL::for_each(const std::function<bool(const sockaddr_storage &addr)> &call) const {
+
+		ParsedUri uri{*this};
+		String port{uri.portText.first, (size_t) (uri.portText.afterLast - uri.portText.first)};
+		String hostname{uri.hostText.first, (size_t) (uri.hostText.afterLast - uri.hostText.first)};
+
+		return Socket::for_each(hostname.c_str(),port.c_str(),call);
 	}
 
  }

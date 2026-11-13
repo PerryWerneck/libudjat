@@ -41,6 +41,10 @@
  #include <udjat/tools/properties.h>
  #include <memory>
 
+ #ifndef _WIN32
+	#include <sys/socket.h>
+ #endif // _WIN32
+
  namespace Udjat {
 
 	class UDJAT_API URL : public Udjat::String {
@@ -215,6 +219,10 @@
 		/// @return The temporary filename.
 		std::string tempfile();
 
+		/// @brief Enumerate resolved socket addresses for this URL.
+		/// @param call Function to call on every address. Returning true stops the scan.
+		/// @return true if the callback returned true, false if not.
+		bool for_each(const std::function<bool(const sockaddr_storage &addr)> &call) const;
 	};
 
  }

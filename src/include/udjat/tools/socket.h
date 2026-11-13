@@ -109,6 +109,12 @@
 		}
 #endif
 
+		/// @brief Enumerate resolved socket addresses for a host and service.
+		/// @param hostname Host name or numeric address to resolve.
+		/// @param service Service name or port number to resolve.
+		/// @param call Function to call on every address. Returning true stops the scan.
+		/// @return true if the callback returned true, false if not.
+		static bool for_each(const char *hostname, const char *service, const std::function<bool(const sockaddr_storage &addr)> &call);	
 
 	};
 
