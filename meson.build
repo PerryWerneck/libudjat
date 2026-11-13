@@ -56,6 +56,16 @@ pkg_micro_version = version_array[2].to_int()
 
 libversion = '@0@.@1@'.format(pkg_major_version,pkg_minor_version)
 
+app_conf = configuration_data()
+app_conf.set_quoted('PACKAGE_NAME', meson.project_name())
+app_conf.set_quoted('PACKAGE_VERSION', meson.project_version())
+app_conf.set_quoted('PACKAGE_DESCRIPTION', project_description)
+app_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
+app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
+app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
+app_conf.set('MINIMAL_MODULE_BUILD', module_build)
+#app_conf.set('LEGACY_CMDLINE_PARSER', 1)
+
 #
 # i18n
 #
@@ -81,21 +91,9 @@ if not openssl.found()
   openssl = dependency('openssl', required: false)
 endif
 
-# VMDETECT (optional)
-vmdetect = dependency(
-  'vmdetect', 
-  method : 'pkg-config',
-  required: false,
-  default_options: ['default_library=static'],
-)
-
-# DMIGET (optional)
-dmiget = dependency(
-  'dmiget', 
-  method : 'pkg-config',
-  required: false,
-  default_options: ['default_library=static'],
-)
+private_libs = [
+  openssl
+]
 
 extra_libs += [
   intl,
@@ -104,12 +102,80 @@ extra_libs += [
   threads,
 ] 
 
-# PUGIXML
-enable_pugixml = get_option('enable_pugixml')
+# VMDETECT (optional)
+if get_option('enable_vmdetect')
+  message('VMDETECT support is enabled.')
+  vmdetect = dependency(
+    'vmdetect', 
+    method : 'pkg-config',
+    required: false,
+    default_options: ['default_library=static'],
+  )
+  if(vmdetect.found()) 
+    app_conf.set('HAVE_VMDETECT', 1)
+    private_libs = [
+      vmdetect,
+    ]
+  else
+    vmdetect_s = dependency(
+        'vmdetect',
+        required: false,
+        fallback: [ 'vmdetect' ],
+        default_options: ['default_library=static']  
+    ) 
+    if vmdetect_s.found()
+      app_conf.set('HAVE_VMDETECT', 1)
+      extra_libs += [ vmdetect_s ]
+    endif
+  endif
+else  
+  message('VMDETECT support is disabled.')
+endif
 
-if enable_pugixml
+# DMIGET (optional)
+if get_option('enable_dmiget')
+  message('DMIGET support is enabled.')
+  dmiget = dependency(
+    'dmiget', 
+    method : 'pkg-config',
+    required: false,
+    default_options: ['default_library=static'],
+  )
+  if dmiget.found() 
+    app_conf.set('HAVE_SMBIOS', 1)
+    private_libs = [
+      dmiget,
+    ]
+  else
+    dmiget_s = dependency(
+        'dmiget',
+        required: false,
+        fallback: [ 'dmiget' ],
+        default_options: ['default_library=static']    
+    ) 
+    if dmiget_s.found()
+      app_conf.set('HAVE_SMBIOS', 1)
+      extra_libs += [ dmiget_s ]  
+    endif
+  endif
+else
+  message('DMIGET support is disabled.')
+endif
+
+# PUGIXML
+if get_option('enable_pugixml')
 
   message('PUGIXML support is enabled.')
+  app_conf.set('HAVE_PUGIXML', 1)
+
+  lib_src += [
+    'src/library/tools/pugixml/document.cc',
+    'src/library/tools/pugixml/attribute.cc',
+    'src/library/tools/pugixml/misc.cc',
+    'src/library/tools/pugixml/load.cc',
+    'src/library/tools/pugixml/node.cc',
+  ]
+  
   pugixml = dependency( 
     'pugixml',
     method : 'pkg-config',
@@ -117,11 +183,9 @@ if enable_pugixml
   )
 
   if pugixml.found()
-
     required_libs += [
       pugixml,
     ]
-
   else
 
     # Configure the CMake project with explicit build options
@@ -145,13 +209,6 @@ if enable_pugixml
 else
   message('PUGIXML support is disabled.')
 endif
-
-
-private_libs = [
-  vmdetect,
-  dmiget,
-  openssl
-]
 
 # URIPARSER
 uriparser = dependency(
@@ -197,7 +254,7 @@ time_epoch = run_command('sh', '-c', 'echo "$SOURCE_DATE_EPOCH"', check : true).
 if time_epoch == ''
   time_epoch = run_command('date','+%Y%m%d', check: true).stdout().strip()
 endif
-
+app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
 
 #    cpp_args: [ , '-fno-lto' ],
 add_project_arguments(cxx.get_supported_arguments([
@@ -213,17 +270,6 @@ add_project_arguments(cxx.get_supported_arguments([
 #
 # Configuration
 #
-app_conf = configuration_data()
-app_conf.set_quoted('PACKAGE_NAME', meson.project_name())
-app_conf.set_quoted('PACKAGE_VERSION', meson.project_version())
-app_conf.set_quoted('PACKAGE_DESCRIPTION', project_description)
-app_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
-app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
-app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
-app_conf.set('MINIMAL_MODULE_BUILD', module_build)
-app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
-#app_conf.set('LEGACY_CMDLINE_PARSER', 1)
-
 if library_type == 'static'
   app_conf.set('LIBUDJAT_STATIC', 1)
 else
@@ -349,10 +395,6 @@ if cxx.has_function('syslog', prefix: '#include <syslog.h>')
   app_conf.set('HAVE_SYSLOG', 1)
 endif
 
-if enable_pugixml
-  app_conf.set('HAVE_PUGIXML', 1)   
-endif
-
 if intl.found()
   app_conf.set('HAVE_LIBINTL', 1)
 endif 
@@ -362,36 +404,6 @@ app_conf.set('PRODUCT_NAME',product_name)
 app_conf.set('PRODUCT_DOMAIN',product_domain)
 
 includes_dir = include_directories('src/include')
-
-if vmdetect.found()
-  app_conf.set('HAVE_VMDETECT', 1)
-else
-  vmdetect_s = dependency(
-      'vmdetect',
-      required: false,
-      fallback: [ 'vmdetect' ],
-      default_options: ['default_library=static']  
-  ) 
-  if vmdetect_s.found()
-    app_conf.set('HAVE_VMDETECT', 1)
-    extra_libs += [ vmdetect_s ]
-  endif
-endif
-
-if dmiget.found()
-  app_conf.set('HAVE_SMBIOS', 1)
-else
-  dmiget_s = dependency(
-      'dmiget',
-      required: false,
-      fallback: [ 'dmiget' ],
-      default_options: ['default_library=static']    
-  ) 
-  if dmiget_s.found()
-    app_conf.set('HAVE_SMBIOS', 1)
-    extra_libs += [ dmiget_s ]  
-  endif
-endif
 
 if host_machine.system() != 'windows'
   #
@@ -602,16 +614,6 @@ lib_src += [
   'src/library/ui/menu.cc',
   'src/library/testcases.cc',
 ]
-
-if enable_pugixml
-  lib_src += [
-    'src/library/tools/pugixml/document.cc',
-    'src/library/tools/pugixml/attribute.cc',
-    'src/library/tools/pugixml/misc.cc',
-    'src/library/tools/pugixml/load.cc',
-    'src/library/tools/pugixml/node.cc',
-  ]
-endif
 
 if openssl.found()
   lib_src += [
