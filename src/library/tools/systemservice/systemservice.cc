@@ -52,8 +52,6 @@
 			throw std::system_error(EBUSY,std::system_category(),"System service already active");
 		}
 
-		Logger::redirect();
-
 		instance = this;
 				
 #ifdef HAVE_SYSTEMD
