@@ -359,9 +359,9 @@
 		return rc;
 	}
 
-	String URL::argument(const char *name) const {
+	String URL::argument(const char *name, const char *def) const {
 
-		String result;
+		String result{def};
 
 		for_each([&result,name](const char *key, const char *value) -> bool {
 			if(!strcasecmp(key,name)) {

@@ -129,7 +129,7 @@
 		/// @brief Iterate over query
 		bool for_each(const std::function<bool(const char *name, const char *value)> &func) const;
 
-		String argument(const char *name) const;
+		String argument(const char *name, const char *def = "") const;
 
 		inline String operator[](const char *name) const {
 			return argument(name);
