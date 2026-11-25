@@ -72,7 +72,7 @@
 		code = HTTP::Ok;
 
 		timestamp.expiration = (time_t) -1;
-		timestamp.modification = (time_t) -1;
+		timestamp.modification = (time_t) 0;
 
 		range.count = 0;
 		range.from = 0;

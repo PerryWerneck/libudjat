@@ -25,6 +25,7 @@
  #include <list>
  #include <mutex>
  #include <functional>
+ #include <utility>
  #include <udjat/tools/logger.h>
  #include <system_error>
  #include <iostream>
@@ -91,6 +92,27 @@
 			inline void push_back(P object) noexcept {
 				std::lock_guard<std::mutex> lock(guard);
 				objects.push_back(object);
+			}
+
+			inline P emplace_back() {
+				std::lock_guard<std::mutex> lock(guard);
+#if __cplusplus >= 201703L
+				return objects.emplace_back();
+#else
+				objects.emplace_back();
+				return objects.back();
+#endif
+			}
+
+			template <typename... Args>
+			inline P emplace_back(Args&&... args) {
+				std::lock_guard<std::mutex> lock(guard);
+#if __cplusplus >= 201703L
+				return objects.emplace_back(std::forward<Args>(args)...);
+#else
+				objects.emplace_back(std::forward<Args>(args)...);
+				return objects.back();
+#endif
 			}
 
 			inline void remove(P object) noexcept {

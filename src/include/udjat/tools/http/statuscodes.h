@@ -30,6 +30,7 @@
 		enum StatusCode : unsigned short {
 			Undefined				= 0,	///< @brief Status code is undefined.
 			Ok 						= 200,	///< @brief The request succeeded. The result and meaning of "success" depends on the HTTP method
+			Created					= 201,	///< The request succeeded, and a new resource was created as a result. This is typically the response sent after POST requests, or some PUT requests.
 			NoContent				= 204,	///< @brief There is no content to send for this request, but the headers are useful.
 			SeeOther				= 303,	///< @brief Direct the client to get the requested resource at another URI with a GET request.
 			NotModified				= 304,

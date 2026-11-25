@@ -116,6 +116,14 @@
 				return code >= 200 && code <= 299;
 			}
 
+			inline operator int() const noexcept {
+				return (int) code;
+			}
+
+			inline operator unsigned int() const noexcept {
+				return (unsigned int) code;
+			}
+
 			inline bool success() const noexcept {
 				return code >= 200 && code <= 299;
 			}
